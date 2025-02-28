@@ -1,0 +1,87 @@
+.user-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: fit-content; /* Ajustar la altura según sea necesario */
+  background-color: #ffffff; /* Fondo blanco */
+  border-radius: var(--border-radius); /* Añadir border-radius */
+  margin-bottom: var(--spacing-medium); /* Añadir margen inferior */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1); /* Hacer el box shadow más ligero */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente del texto */
+}
+
+.menu {
+  display: flex;
+  gap: var(--spacing-small);
+  padding: var(--spacing-small);
+}
+
+.user-panel {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small);
+  padding: var(--spacing-small);
+}
+
+.user-panel img {
+  pointer-events: none;
+}
+
+.user-bar button {
+  height: 36px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  transition: var(--transition-standart);
+}
+.user-bar button:hover {
+  background-color: var(--color-white-hover); /* Gris claro */
+  transition: var(--transition-standart);
+}
+
+.user{
+  position: relative;
+}
+/* Añadir estilos para el menú desplegable */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: calc(var(--spacing-small) - (var(--spacing-small) * 2));
+    top: calc(36px + (var(--spacing-small)) * 2);
+    background-color: #ffffff;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: var(--border-radius);
+}
+
+.dropdown-content a {
+  font-size: 16px;
+    color: var(--color-texto);
+    height: 44px;
+    padding: 12px 16px;
+    text-decoration: none;
+    transition: var(--transition-standart);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .dropdown-content a:hover {
+    background-color: var(--color-white-hover);
+    transition: var(--transition-standart);
+ 
+}
+
+.show {
+    display: block;
+}
+.dropdownImg{
+  transition: var(--transition-standart);
+}
+.rotate {
+  transform: rotate(180deg);
+    transition: var(--transition-standart);
+}

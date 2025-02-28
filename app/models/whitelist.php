@@ -1,0 +1,16 @@
+<?php
+return [
+    "login",
+    "register",
+    "dashboard",
+    "employeeTable",
+    "employeeForm",
+    "employeeFormEdit",
+    "pcTable",
+    "pcForm",
+    "pcFormNew",
+    "pcFormEdit",
+    "config",
+    "faultReport"
+];
+?>

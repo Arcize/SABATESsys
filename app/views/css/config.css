@@ -1,0 +1,24 @@
+.configBtn{
+    width: 120px;
+    background-color: var(--color-secundario);
+    color: var(--color-claro);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+}
+
+.btnContainer{
+    margin: 10px;
+    display: flex;
+    text-wrap: balance;
+    justify-content: space-between;
+
+}
+
+.containerLimit{
+    display: flex;
+    align-items: flex-end;
+    min-height: 450px;
+    min-width: 600px;
+    border-radius: var(--border-radius);
+    margin: auto 0;
+}
