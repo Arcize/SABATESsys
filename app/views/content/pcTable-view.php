@@ -8,7 +8,7 @@ $pcs = $pcModel->readAll();
 <div class="view-box">
     <div class="table-heading">
         <h3 class="h3">Datos de Equipos Informáticos</h3>
-        <a href="index.php?view=pcFormNew">
+        <a href="index.php?view=pcForm">
             <button class="table-button">Registrar</button>
         </a>
     </div>

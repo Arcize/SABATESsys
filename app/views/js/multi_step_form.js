@@ -1,27 +1,72 @@
-let currentStep = 0;
-showStep(currentStep);
+document.addEventListener("DOMContentLoaded", function () {
+  const slidePage = document.querySelector(".slidePage");
+  const page = document.getElementsByClassName("page");
+  const bullets = document.getElementsByClassName("bullet");
+  const numbers = document.getElementsByClassName("step-number");
+  const checks = document.getElementsByClassName("check");
+  let max = page.length;
+  let current = 0;
 
-function showStep(step) {
-    const steps = document.getElementsByClassName("step");
-    steps[step].classList.add("active");
-}
-
-function nextStep() {
-    const steps = document.getElementsByClassName("step");
-    steps[currentStep].classList.remove("active");
-    currentStep++;
-    if (currentStep >= steps.length) {
-        currentStep = steps.length - 1;
+  function nextStep() {
+    if (validateStep(current)) {
+      if (current < max - 1) {
+        bullets[current].classList.add("completed");
+        numbers[current].classList.remove("display");
+        checks[current].classList.add("display");
+        current++;
+        bullets[current].classList.add("bulletActive");
+        slidePage.style.marginLeft = `-${current * 20}%`;
+        if (current === max - 1) {
+          const btnNext = document.querySelector(".btnArea .button:last-child");
+          btnNext.textContent = "Enviar";
+          btnNext.setAttribute("onclick", "submitForm()");
+        }
+      }
+    } else {
+        Swal.fire({
+            icon: 'warning',
+            text: 'Por favor, rellene todos los campos antes de continuar.',
+            customClass: {
+                popup: 'custom-swal-font'
+            }
+        });
     }
-    showStep(currentStep);
-}
+  }
 
-function prevStep() {
-    const steps = document.getElementsByClassName("step");
-    steps[currentStep].classList.remove("active");
-    currentStep--;
-    if (currentStep < 0) {
-        currentStep = 0;
+  function prevStep() {
+    if (current === 0) {
+      window.location.href = "index.php?view=pcTable";
+    } else {
+      bullets[current].classList.remove("bulletActive");
+      current--;
+      numbers[current].classList.add("display");
+      checks[current].classList.remove("display");
+      bullets[current].classList.remove("completed");
+      slidePage.style.marginLeft = `-${current * 20}%`;
+
+      if (current < max - 1) {
+        const btnNext = document.querySelector(".btnArea .button:last-child");
+        btnNext.textContent = "Siguiente";
+        btnNext.setAttribute("onclick", "nextStep()");
+      }
     }
-    showStep(currentStep);
-}
+  }
+
+  function validateStep(step) {
+    const inputs = page[step].querySelectorAll("input, select");
+    for (let input of inputs) {
+      if (!input.value) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function submitForm() {
+    document.querySelector(".multi-step-form").submit();
+  }
+
+  window.nextStep = nextStep;
+  window.prevStep = prevStep;
+  window.submitForm = submitForm;
+});

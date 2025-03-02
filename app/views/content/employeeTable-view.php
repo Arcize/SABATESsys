@@ -15,6 +15,7 @@ $employee = $employeeModel->readAll();
     <table class="table">
         <thead class="table-head">
             <tr>
+                <th scope="col">#</th>
                 <th scope="col">Nombre</th>
                 <th scope="col">Apellido</th>
                 <th scope="col">Cédula</th>
@@ -28,6 +29,7 @@ $employee = $employeeModel->readAll();
         <tbody>
             <?php foreach ($employee as $key => $item) { ?>
                 <tr>
+                    <td><?php echo $item["id_persona"]; ?></td>
                     <td><?php echo $item["nombre"]; ?></td>
                     <td><?php echo $item["apellido"]; ?></td>
                     <td><?php echo $item["cedula"]; ?></td>

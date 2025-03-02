@@ -4,19 +4,14 @@
 
 .formContainer {
   height: 700px;
-  width: 450px;
-}
-.form {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
+  min-width: 550px;
+  padding: 0 50px;
 }
 
-.formContainer select:focus,
-.formContainer select:valid {
-  border: solid 2px var(--color-primario);
+.form {
+  display: flex;
 }
+
 .formContainer select {
   border: solid 1px rgba(0, 0, 0, 0.2);
   outline: none;
@@ -30,6 +25,12 @@
   margin-top: 4px;
   cursor: pointer;
 }
+
+.formContainer select:focus,
+.formContainer select:valid {
+  border: solid 2px var(--color-primario);
+}
+
 ::-webkit-calendar-picker-indicator {
   cursor: pointer;
 }
@@ -42,6 +43,7 @@
   width: calc(100% / 2 - 20px);
   margin: 20px 0 12px 0;
 }
+
 .input {
   width: 100%;
   height: 36px;
@@ -57,10 +59,16 @@
   font-size: 16px;
 }
 
+.input:focus,
+.input:valid {
+  border: solid 2px var(--color-primario);
+}
+
 .textArea {
   width: 100%;
   height: 300px;
 }
+
 .textArea > textarea {
   width: 100%;
   height: 100%;
@@ -78,15 +86,13 @@
   overflow: auto;
   padding: 10px;
 }
-.input:focus,
-.input:valid {
-  border: solid 2px var(--color-primario);
-}
+
 .userDetails {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
 }
+
 label {
   display: block;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -94,11 +100,13 @@ label {
   font-weight: 400;
   font-size: 16px;
 }
+
 .btnArea {
   display: flex;
   justify-content: space-between;
   width: 100%;
 }
+
 .button {
   cursor: pointer;
   border: none;
@@ -107,59 +115,4 @@ label {
   padding: 6px 0;
   background-color: var(--color-primario);
   color: var(--color-claro);
-}
-
-/*Formularios Multipasos*/
-.progressBar {
-  display: flex;
-  margin: 20px 0 0;
-  justify-content: space-around;
-}
-.bullet {
-  border: solid 3px var(--color-primario);
-  border-radius: 50%;
-  height: 36px;
-  width: 36px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 4px;
-  position: relative;
-}
-.bullet span{
-  font-size: 16px;
-  color: var(--color-primario);
-  font-weight: 600;
-  font-family: "poppins", sans-serif;
-}
-.bullet::before,
-.bullet::after {
-  content: "";
-  position: absolute;
-  background-color: var(--color-primario);
-  height: 3px;
-  width: 50px;
-  right: -55px;
-}
-.stepIndicator:last-child .bullet:before,
-.stepIndicator:last-child .bullet:after{
-  display: none;
-}
-.stepIndicator {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-.step {
-  display: none;
-}
-
-.active {
-  display: block;
-}
-.stepInputs {
-  min-height: 300px;
 }

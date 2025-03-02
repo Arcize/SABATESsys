@@ -2,7 +2,7 @@
   --color-primario: #0f2c64;
   --color-primario-hover: #233d78;
   --color-background: #f3f8fd;
-  --color-white-hover: #f1f1f1;
+  --color-white-hover: #e0e0e0;
   --color-secundario: #088395;
   --color-acento: #37b7c3;
   --color-claro: #f6f6f6;
@@ -18,7 +18,7 @@
   height: 100vh;
 }
 .principal {
-  width: 82%;
+  width: 82vw;
   height: 100vh;
   background-color: var(--color-background); /* Fondo blanco azulado */
   display: flex;
