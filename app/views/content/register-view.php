@@ -21,7 +21,7 @@
             <div class="input-box">
                 <input type="text" placeholder="Usuario" name="username" required />
                 <img
-                    src="app/views/img/user.svg"
+                    src="app/views/img/user_white.svg"
                     alt="user" />
             </div>
             <div class="input-box">
