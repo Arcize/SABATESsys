@@ -26,6 +26,10 @@ $pc = $pcModel->readOne($_GET['id']);
 				<span class="step-number display">5</span>
 				<div class="check"><img src="app/views/img/check.svg" alt=""></div>
 			</div>
+			<div class="bullet">
+				<span class="step-number display">6</span>
+				<div class="check"><img src="app/views/img/check.svg" alt=""></div>
+			</div>
 		</div>
 		<div class="form-layout">
 			<form action="index.php?view=pc&action=pc_update" method="post" class="multi-step-form">
@@ -35,8 +39,8 @@ $pc = $pcModel->readOne($_GET['id']);
 						<h4 class="h4">Información General</h4>
 					</legend>
 					<div class="pageInputs">
-						<label for="marca">Marca:</label>
-						<input type="text" id="marca" name="marca" class="input" value="<?php echo isset($pc['marca_equipo_informatico']) ? $pc['marca_equipo_informatico'] : ''; ?>" required>
+						<label for="fabricante">Fabricante:</label>
+						<input type="text" id="fabricante" name="fabricante" class="input" value="<?php echo isset($pc['fabricante_equipo_informatico']) ? $pc['fabricante_equipo_informatico'] : ''; ?>" required>
 
 						<label for="estado">Estado del equipo:</label>
 						<select id="estado" name="estado" class="input" required>
@@ -57,8 +61,8 @@ $pc = $pcModel->readOne($_GET['id']);
 						<h4 class="h4">Procesador</h4>
 					</legend>
 					<div class="pageInputs">
-						<label for="marca_procesador">Marca del procesador:</label>
-						<input type="text" id="marca_procesador" name="marca_procesador" class="input" value="<?php echo isset($pc['marca_procesador']) ? $pc['marca_procesador'] : ''; ?>" required>
+						<label for="fabricante_procesador">Fabricante del procesador:</label>
+						<input type="text" id="fabricante_procesador" name="fabricante_procesador" class="input" value="<?php echo isset($pc['fabricante_procesador']) ? $pc['fabricante_procesador'] : ''; ?>" required>
 
 						<label for="nombre_procesador">Nombre del procesador:</label>
 						<input type="text" id="nombre_procesador" name="nombre_procesador" class="input" value="<?php echo isset($pc['nombre_procesador']) ? $pc['nombre_procesador'] : ''; ?>" required>
@@ -75,8 +79,8 @@ $pc = $pcModel->readOne($_GET['id']);
 						<h4 class="h4">Motherboard</h4>
 					</legend>
 					<div class="pageInputs">
-						<label for="marca_motherboard">Marca de la motherboard:</label>
-						<input type="text" id="marca_motherboard" name="marca_motherboard" class="input" value="<?php echo isset($pc['marca_motherboard']) ? $pc['marca_motherboard'] : ''; ?>" required>
+						<label for="fabricante_motherboard">Fabricante de la motherboard:</label>
+						<input type="text" id="fabricante_motherboard" name="fabricante_motherboard" class="input" value="<?php echo isset($pc['fabricante_motherboard']) ? $pc['fabricante_motherboard'] : ''; ?>" required>
 
 						<label for="modelo_motherboard">Modelo de la motherboard:</label>
 						<input type="text" id="modelo_motherboard" name="modelo_motherboard" class="input" value="<?php echo isset($pc['modelo_motherboard']) ? $pc['modelo_motherboard'] : ''; ?>" required>
@@ -87,8 +91,8 @@ $pc = $pcModel->readOne($_GET['id']);
 						<h4 class="h4">Fuente</h4>
 					</legend>
 					<div class="pageInputs">
-						<label for="marca_fuente">Marca de la fuente:</label>
-						<input type="text" id="marca_fuente" name="marca_fuente" class="input" value="<?php echo isset($pc['marca_fuente_poder']) ? $pc['marca_fuente_poder'] : ''; ?>" required>
+						<label for="fabricante_fuente">Fabricante de la fuente:</label>
+						<input type="text" id="fabricante_fuente" name="fabricante_fuente" class="input" value="<?php echo isset($pc['fabricante_fuente_poder']) ? $pc['fabricante_fuente_poder'] : ''; ?>" required>
 
 						<label for="wattage_fuente">Wattage de la fuente:</label>
 						<input type="text" id="wattage_fuente" name="wattage_fuente" class="input" value="<?php echo isset($pc['wattage_fuente']) ? $pc['wattage_fuente'] : ''; ?>" required>
@@ -99,8 +103,8 @@ $pc = $pcModel->readOne($_GET['id']);
 						<h4 class="h4">RAM</h4>
 					</legend>
 					<div class="pageInputs">
-						<label for="marca_ram">Marca de la RAM:</label>
-						<input type="text" id="marca_ram" name="marca_ram" class="input" value="<?php echo isset($pc['marca_ram']) ? $pc['marca_ram'] : ''; ?>" required>
+						<label for="fabricante_ram">Fabricante de la RAM:</label>
+						<input type="text" id="fabricante_ram" name="fabricante_ram" class="input" value="<?php echo isset($pc['fabricante_ram']) ? $pc['fabricante_ram'] : ''; ?>" required>
 
 						<label for="tipo_ram">Tipo de RAM:</label>
 						<input type="text" id="tipo_ram" name="tipo_ram" class="input" value="<?php echo isset($pc['tipo_ram']) ? $pc['tipo_ram'] : ''; ?>" required>
@@ -110,6 +114,21 @@ $pc = $pcModel->readOne($_GET['id']);
 
 						<label for="capacidad_ram">Capacidad de la RAM (GB):</label>
 						<input type="text" id="capacidad_ram" name="capacidad_ram" class="input" value="<?php echo isset($pc['capacidad_ram']) ? $pc['capacidad_ram'] : ''; ?>" required>
+					</div>
+				</fieldset>
+				<fieldset class="page">
+					<legend>
+						<h4 class="h4">Almacenamiento</h4>
+					</legend>
+					<div class="pageInputs">
+						<label for="fabricante_almacenamiento">Fabricante del almacenamiento:</label>
+						<input type="text" id="fabricante_almacenamiento" name="fabricante_almacenamiento" class="input" value="<?php echo isset($pc['fabricante_almacenamiento']) ? $pc['fabricante_almacenamiento'] : ''; ?>" required>
+
+						<label for="tipo_almacenamiento">Tipo de almacenamiento:</label>
+						<input type="text" id="tipo_almacenamiento" name="tipo_almacenamiento" class="input" value="<?php echo isset($pc['tipo_almacenamiento']) ? $pc['tipo_almacenamiento'] : ''; ?>" required>
+
+						<label for="capacidad_almacenamiento">Capacidad del almacenamiento (GB):</label>
+						<input type="text" id="capacidad_almacenamiento" name="capacidad_almacenamiento" class="input" value="<?php echo isset($pc['capacidad_almacenamiento']) ? $pc['capacidad_almacenamiento'] : ''; ?>" required>
 					</div>
 				</fieldset>
 			</form>

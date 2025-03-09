@@ -8,21 +8,21 @@ document.addEventListener("DOMContentLoaded", function () {
   let current = 0;
 
   function nextStep() {
-    if (validateStep(current)) {
+   /* if (validateStep(current)) {*/
       if (current < max - 1) {
         bullets[current].classList.add("completed");
         numbers[current].classList.remove("display");
         checks[current].classList.add("display");
         current++;
         bullets[current].classList.add("bulletActive");
-        slidePage.style.marginLeft = `-${current * 20}%`;
+        slidePage.style.marginLeft = `-${current * 450}px`;
         if (current === max - 1) {
           const btnNext = document.querySelector(".btnArea .button:last-child");
           btnNext.textContent = "Enviar";
           btnNext.setAttribute("onclick", "submitForm()");
         }
       }
-    } else {
+    /*} else {
         Swal.fire({
             icon: 'warning',
             text: 'Por favor, rellene todos los campos antes de continuar.',
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 popup: 'custom-swal-font'
             }
         });
-    }
+    }*/
   }
 
   function prevStep() {
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
       numbers[current].classList.add("display");
       checks[current].classList.remove("display");
       bullets[current].classList.remove("completed");
-      slidePage.style.marginLeft = `-${current * 20}%`;
+      slidePage.style.marginLeft = `-${current * 450}px`;
 
       if (current < max - 1) {
         const btnNext = document.querySelector(".btnArea .button:last-child");

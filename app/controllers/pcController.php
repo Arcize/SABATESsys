@@ -38,41 +38,47 @@ class pcController
 
     private function createPC()
     {
-        $marca = $_POST['marca'];
+        $fabricante = $_POST['fabricante'];
         $estado = $_POST['estado'];
         $persona_id = $_POST['persona_id'];
-        $marca_procesador = $_POST['marca_procesador'];
+        $fabricante_procesador = $_POST['fabricante_procesador'];
         $nombre_procesador = $_POST['nombre_procesador'];
         $nucleos = $_POST['nucleos'];
         $frecuencia_procesador = $_POST['frecuencia_procesador'];
-        $marca_motherboard = $_POST['marca_motherboard'];
+        $fabricante_motherboard = $_POST['fabricante_motherboard'];
         $modelo_motherboard = $_POST['modelo_motherboard'];
-        $marca_fuente = $_POST['marca_fuente'];
+        $fabricante_fuente = $_POST['fabricante_fuente'];
         $wattage_fuente = $_POST['wattage_fuente'];
-        $marca_ram = $_POST['marca_ram'];
+        $fabricante_ram = $_POST['fabricante_ram'];
         $tipo_ram = $_POST['tipo_ram'];
         $frecuencia_ram = $_POST['frecuencia_ram'];
         $capacidad_ram = $_POST['capacidad_ram'];
+        $fabricante_almacenamiento = $_POST['fabricante_almacenamiento'];
+        $tipo_almacenamiento = $_POST['tipo_almacenamiento'];
+        $capacidad_almacenamiento = $_POST['capacidad_almacenamiento'];
 
         // Mensajes de depuración
         error_log("Datos recibidos para crear PC:");
-        error_log("Marca: $marca");
+        error_log("Fabricante: $fabricante");
         error_log("Estado: $estado");
         error_log("Persona ID: $persona_id");
-        error_log("Marca Procesador: $marca_procesador");
+        error_log("Fabricante Procesador: $fabricante_procesador");
         error_log("Nombre Procesador: $nombre_procesador");
         error_log("Núcleos: $nucleos");
         error_log("Frecuencia Procesador: $frecuencia_procesador");
-        error_log("Marca Motherboard: $marca_motherboard");
+        error_log("Fabricante Motherboard: $fabricante_motherboard");
         error_log("Modelo Motherboard: $modelo_motherboard");
-        error_log("Marca Fuente: $marca_fuente");
+        error_log("Fabricante Fuente: $fabricante_fuente");
         error_log("Wattage Fuente: $wattage_fuente");
-        error_log("Marca RAM: $marca_ram");
+        error_log("Fabricante RAM: $fabricante_ram");
         error_log("Tipo RAM: $tipo_ram");
         error_log("Frecuencia RAM: $frecuencia_ram");
         error_log("Capacidad RAM: $capacidad_ram");
+        error_log("Fabricante Almacenamiento: $fabricante_almacenamiento");
+        error_log("Tipo Almacenamiento: $tipo_almacenamiento");
+        error_log("Capacidad Almacenamiento: $capacidad_almacenamiento");
 
-        $this->pcModel->getData($marca, $estado, $persona_id, $marca_procesador, $nombre_procesador, $nucleos, $frecuencia_procesador, $marca_motherboard, $modelo_motherboard, $marca_fuente, $wattage_fuente, $marca_ram, $tipo_ram, $frecuencia_ram, $capacidad_ram);
+        $this->pcModel->getData($fabricante, $estado, $persona_id, $fabricante_procesador, $nombre_procesador, $nucleos, $frecuencia_procesador, $fabricante_motherboard, $modelo_motherboard, $fabricante_fuente, $wattage_fuente, $fabricante_ram, $tipo_ram, $frecuencia_ram, $capacidad_ram, $fabricante_almacenamiento, $tipo_almacenamiento, $capacidad_almacenamiento);
         $this->pcModel->create();
 
         header("Location: index.php?view=pcTable");
@@ -91,23 +97,26 @@ class pcController
     private function updatePC()
     {
         $id = $_POST['id'];
-        $marca = $_POST['marca'];
+        $fabricante = $_POST['fabricante'];
         $estado = $_POST['estado'];
         $persona_id = $_POST['persona_id'];
-        $marca_procesador = $_POST['marca_procesador'];
+        $fabricante_procesador = $_POST['fabricante_procesador'];
         $nombre_procesador = $_POST['nombre_procesador'];
         $nucleos = $_POST['nucleos'];
         $frecuencia_procesador = $_POST['frecuencia_procesador'];
-        $marca_motherboard = $_POST['marca_motherboard'];
+        $fabricante_motherboard = $_POST['fabricante_motherboard'];
         $modelo_motherboard = $_POST['modelo_motherboard'];
-        $marca_fuente = $_POST['marca_fuente'];
+        $fabricante_fuente = $_POST['fabricante_fuente'];
         $wattage_fuente = $_POST['wattage_fuente'];
-        $marca_ram = $_POST['marca_ram'];
+        $fabricante_ram = $_POST['fabricante_ram'];
         $tipo_ram = $_POST['tipo_ram'];
         $frecuencia_ram = $_POST['frecuencia_ram'];
         $capacidad_ram = $_POST['capacidad_ram'];
+        $fabricante_almacenamiento = $_POST['fabricante_almacenamiento'];
+        $tipo_almacenamiento = $_POST['tipo_almacenamiento'];
+        $capacidad_almacenamiento = $_POST['capacidad_almacenamiento'];
 
-        $this->pcModel->getData($marca, $estado, $persona_id, $marca_procesador, $nombre_procesador, $nucleos, $frecuencia_procesador, $marca_motherboard, $modelo_motherboard, $marca_fuente, $wattage_fuente, $marca_ram, $tipo_ram, $frecuencia_ram, $capacidad_ram);
+        $this->pcModel->getData($fabricante, $estado, $persona_id, $fabricante_procesador, $nombre_procesador, $nucleos, $frecuencia_procesador, $fabricante_motherboard, $modelo_motherboard, $fabricante_fuente, $wattage_fuente, $fabricante_ram, $tipo_ram, $frecuencia_ram, $capacidad_ram, $fabricante_almacenamiento, $tipo_almacenamiento, $capacidad_almacenamiento);
         $this->pcModel->update($id);
 
         header("Location: index.php?view=pcTable");

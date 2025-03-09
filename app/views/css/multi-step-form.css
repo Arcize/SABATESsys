@@ -1,16 +1,22 @@
 /* Formularios Multipasos */
-
+:root{
+  --form-size: 450px;
+  --bullet-size: 32px;
+}
 .form-box {
-  width: 450px;
+  width: var(--form-size);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .multi-step-form {
   display: flex;
-  width: 500%;
+  width: 600%;
 }
 
 .form-layout {
-  width: 450px;
+  width: var(--form-size);
   height: 350px;
   overflow: hidden;
 }
@@ -18,15 +24,15 @@
 .progressBar {
   display: flex;
   margin: 20px 0 0;
-  width: 400px;
+  width: calc(var(--form-size) - (var(--form-size) / 9));
   justify-content: space-around;
 }
 
 .bullet {
   border: solid 3px var(--color-white-hover);
   border-radius: 50%;
-  height: 32px;
-  width: 32px;
+  height: var(--bullet-size);
+  width: var(--bullet-size);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -49,8 +55,8 @@
   position: absolute;
   background-color: var(--color-white-hover);
   height: 3px;
-  width: 40px;
-  right: -45px;
+  width: 32px;
+  right: -36px;
   border-radius: var(--border-radius);
 }
 
@@ -88,7 +94,7 @@
 }
 
 .page {
-  width: 450px;
+  width: var(--form-size);
   transition: margin-left 0.2s ease-in-out;
 }
 

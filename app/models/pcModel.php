@@ -3,21 +3,24 @@ include_once("app\models\DB.php");
 
 class pcModel
 {
-    private $marca;
+    private $fabricante;
     private $estado;
     private $persona_id;
-    private $marca_procesador;
+    private $fabricante_procesador;
     private $nombre_procesador;
     private $nucleos;
     private $frecuencia_procesador;
-    private $marca_motherboard;
+    private $fabricante_motherboard;
     private $modelo_motherboard;
-    private $marca_fuente;
+    private $fabricante_fuente;
     private $wattage_fuente;
-    private $marca_ram;
+    private $fabricante_ram;
     private $tipo_ram;
     private $frecuencia_ram;
     private $capacidad_ram;
+    private $fabricante_almacenamiento;
+    private $tipo_almacenamiento;
+    private $capacidad_almacenamiento;
     private $db;
 
     public function __construct()
@@ -25,23 +28,26 @@ class pcModel
         $this->db = DataBase::getInstance();
     }
 
-    public function getData($marca, $estado, $persona_id, $marca_procesador, $nombre_procesador, $nucleos, $frecuencia_procesador, $marca_motherboard, $modelo_motherboard, $marca_fuente, $wattage_fuente, $marca_ram, $tipo_ram, $frecuencia_ram, $capacidad_ram)
+    public function getData($fabricante, $estado, $persona_id, $fabricante_procesador, $nombre_procesador, $nucleos, $frecuencia_procesador, $fabricante_motherboard, $modelo_motherboard, $fabricante_fuente, $wattage_fuente, $fabricante_ram, $tipo_ram, $frecuencia_ram, $capacidad_ram, $fabricante_almacenamiento, $tipo_almacenamiento, $capacidad_almacenamiento)
     {
-        $this->marca = $marca;
+        $this->fabricante = $fabricante;
         $this->estado = $estado;
         $this->persona_id = $persona_id;
-        $this->marca_procesador = $marca_procesador;
+        $this->fabricante_procesador = $fabricante_procesador;
         $this->nombre_procesador = $nombre_procesador;
         $this->nucleos = $nucleos;
         $this->frecuencia_procesador = $frecuencia_procesador;
-        $this->marca_motherboard = $marca_motherboard;
+        $this->fabricante_motherboard = $fabricante_motherboard;
         $this->modelo_motherboard = $modelo_motherboard;
-        $this->marca_fuente = $marca_fuente;
+        $this->fabricante_fuente = $fabricante_fuente;
         $this->wattage_fuente = $wattage_fuente;
-        $this->marca_ram = $marca_ram;
+        $this->fabricante_ram = $fabricante_ram;
         $this->tipo_ram = $tipo_ram;
         $this->frecuencia_ram = $frecuencia_ram;
         $this->capacidad_ram = $capacidad_ram;
+        $this->fabricante_almacenamiento = $fabricante_almacenamiento;
+        $this->tipo_almacenamiento = $tipo_almacenamiento;
+        $this->capacidad_almacenamiento = $capacidad_almacenamiento;
     }
 
     public function create()
@@ -49,90 +55,113 @@ class pcModel
         try {
             $this->db->beginTransaction();
 
-            // Insertar procesador
-            $sql = "INSERT INTO procesador (marca_procesador, nombre_procesador, nucleos, frecuencia, id_estado_pieza_procesador) 
-                    VALUES (:marca_procesador, :nombre_procesador, :nucleos, :frecuencia, 1)";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':marca_procesador', $this->marca_procesador);
-            $stmt->bindParam(':nombre_procesador', $this->nombre_procesador);
-            $stmt->bindParam(':nucleos', $this->nucleos);
-            $stmt->bindParam(':frecuencia', $this->frecuencia_procesador);
-            if (!$stmt->execute()) {
-                throw new PDOException("Error executing query (procesador): " . implode(", ", $stmt->errorInfo()));
+            // Insertar equipo informático
+            try {
+                $sql = "INSERT INTO equipo_informatico (fabricante_equipo_informatico, id_estado_equipo, id_persona) VALUES (:fabricante, :estado, :persona_id)";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':fabricante', $this->fabricante);
+                $stmt->bindParam(':estado', $this->estado);
+                $stmt->bindParam(':persona_id', $this->persona_id);
+                $stmt->execute();
+                $id_equipo_informatico = $this->db->lastInsertId();
+            } catch (PDOException $e) {
+                error_log("Error al insertar equipo informático: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
+                throw new Exception("Error al insertar equipo informático.");
             }
-            $id_procesador = $this->db->lastInsertId();
+
+            // Insertar procesador
+            try {
+                $sql = "INSERT INTO procesador (id_equipo_informatico_procesador, fabricante_procesador, nombre_procesador, nucleos, frecuencia, id_estado_pieza_procesador) VALUES (:id_equipo_informatico, :fabricante_procesador, :nombre_procesador, :nucleos, :frecuencia, 1)";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':id_equipo_informatico', $id_equipo_informatico);
+                $stmt->bindParam(':fabricante_procesador', $this->fabricante_procesador);
+                $stmt->bindParam(':nombre_procesador', $this->nombre_procesador);
+                $stmt->bindParam(':nucleos', $this->nucleos);
+                $stmt->bindParam(':frecuencia', $this->frecuencia_procesador);
+                $stmt->execute();
+            } catch (PDOException $e) {
+                error_log("Error al insertar procesador: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
+                throw new Exception("Error al insertar procesador.");
+            }
 
             // Insertar motherboard
-            $sql = "INSERT INTO motherboard (modelo_motherboard, marca_motherboard, id_estado_pieza_motherboard) 
-                    VALUES (:modelo_motherboard, :marca_motherboard, 1)";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':modelo_motherboard', $this->modelo_motherboard);
-            $stmt->bindParam(':marca_motherboard', $this->marca_motherboard);
-            if (!$stmt->execute()) {
-                throw new PDOException("Error executing query (motherboard): " . implode(", ", $stmt->errorInfo()));
+            try {
+                $sql = "INSERT INTO motherboard (id_equipo_informatico_motherboard, modelo_motherboard, fabricante_motherboard, id_estado_pieza_motherboard) VALUES (:id_equipo_informatico, :modelo_motherboard, :fabricante_motherboard, 1)";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':id_equipo_informatico', $id_equipo_informatico);
+                $stmt->bindParam(':modelo_motherboard', $this->modelo_motherboard);
+                $stmt->bindParam(':fabricante_motherboard', $this->fabricante_motherboard);
+                $stmt->execute();
+            } catch (PDOException $e) {
+                error_log("Error al insertar motherboard: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
+                throw new Exception("Error al insertar motherboard.");
             }
-            $id_motherboard = $this->db->lastInsertId();
 
             // Insertar fuente de poder
-            $sql = "INSERT INTO fuente_poder (marca_fuente_poder, wattage, id_estado_pieza_fuente) 
-                    VALUES (:marca_fuente, :wattage, 1)";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':marca_fuente', $this->marca_fuente);
-            $stmt->bindParam(':wattage', $this->wattage_fuente);
-            if (!$stmt->execute()) {
-                throw new PDOException("Error executing query (fuente_poder): " . implode(", ", $stmt->errorInfo()));
+            try {
+                $sql = "INSERT INTO fuente_poder (id_equipo_informatico_fuente, fabricante_fuente_poder, wattage, id_estado_pieza_fuente) VALUES (:id_equipo_informatico, :fabricante_fuente, :wattage, 1)";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':id_equipo_informatico', $id_equipo_informatico);
+                $stmt->bindParam(':fabricante_fuente', $this->fabricante_fuente);
+                $stmt->bindParam(':wattage', $this->wattage_fuente);
+                $stmt->execute();
+            } catch (PDOException $e) {
+                error_log("Error al insertar fuente de poder: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
+                throw new Exception("Error al insertar fuente de poder.");
             }
-            $id_fuente = $this->db->lastInsertId();
 
-            // Insertar equipo informático
-            $sql = "INSERT INTO equipo_informatico (marca_equipo_informatico, id_estado_equipo, id_persona, id_procesador, id_motherboard, id_fuente) 
-                    VALUES (:marca, :estado, :persona_id, :id_procesador, :id_motherboard, :id_fuente)";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':marca', $this->marca);
-            $stmt->bindParam(':estado', $this->estado);
-            $stmt->bindParam(':persona_id', $this->persona_id);
-            $stmt->bindParam(':id_procesador', $id_procesador);
-            $stmt->bindParam(':id_motherboard', $id_motherboard);
-            $stmt->bindParam(':id_fuente', $id_fuente);
-            if (!$stmt->execute()) {
-                throw new PDOException("Error executing query (equipo_informatico): " . implode(", ", $stmt->errorInfo()));
+            // Insertar almacenamiento
+            try {
+                $sql = "INSERT INTO almacenamiento (id_equipo_informatico_almacenamiento, fabricante_almacenamiento, tipo_almacenamiento, capacidad_almacenamiento, id_estado_pieza_almacenamiento) VALUES (:id_equipo_informatico, :fabricante_almacenamiento, :tipo_almacenamiento, :capacidad_almacenamiento, 1)";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':id_equipo_informatico', $id_equipo_informatico);
+                $stmt->bindParam(':fabricante_almacenamiento', $this->fabricante_almacenamiento);
+                $stmt->bindParam(':tipo_almacenamiento', $this->tipo_almacenamiento);
+                $stmt->bindParam(':capacidad_almacenamiento', $this->capacidad_almacenamiento);
+                $stmt->execute();
+            } catch (PDOException $e) {
+                error_log("Error al insertar almacenamiento: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
+                throw new Exception("Error al insertar almacenamiento.");
             }
-            $id_equipo_informatico = $this->db->lastInsertId();
 
             // Insertar RAM
-            $sql = "INSERT INTO ram (id_equipo_informatico, marca_ram, tipo_ram, capacidad_ram, frecuencia_ram, id_estado_pieza_ram) 
-                    VALUES (:id_equipo_informatico, :marca_ram, :tipo_ram, :capacidad_ram, :frecuencia_ram, 1)";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id_equipo_informatico', $id_equipo_informatico);
-            $stmt->bindParam(':marca_ram', $this->marca_ram);
-            $stmt->bindParam(':tipo_ram', $this->tipo_ram);
-            $stmt->bindParam(':capacidad_ram', $this->capacidad_ram);
-            $stmt->bindParam(':frecuencia_ram', $this->frecuencia_ram);
-            if (!$stmt->execute()) {
-                throw new PDOException("Error executing query (ram): " . implode(", ", $stmt->errorInfo()));
+            try {
+                $sql = "INSERT INTO ram (id_equipo_informatico_ram, fabricante_ram, tipo_ram, capacidad_ram, frecuencia_ram, id_estado_pieza_ram) VALUES (:id_equipo_informatico, :fabricante_ram, :tipo_ram, :capacidad_ram, :frecuencia_ram, 1)";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':id_equipo_informatico', $id_equipo_informatico);
+                $stmt->bindParam(':fabricante_ram', $this->fabricante_ram);
+                $stmt->bindParam(':tipo_ram', $this->tipo_ram);
+                $stmt->bindParam(':capacidad_ram', $this->capacidad_ram);
+                $stmt->bindParam(':frecuencia_ram', $this->frecuencia_ram);
+                $stmt->execute();
+            } catch (PDOException $e) {
+                error_log("Error al insertar RAM: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
+                throw new Exception("Error al insertar RAM.");
             }
 
             $this->db->commit();
-
             echo "Registro de equipo informático guardado con éxito.";
-        } catch (PDOException $e) {
+        } catch (Exception $e) {
             $this->db->rollBack();
-            echo "Error: " . $e->getMessage();
+            error_log("Transacción fallida: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
+            echo "Ocurrió un error. Por favor, revisa el archivo de registro.";
         }
     }
 
     public function readOne($id)
     {
         try {
-            $sql = "SELECT ei.*, p.marca_procesador, p.nombre_procesador, p.nucleos, p.frecuencia AS frecuencia_procesador, 
-                           m.modelo_motherboard, m.marca_motherboard,
-                           f.marca_fuente_poder, f.wattage AS wattage_fuente, 
-                           r.marca_ram, r.tipo_ram, r.capacidad_ram, r.frecuencia_ram 
+            $sql = "SELECT ei.*, p.fabricante_procesador, p.nombre_procesador, p.nucleos, p.frecuencia AS frecuencia_procesador, 
+                           m.modelo_motherboard, m.fabricante_motherboard,
+                           f.fabricante_fuente_poder, f.wattage AS wattage_fuente, 
+                           r.fabricante_ram, r.tipo_ram, r.capacidad_ram, r.frecuencia_ram,
+                           a.fabricante_almacenamiento, a.tipo_almacenamiento, a.capacidad_almacenamiento
                     FROM equipo_informatico ei
-                    JOIN procesador p ON ei.id_procesador = p.id_procesador
-                    JOIN motherboard m ON ei.id_motherboard = m.id_motherboard
-                    JOIN fuente_poder f ON ei.id_fuente = f.id_fuente_poder
-                    JOIN ram r ON ei.id_equipo_informatico = r.id_equipo_informatico
+                    JOIN procesador p ON ei.id_equipo_informatico = p.id_equipo_informatico_procesador
+                    JOIN motherboard m ON ei.id_equipo_informatico = m.id_equipo_informatico_motherboard
+                    JOIN fuente_poder f ON ei.id_equipo_informatico = f.id_equipo_informatico_fuente
+                    JOIN ram r ON ei.id_equipo_informatico = r.id_equipo_informatico_ram
+                    JOIN almacenamiento a ON ei.id_equipo_informatico = a.id_equipo_informatico_almacenamiento
                     WHERE ei.id_equipo_informatico = :id";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id', $id);
@@ -148,17 +177,19 @@ class pcModel
     {
         try {
             $sql = "SELECT ei.*, 
-                           p.marca_procesador, p.nombre_procesador, p.nucleos, p.frecuencia AS frecuencia_procesador, 
-                           m.modelo_motherboard, m.marca_motherboard,
-                           f.marca_fuente_poder, f.wattage AS wattage, 
+                           p.fabricante_procesador, p.nombre_procesador, p.nucleos, p.frecuencia AS frecuencia_procesador, 
+                           m.modelo_motherboard, m.fabricante_motherboard,
+                           f.fabricante_fuente_poder, f.wattage AS wattage, 
                            SUM(r.capacidad_ram) AS capacidad_ram_total,
                            per.nombre, per.apellido,
-                           est.estado_equipo_informatico AS estado_equipo_informatico
+                           est.estado_equipo_informatico AS estado_equipo_informatico,
+                           SUM(a.capacidad_almacenamiento) AS almacenamiento_total
                     FROM equipo_informatico ei
-                    JOIN procesador p ON ei.id_procesador = p.id_procesador
-                    JOIN motherboard m ON ei.id_motherboard = m.id_motherboard
-                    JOIN fuente_poder f ON ei.id_fuente = f.id_fuente_poder
-                    JOIN ram r ON ei.id_equipo_informatico = r.id_equipo_informatico
+                    JOIN procesador p ON ei.id_equipo_informatico = p.id_equipo_informatico_procesador
+                    JOIN motherboard m ON ei.id_equipo_informatico = m.id_equipo_informatico_motherboard
+                    JOIN fuente_poder f ON ei.id_equipo_informatico = f.id_equipo_informatico_fuente
+                    JOIN ram r ON ei.id_equipo_informatico = r.id_equipo_informatico_ram
+                    JOIN almacenamiento a ON ei.id_equipo_informatico = a.id_equipo_informatico_almacenamiento
                     JOIN persona per ON ei.id_persona = per.id_persona
                     JOIN estado_equipo_informatico est ON ei.id_estado_equipo = est.id_estado_equipo_informatico
                     GROUP BY ei.id_equipo_informatico";
@@ -175,50 +206,77 @@ class pcModel
         try {
             $this->db->beginTransaction();
 
-            // Actualizar procesador
-            $sql = "UPDATE procesador SET marca_procesador = :marca_procesador, nombre_procesador = :nombre_procesador, nucleos = :nucleos, frecuencia = :frecuencia 
-                    WHERE id_procesador = (SELECT id_procesador FROM equipo_informatico WHERE id_equipo_informatico = :id)";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':marca_procesador', $this->marca_procesador);
-            $stmt->bindParam(':nombre_procesador', $this->nombre_procesador);
-            $stmt->bindParam(':nucleos', $this->nucleos);
-            $stmt->bindParam(':frecuencia', $this->frecuencia_procesador);
-            $stmt->bindParam(':id', $id);
-            $stmt->execute();
+            try {
+                // Actualizar equipo informático
+                $sql = "UPDATE equipo_informatico SET fabricante_equipo_informatico = :fabricante, id_estado_equipo = :estado, id_persona = :persona_id 
+            WHERE id_equipo_informatico = :id";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':fabricante', $this->fabricante);
+                $stmt->bindParam(':estado', $this->estado);
+                $stmt->bindParam(':persona_id', $this->persona_id);
+                $stmt->bindParam(':id', $id);
+                $stmt->execute();
+            } catch (PDOException $e) {
+                error_log("Error al actualizar equipo informático: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
+            }
+            try {
+                // Actualizar procesador
+                $sql = "UPDATE procesador SET fabricante_procesador = :fabricante_procesador, nombre_procesador = :nombre_procesador, nucleos = :nucleos, frecuencia = :frecuencia 
+                    WHERE id_equipo_informatico_procesador = :id";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':fabricante_procesador', $this->fabricante_procesador);
+                $stmt->bindParam(':nombre_procesador', $this->nombre_procesador);
+                $stmt->bindParam(':nucleos', $this->nucleos);
+                $stmt->bindParam(':frecuencia', $this->frecuencia_procesador);
+                $stmt->bindParam(':id', $id);
+                $stmt->execute();
+            } catch (PDOException $e) {
+                error_log("Error al actualizar procesador: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
 
-            // Actualizar motherboard
-            $sql = "UPDATE motherboard SET modelo_motherboard = :modelo_motherboard, marca_motherboard = :marca_motherboard
-                    WHERE id_motherboard = (SELECT id_motherboard FROM equipo_informatico WHERE id_equipo_informatico = :id)";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':modelo_motherboard', $this->modelo_motherboard);
-            $stmt->bindParam(':marca_motherboard', $this->marca_motherboard);
-            $stmt->bindParam(':id', $id);
-            $stmt->execute();
+            }
+            try {
+                // Actualizar motherboard
+                $sql = "UPDATE motherboard SET modelo_motherboard = :modelo_motherboard, fabricante_motherboard = :fabricante_motherboard
+                    WHERE id_equipo_informatico_motherboard = :id";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':modelo_motherboard', $this->modelo_motherboard);
+                $stmt->bindParam(':fabricante_motherboard', $this->fabricante_motherboard);
+                $stmt->bindParam(':id', $id);
+                $stmt->execute();
+            } catch (PDOException $e) {
+                error_log("Error al actualizar motherboard: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
 
-            // Actualizar fuente de poder
-            $sql = "UPDATE fuente_poder SET marca_fuente_poder = :marca_fuente, wattage = :wattage 
-                    WHERE id_fuente_poder = (SELECT id_fuente FROM equipo_informatico WHERE id_equipo_informatico = :id)";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':marca_fuente', $this->marca_fuente);
-            $stmt->bindParam(':wattage', $this->wattage_fuente);
-            $stmt->bindParam(':id', $id);
-            $stmt->execute();
+            }
+            try {
+                // Actualizar fuente de poder
+                $sql = "UPDATE fuente_poder SET fabricante_fuente_poder = :fabricante_fuente, wattage = :wattage 
+                    WHERE id_equipo_informatico_fuente = :id";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':fabricante_fuente', $this->fabricante_fuente);
+                $stmt->bindParam(':wattage', $this->wattage_fuente);
+                $stmt->bindParam(':id', $id);
+                $stmt->execute();
+            } catch (PDOException $e) {
+                error_log("Error al actualizar fuente: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
 
-            // Actualizar equipo informático
-            $sql = "UPDATE equipo_informatico SET marca_equipo_informatico = :marca, id_estado_equipo = :estado, id_persona = :persona_id 
-                    WHERE id_equipo_informatico = :id";
+            }
+
+
+            // Actualizar almacenamiento
+            $sql = "UPDATE almacenamiento SET fabricante_almacenamiento = :fabricante_almacenamiento, tipo_almacenamiento = :tipo_almacenamiento, capacidad_almacenamiento = :capacidad_almacenamiento 
+                    WHERE id_equipo_informatico_almacenamiento = :id";
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':marca', $this->marca);
-            $stmt->bindParam(':estado', $this->estado);
-            $stmt->bindParam(':persona_id', $this->persona_id);
+            $stmt->bindParam(':fabricante_almacenamiento', $this->fabricante_almacenamiento);
+            $stmt->bindParam(':tipo_almacenamiento', $this->tipo_almacenamiento);
+            $stmt->bindParam(':capacidad_almacenamiento', $this->capacidad_almacenamiento);
             $stmt->bindParam(':id', $id);
             $stmt->execute();
 
             // Actualizar RAM
-            $sql = "UPDATE ram SET marca_ram = :marca_ram, tipo_ram = :tipo_ram, capacidad_ram = :capacidad_ram, frecuencia_ram = :frecuencia_ram 
-                    WHERE id_equipo_informatico = :id";
+            $sql = "UPDATE ram SET fabricante_ram = :fabricante_ram, tipo_ram = :tipo_ram, capacidad_ram = :capacidad_ram, frecuencia_ram = :frecuencia_ram 
+                    WHERE id_equipo_informatico_ram = :id";
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':marca_ram', $this->marca_ram);
+            $stmt->bindParam(':fabricante_ram', $this->fabricante_ram);
             $stmt->bindParam(':tipo_ram', $this->tipo_ram);
             $stmt->bindParam(':capacidad_ram', $this->capacidad_ram);
             $stmt->bindParam(':frecuencia_ram', $this->frecuencia_ram);
@@ -229,6 +287,7 @@ class pcModel
         } catch (PDOException $e) {
             $this->db->rollBack();
             echo "Error: " . $e->getMessage();
+            error_log("Error en la actualización: " . $e->getMessage());
         }
     }
 
@@ -237,48 +296,17 @@ class pcModel
         try {
             $this->db->beginTransaction();
 
-            // Eliminar RAM asociada
-            $sql = "DELETE FROM ram WHERE id_equipo_informatico = :id";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id', $id);
-            $stmt->execute();
-
-            // Obtener IDs de componentes asociados
-            $sql = "SELECT id_procesador, id_motherboard, id_fuente FROM equipo_informatico WHERE id_equipo_informatico = :id";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id', $id);
-            $stmt->execute();
-            $componentes = $stmt->fetch(PDO::FETCH_ASSOC);
-
             // Eliminar equipo informático
             $sql = "DELETE FROM equipo_informatico WHERE id_equipo_informatico = :id";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id', $id);
             $stmt->execute();
 
-            // Eliminar procesador asociado
-            $sql = "DELETE FROM procesador WHERE id_procesador = :id_procesador";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id_procesador', $componentes['id_procesador']);
-            $stmt->execute();
-
-            // Eliminar motherboard asociada
-            $sql = "DELETE FROM motherboard WHERE id_motherboard = :id_motherboard";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id_motherboard', $componentes['id_motherboard']);
-            $stmt->execute();
-
-            // Eliminar fuente de poder asociada
-            $sql = "DELETE FROM fuente_poder WHERE id_fuente_poder = :id_fuente";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':id_fuente', $componentes['id_fuente']);
-            $stmt->execute();
-
             $this->db->commit();
         } catch (PDOException $e) {
+            error_log($e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
             $this->db->rollBack();
             echo "Error: " . $e->getMessage();
         }
     }
 }
-?>

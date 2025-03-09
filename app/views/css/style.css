@@ -8,7 +8,7 @@
   --color-claro: #f6f6f6;
   --color-texto: #212121;
   --transition-standart: all 0.2s ease;
-  --spacing-medium: 20px;
+  --spacing-medium: 18px;
   --spacing-small: 5px;
   --border-radius: 5px;
 }
@@ -18,7 +18,7 @@
   height: 100vh;
 }
 .principal {
-  width: 82vw;
+  width: 83%;
   height: 100vh;
   background-color: var(--color-background); /* Fondo blanco azulado */
   display: flex;
