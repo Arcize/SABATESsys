@@ -10,6 +10,9 @@ return [
     "pcForm",
     "pcFormNew",
     "pcFormEdit",
+    "userTable",
+    "roleTable",
+    "roleForm",
     "config",
     "faultReport"
 ];

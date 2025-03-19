@@ -29,13 +29,14 @@ class employeeModel
         $this->fecha_nac = $fecha_nac;
     }
 
-    public function create() {
+    public function create()
+    {
         try {
             // Consulta SQL con parámetros nombrados
             $sql = "INSERT INTO persona (nombre, apellido, cedula, correo, id_departamento, id_sexo, fecha_nac) 
                     VALUES (:nombre, :apellido, :cedula, :correo, :id_departamento, :id_sexo, :fecha_nac)";
             $stmt = $this->db->prepare($sql);
-    
+
             // Asignar valores a los parámetros
             $stmt->bindParam(':nombre', $this->nombre);
             $stmt->bindParam(':apellido', $this->apellido);
@@ -44,16 +45,16 @@ class employeeModel
             $stmt->bindParam(':id_departamento', $this->departamento);
             $stmt->bindParam(':id_sexo', $this->sexo);
             $stmt->bindParam(':fecha_nac', $this->fecha_nac);
-            
+
             // Ejecutar la consulta
             $stmt->execute();
-    
+
             echo "Registro guardado con éxito.";
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
     }
-    
+
 
     public function readOne($id)
     {
@@ -73,14 +74,14 @@ class employeeModel
     }
 
 
-    public function readAll() {
+    public function readAll()
+    {
         try {
             // Consulta SQL con JOIN para obtener los datos de persona, departamento y sexo
             $sql = "SELECT p.*, d.nombre_departamento, s.sexo
                     FROM persona p
                     JOIN departamento d ON p.id_departamento = d.id_departamento
                     JOIN sexo s ON p.id_sexo = s.id_sexo";
-                    
             $stmt = $this->db->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
@@ -88,8 +89,8 @@ class employeeModel
             return [];
         }
     }
-    
-    
+
+
     public function update($id)
     {
         try {
@@ -118,6 +119,24 @@ class employeeModel
             $stmt->execute();
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
+        }
+    }
+    public function pieChart()
+    {
+        try {
+            $sql = "SELECT CASE WHEN id_usuario IS NULL THEN 'No Registrados' 
+                    ELSE 'Registrados' 
+                    END AS estado, 
+                    COUNT(*) AS total 
+                    FROM persona 
+                    GROUP BY estado;";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return json_encode($data);
+        } catch (PDOException $e) {
+            // Manejo de errores
+            echo json_encode(["error" => $e->getMessage()]);
         }
     }
 }

@@ -19,6 +19,8 @@ $cssFiles = [
     "config.css",
     "dashboard.css",
     "user-bar.css",
+    "role.css",
+    "switch.css",
     "multi-step-form.css"
 ];
 

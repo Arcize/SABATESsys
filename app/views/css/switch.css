@@ -1,0 +1,33 @@
+:root{
+    --switch-parameter: 21px;
+}
+.switchModule input{
+    display: none;
+}
+.switch{
+    height: var(--switch-parameter);
+    aspect-ratio: 2/1;
+    background-color: #d9d4da;
+    border-radius: 42px;
+    position: relative;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.switch::before{
+    display: flex;
+    content: '';
+    height: 80%;
+    aspect-ratio: 1/1;
+    background-color: #ffffff;
+    position: absolute;
+    border-radius: 50%;
+    margin: 2px;
+    transition: 0.2s;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+.switchModule input:checked + .switch{
+    background-color: var(--color-primario);
+}
+.switchModule input:checked + .switch::before{
+    transform: translateX(var(--switch-parameter));
+}

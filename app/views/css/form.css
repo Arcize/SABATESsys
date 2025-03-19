@@ -28,7 +28,7 @@
 
 .formContainer select:focus,
 .formContainer select:valid {
-  border: solid 2px var(--color-primario);
+  border: solid 1px var(--color-primario);
 }
 
 ::-webkit-calendar-picker-indicator {
@@ -61,7 +61,7 @@
 
 .input:focus,
 .input:valid {
-  border: solid 2px var(--color-primario);
+  border: solid 1px var(--color-primario);
 }
 
 .textArea {

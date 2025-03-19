@@ -42,16 +42,10 @@ class userModel
         // Verificar si la consulta devuelve filas
         $rowCount = $stmt->rowCount();
 
-
-        $sql = "INSERT INTO test (numeros) VALUES ($rowCount)";
-        $stmt = $this->db->prepare($sql);
-        $stmt->execute();
-
-
         if ($rowCount > 0) {
-            $this->typeUser = 2; // La persona es del departamento de informática
+            $this->typeUser = 1; // La persona es del departamento de informática
         } else {
-            $this->typeUser = 1; // La persona no es del departamento de informática
+            $this->typeUser = 2; // La persona no es del departamento de informática
         }
         // Devolver el tipo de usuario para facilitar las pruebas y validaciones
         return $this->typeUser;
@@ -69,7 +63,7 @@ class userModel
     public function register()
     {
         try {
-            $sql = "INSERT INTO usuario (username, password, id_tipo_u) VALUES ('$this->username', '$this->password', $this->typeUser)";
+            $sql = "INSERT INTO usuario (username, password, id_rol) VALUES ('$this->username', '$this->password', $this->typeUser)";
             $resultQuery = $this->db->query($sql);
             if ($resultQuery) {
 
@@ -82,6 +76,21 @@ class userModel
             header("Location: index.php?view=login");
         } catch (PDOException $e) {
             echo "Ha ocurrido un error: " . $e->getMessage(); // Mostrar el mensaje de error
+        }
+    }
+    public function readAll() {
+        try {
+            // Consulta SQL con JOIN para obtener los datos de persona, departamento y sexo
+            $sql = "SELECT p.cedula, u.username, p.id_usuario, r.rol
+                    FROM persona p
+                    JOIN usuario u ON p.id_usuario = u.id_usuario
+                    JOIN rol r on r.id_rol = u.id_rol";
+                    
+            $stmt = $this->db->query($sql);
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return [];
         }
     }
 

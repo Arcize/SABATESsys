@@ -31,6 +31,9 @@ class employeeController
             case 'employee_edit':
                 $this->editEmployee();
                 break;
+            case 'get_pie_chart_data':
+                $this->getPieChartData();
+                break;
             default:
                 break;
         }
@@ -84,6 +87,13 @@ class employeeController
     {
         $id = $_GET['id'];
         $employee = $this->employeeModel->readOne($id);
+    }
+
+    private function getPieChartData()
+    {
+        header('Content-Type: application/json');
+        echo $this->employeeModel->pieChart();
+        exit();
     }
 }
 

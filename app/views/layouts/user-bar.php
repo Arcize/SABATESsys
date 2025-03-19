@@ -1,6 +1,6 @@
 <header class="user-bar">
     <div class="menu">
-        <button><img src="app/views/img/menu.svg" alt=""></button>
+        <button onclick="toggleNavbar()"><img src="app/views/img/menu.svg" alt=""></button>
     </div>
     <div class="user-panel">
         <div class="notifications">

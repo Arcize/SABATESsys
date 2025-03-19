@@ -6,11 +6,12 @@
   height: 100%;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: var(--color-claro);
+  transition: all 0.3s ease ;
 }
 .navbar__list-container{
 	padding: 12px 0;
-	border-top: 2px solid rgba(0, 0, 0, 0.1);
-	border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+	border-top: 1px solid rgba(255, 255, 255, 0.2);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 .navbar h1 {
   font-family: "poppins";
@@ -32,12 +33,18 @@
 }
 .navbar__link {
 	border-radius: var(--border-radius);
-	padding: 12px 16px;
+	padding: 10px;
 	display: flex;
 	align-items: center;
 	font-size: 16px;
 	gap: 10px;
 	height: 100%;
+	justify-content: space-between;
+}
+.navbar__item-content{
+	display: flex;
+	align-items: center;
+	gap: 10px;
 }
 .navbar__link:hover {
   background-color: var(--color-primario-hover);
@@ -59,8 +66,25 @@
 	overflow: hidden;
 	transition: var(--transition-standart);
 }
-
-
+.collapsed{
+	width: 5vw;
+}
+.collapsed .navbar__text{
+	display: none;
+}
+.collapsed .page_header{
+	visibility: hidden;
+}
+.collapsed .arrow{
+	display: none
+}
+.imgArrow{
+	transition: var(--transition-standart);
+}
+/* Opcional: Si quieres desactivar animaciones iniciales */
+.navbar-preload {
+    transition: none ;
+}
 .accordion__content a:hover {
   background-color: var(--color-primario-hover); /* Añadir color de fondo al pasar el ratón */
   text-decoration: none; /* Asegurarse de que no haya subrayado al pasar el ratón */

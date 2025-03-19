@@ -82,6 +82,26 @@
   transition: var(--transition-standart);
 }
 .rotate {
-  transform: rotate(180deg);
+  transform: rotate(90deg);
     transition: var(--transition-standart);
+}
+
+.notifications{
+  position: relative;
+}
+.notifications button::after{
+  color: var(--color-claro);
+  content: "17";
+  font-family: "poppins";
+  font-size: 12px;
+  position: absolute;
+  background-color: #b22222;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0px;
+  right: 0px;
 }

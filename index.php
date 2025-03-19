@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="es">
 <?php
 /*
  * Punto de entrada principal para la aplicación.
@@ -84,13 +86,14 @@ if (isset($_GET['view'])) {
                 header("Location: index.php?view=dashboard");
                 exit();
             } else {
-                ?>
+    ?>
                 <div class="mainContainer">
                     <?php
-                // Si ya está logueado y accede a cualquier otra vista permitida
-                require_once("app/views/layouts/navbar.php");
-                ?>
-               
+                    // Si ya está logueado y accede a cualquier otra vista permitida
+                    require_once("app/views/layouts/navbar.php");
+                    ?>
+                    <script src="app/views/js/collapseNavbar.js"></script>
+
                     <div class="principal">
                         <div class="content">
                             <?php require_once("app/views/layouts/user-bar.php"); ?>
@@ -113,6 +116,9 @@ if (isset($_GET['view'])) {
                 "pcTable",
                 "pcForm",
                 "pcFormEdit",
+                "userTable",
+                "roleTable",
+                "roleForm",
                 "faultReport"
             ];
 
@@ -130,3 +136,5 @@ if (isset($_GET['view'])) {
 
 
 </body>
+
+</html>

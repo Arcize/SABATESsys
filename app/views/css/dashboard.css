@@ -1,22 +1,27 @@
-
 /*Controlan la apariencia del layout de los paneles, asi como los paneles mismos*/
 .data-panels {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--spacing-medium); /* Usar gap en lugar de margen */
+  display: grid;
+  justify-content: space-between;
+  gap: var(--spacing-medium); /* Usar gap en lugar de margen */
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  height: calc(100% - 46px - var(--spacing-medium));
 }
-
+#pieChartPanel{
+}
 .data-panel {
-    flex: 1;
-    height: 150px; /* Ajustar la altura según sea necesario */
-    background-color: #ffffff; /* Fondo blanco */
-    border-radius: var(--border-radius); /* Añadir border-radius */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    padding: var(--spacing-small); /* Añadir padding */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: var(--color-texto); /* Color del texto */
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Fuente del texto */
-    font-size: 16px; /* Tamaño del texto */
+  background-color: #ffffff; /* Fondo blanco */
+  border-radius: var(--border-radius); /* Añadir border-radius */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px; /* Añadir padding */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--color-texto); /* Color del texto */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Fuente del texto */
+  font-size: 16px; /* Tamaño del texto */
+}
+.chartBox{
+  width: 80%;
+  height: 90%;
 }

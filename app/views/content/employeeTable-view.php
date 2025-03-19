@@ -15,25 +15,23 @@ $employee = $employeeModel->readAll();
     <table class="table">
         <thead class="table-head">
             <tr>
-                <th scope="col">#</th>
+                <th scope="col">N°</th>
                 <th scope="col">Nombre</th>
                 <th scope="col">Apellido</th>
                 <th scope="col">Cédula</th>
-                <th scope="col">Email</th>
                 <th scope="col">Departamento</th>
                 <th scope="col">Sexo</th>
-                <th scope="col">ID Usuario</th>
-                <th scope="col"><i></i></th>
+                <!-- <th scope="col">ID Usuario</th> -->
+                <th scope="col">Acciones</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach ($employee as $key => $item) { ?>
                 <tr>
-                    <td><?php echo $item["id_persona"]; ?></td>
+                    <td><?php echo $key+1; ?></td>
                     <td><?php echo $item["nombre"]; ?></td>
                     <td><?php echo $item["apellido"]; ?></td>
                     <td><?php echo $item["cedula"]; ?></td>
-                    <td><?php echo $item["correo"]; ?></td>
                     <td><?php echo $item["nombre_departamento"]; ?></td>
                     <td>
                         <?php
@@ -50,7 +48,6 @@ $employee = $employeeModel->readAll();
                         }
                         ?>
                     </td>
-                    <td><?php echo !empty($item["id_usuario"]) ? $item["id_usuario"] : 'Sin Registrar'; ?></td>
                     <td class="relative-container">
                         <div class="button-container">
                             <div>
@@ -61,12 +58,20 @@ $employee = $employeeModel->readAll();
                                 </a>
                             </div>
                             <div>
+                                <a href="#">
+                                    <button class="crud-button details-button">
+                                        <img src="app/views/img/menu_white.svg" alt="Delete">
+                                    </button>
+                                </a>
+                            </div>
+                            <div>
                                 <a href="index.php?view=employee&action=employee_delete&id=<?php echo $item['id_persona']; ?>">
                                     <button class="crud-button delete-button">
                                         <img src="app/views/img/delete.svg" alt="Delete">
                                     </button>
                                 </a>
                             </div>
+
                         </div>
                     </td>
                 </tr>
