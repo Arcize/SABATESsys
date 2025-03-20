@@ -13,12 +13,12 @@
   --border-radius: 5px;
 }
 /*Ajustes de la vista*/
-.mainContainer {
+.layout {
   display: flex;
   height: 100vh;
 }
 .principal {
-  width: 100%;
+  flex-grow: 1;
   height: 100vh;
   background-color: var(--color-background); /* Fondo blanco azulado */
   display: flex;

@@ -36,6 +36,7 @@ $jsFiles = [
     "dropdown.js",
     "accordion.js",
     "multi_step_form.js",
+    "dropdownNotifications.js",
     "chart.umd.js",
     "password_verification.js"
 ];

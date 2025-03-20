@@ -11,6 +11,7 @@
   font-size: 14px;
   text-align: center;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  text-wrap: nowrap;
 }
 .table-head {
   background-color: var(--color-primario);

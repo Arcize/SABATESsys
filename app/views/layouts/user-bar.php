@@ -4,9 +4,20 @@
     </div>
     <div class="user-panel">
         <div class="notifications">
-            <button>
+            <button class="dropbtn" onclick="toggleNotificationsDropdown()">
                 <img src="app/views/img/notification.svg" alt="">
             </button>
+            <div id="notificationsDropdown" class="dropdown-content">
+                <a href="#">
+                    <span>Notificación 1</span>
+                </a>
+                <a href="#">
+                    <span>Notificación 2</span>
+                </a>
+                <a href="#">
+                    <span>Notificación 3</span>
+                </a>
+            </div>
         </div>
         <div class="user">
             <button class="dropbtn" onclick="toggleDropdown()">

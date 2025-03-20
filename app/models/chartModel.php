@@ -12,8 +12,8 @@ class chartModel
     public function getData()
     {
         try {
-            $sql = "SELECT CASE WHEN id_usuario IS NULL THEN 'Empleados No Registrados' 
-                    ELSE 'Empleados Registrados' 
+            $sql = "SELECT CASE WHEN id_usuario IS NULL THEN 'No Registrados' 
+                    ELSE 'Registrados' 
                     END AS estado, 
                     COUNT(*) AS total 
                     FROM persona 

@@ -94,12 +94,11 @@ if (isset($_GET['view']) && $_GET['view'] === 'chartData') {
                 exit();
             } else {
     ?>
-                <div class="mainContainer">
+                <div class="layout">
                     <?php
                     // Si ya está logueado y accede a cualquier otra vista permitida
                     require_once("app/views/layouts/navbar.php");
                     ?>
-                    <script src="app/views/js/collapseNavbar.js"></script>
 
                     <div class="principal">
                         <div class="content">

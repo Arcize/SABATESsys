@@ -2,24 +2,35 @@
 .data-panels {
   display: grid;
   justify-content: space-between;
-  gap: var(--spacing-medium); /* Usar gap en lugar de margen */
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
+  gap: 16px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   height: calc(100% - 46px - var(--spacing-medium));
 }
-#pieChartPanel{
-}
 .data-panel {
-  background-color: #ffffff; /* Fondo blanco */
-  border-radius: var(--border-radius); /* Añadir border-radius */
+  background-color: #ffffff;
+  border-radius: var(--border-radius);
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  padding: 20px; /* Añadir padding */
+  padding: 20px 0px;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: var(--color-texto); /* Color del texto */
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Fuente del texto */
-  font-size: 16px; /* Tamaño del texto */
+  color: var(--color-texto);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 16px;
+}
+.data-panel:nth-of-type(3){
+  grid-column: 3 / 5;
+}
+.data-panel:nth-of-type(4){
+  grid-column: 1 / 4;
+}
+.data-panel:nth-of-type(5){
+  grid-column: 4/ 5;
+  grid-row: 2 / 4;
+}
+.data-panel:nth-of-type(7){
+  grid-column: 2 / 4;
 }
 .chartBox{
   width: 80%;

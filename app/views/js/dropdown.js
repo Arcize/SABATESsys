@@ -1,8 +1,15 @@
-// Función para mostrar/ocultar el dropdown al hacer clic
+// Función para mostrar/ocultar el dropdown de usuario al hacer clic
 function toggleDropdown() {
+    // Cerrar el dropdown de notificaciones si está abierto
+    var notificationsDropdown = document.getElementById("notificationsDropdown");
+    if (notificationsDropdown && notificationsDropdown.classList.contains("show")) {
+        notificationsDropdown.classList.remove("show");
+    }
+
+    // Mostrar/ocultar el dropdown de usuario
     document.getElementById("dropdown").classList.toggle("show");
 
-    // Aquí obtienes una colección de elementos, debes iterar para aplicar la clase 'rotate'
+    // Rotar la flecha del dropdown
     var dropdownImgs = document.getElementsByClassName("dropdownImg");
     for (var i = 0; i < dropdownImgs.length; i++) {
         dropdownImgs[i].classList.toggle("rotate");

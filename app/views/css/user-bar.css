@@ -24,7 +24,7 @@
   padding: var(--spacing-small);
 }
 
-.user-panel img {
+.user-bar img {
   pointer-events: none;
 }
 

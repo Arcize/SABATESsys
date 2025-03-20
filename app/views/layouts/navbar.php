@@ -1,6 +1,8 @@
 <aside class="navbar">
     <nav class="navbar__nav">
-        <h1 class="page_header">SABATES</h1>
+        <div class="navbar__header">
+            <h1 class="page_header">SABATES</h1>
+        </div>
 
         <div class="navbar__list-container">
             <div class="navbar__item">
@@ -112,3 +114,4 @@
         </div>
     </nav>
 </aside>
+<script src="app/views/js/collapseNavbar.js"></script>
