@@ -1,11 +1,4 @@
 <?php
-/**
- * Controlador de usuario.
- * 
- * Este archivo contiene la lógica del controlador para manejar las operaciones relacionadas con los usuarios.
- * 
- * @archivo /c:/xampp/htdocs/SABATES/app/controllers/userController.php
- */
 require_once("app/models/userModel.php");
 class userController
 {

@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<html lang="es">
 <?php
 /*
  * Punto de entrada principal para la aplicación.
@@ -47,7 +45,16 @@ if (isset($_GET['view'])) {
 } else {
     $url = ["login"];
 }
+
+if (isset($_GET['view']) && $_GET['view'] === 'chartData') {
+    require_once('app/controllers/chartController.php');
+    $chartController = new chartController();
+    $chartController->chartData();
+    exit(); // Detener la ejecución para evitar salida adicional
+}
 ?>
+<!DOCTYPE html>
+<html lang="es">
 
 <head>
     <?php require_once("app/views/layouts/head.php"); ?>

@@ -121,22 +121,5 @@ class employeeModel
             echo "Error: " . $e->getMessage();
         }
     }
-    public function pieChart()
-    {
-        try {
-            $sql = "SELECT CASE WHEN id_usuario IS NULL THEN 'No Registrados' 
-                    ELSE 'Registrados' 
-                    END AS estado, 
-                    COUNT(*) AS total 
-                    FROM persona 
-                    GROUP BY estado;";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            return json_encode($data);
-        } catch (PDOException $e) {
-            // Manejo de errores
-            echo json_encode(["error" => $e->getMessage()]);
-        }
-    }
+  
 }

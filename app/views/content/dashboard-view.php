@@ -8,5 +8,4 @@
     <div class="data-panel"></div>
     <div class="data-panel"></div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="app/views/js/chartScript.js"></script>
+<script src="/SABATES/app/views/js/chartScript.js"></script>

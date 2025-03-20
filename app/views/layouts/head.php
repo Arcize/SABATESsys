@@ -2,7 +2,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="app/views/img/sabates_icon.png">
 <title>SABATES</title>
-
 <!-- CSS -->
 <?php
 $cssFiles = [
@@ -37,6 +36,7 @@ $jsFiles = [
     "dropdown.js",
     "accordion.js",
     "multi_step_form.js",
+    "chart.umd.js",
     "password_verification.js"
 ];
 
