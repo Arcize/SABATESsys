@@ -106,6 +106,7 @@ if (isset($_GET['view']) && $_GET['view'] === 'chartData') {
                             <?php
                             require_once $view;
                             ?>
+                            <script src="app/views/js/modal.js"></script>
                         </div>
                     </div>
                 </div>

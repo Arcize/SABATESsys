@@ -1,3 +1,8 @@
+<?php
+include_once('app/controllers/departmentController.php');
+$departmentController = new departmentController();
+$departments = $departmentController->listDepartments();
+?>
 <div class="view-box">
     <div class="formContainer">
         <h3 class="h3">Registre un Empleado</h2>
@@ -23,9 +28,9 @@
                         <label for="departamento">Departamento:</label>
                         <select id="departamento" required name="departamento">
                             <option value="">------------------------------------</option>
-                            <option value="1">Informática</option>
-                            <option value="2">Recursos Humanos</option>
-                            <option value="3">Contabilidad</option>
+                            <?php foreach ($departments as $department) : ?>
+                                <option value="<?php echo $department['id_departamento']; ?>"><?php echo $department['nombre_departamento']; ?></option>
+                            <?php endforeach; ?>
                         </select>
                     </div>
                     <div class="inputGroup">

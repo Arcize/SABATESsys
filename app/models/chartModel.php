@@ -1,5 +1,5 @@
 <?php
-include_once(__DIR__ . '/../models/DB.php');
+include_once('app/models/DB.php');
 class chartModel
 {
     private $db;

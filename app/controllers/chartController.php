@@ -1,5 +1,5 @@
 <?php
-include_once(__DIR__ . '/../models/chartModel.php');
+include_once('app/models/chartModel.php');
 
 class chartController
 {

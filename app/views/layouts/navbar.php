@@ -26,6 +26,16 @@
                     </div>
                 </a>
             </div>
+            <div class="navbar__item">
+                <a href="index.php?view=userTable" class="navbar__link">
+                    <div class="navbar__item-content">
+                        <div class="navbar__icon">
+                            <img src="app/views/img/inventory.svg" alt="">
+                        </div>
+                        <div class="navbar__text">Inventario</div>
+                    </div>
+                </a>
+            </div>
 
             <div class="navbar__item">
                 <a class="accordion__header navbar__link">

@@ -7,20 +7,21 @@
 $cssFiles = [
     "reset.css",
     "style.css",
-    "sweetalert2.min.css",
+    "navbar.css",
+    "form.css",
     "custom.css",
     "nunitoFont.css",
     "poppinsFont.css",
-    "navbar.css",
     "login-register.css",
     "table.css",
-    "form.css",
     "config.css",
     "dashboard.css",
     "user-bar.css",
     "role.css",
     "switch.css",
-    "multi-step-form.css"
+    "modal.css",
+    "multi-step-form.css",
+    "sweetalert2.min.css"
 ];
 
 foreach ($cssFiles as $cssFile) {

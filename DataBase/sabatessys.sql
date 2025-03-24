@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 13-03-2025 a las 18:28:09
+-- Tiempo de generación: 21-03-2025 a las 07:04:35
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -35,6 +35,13 @@ CREATE TABLE `almacenamiento` (
   `capacidad_almacenamiento` int(11) NOT NULL,
   `id_estado_pieza_almacenamiento` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `almacenamiento`
+--
+
+INSERT INTO `almacenamiento` (`id_almacenamiento`, `id_equipo_informatico_almacenamiento`, `fabricante_almacenamiento`, `tipo_almacenamiento`, `capacidad_almacenamiento`, `id_estado_pieza_almacenamiento`) VALUES
+(6, 10, 'Western Digital', 'SSD', 1000, 1);
 
 -- --------------------------------------------------------
 
@@ -68,6 +75,13 @@ CREATE TABLE `equipo_informatico` (
   `id_estado_equipo` int(11) NOT NULL,
   `id_persona` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `equipo_informatico`
+--
+
+INSERT INTO `equipo_informatico` (`id_equipo_informatico`, `fabricante_equipo_informatico`, `id_estado_equipo`, `id_persona`) VALUES
+(10, 'Asus', 1, 12);
 
 -- --------------------------------------------------------
 
@@ -135,6 +149,13 @@ CREATE TABLE `fuente_poder` (
   `id_estado_pieza_fuente` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `fuente_poder`
+--
+
+INSERT INTO `fuente_poder` (`id_fuente_poder`, `id_equipo_informatico_fuente`, `fabricante_fuente_poder`, `wattage`, `id_estado_pieza_fuente`) VALUES
+(17, 10, 'Thermaltake', 650, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -148,6 +169,13 @@ CREATE TABLE `motherboard` (
   `modelo_motherboard` varchar(25) NOT NULL,
   `id_estado_pieza_motherboard` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `motherboard`
+--
+
+INSERT INTO `motherboard` (`id_motherboard`, `id_equipo_informatico_motherboard`, `fabricante_motherboard`, `modelo_motherboard`, `id_estado_pieza_motherboard`) VALUES
+(23, 10, 'Gigabyte', 'BZ790', 1);
 
 -- --------------------------------------------------------
 
@@ -172,10 +200,11 @@ CREATE TABLE `persona` (
 --
 
 INSERT INTO `persona` (`id_persona`, `nombre`, `apellido`, `cedula`, `correo`, `id_departamento`, `id_sexo`, `fecha_nac`, `id_usuario`) VALUES
-(8, 'Oscar', 'Bermúdez', 30870327, 'oscarx798@gmail.com', 1, 1, '2025-01-14', 2),
-(12, 'Santiago', 'Barreto', 30508673, 'santigo@gmail.com', 1, 1, '2025-02-19', NULL),
+(12, 'Santiago', 'Barreto', 30508673, 'santiago@gmail.com', 1, 1, '2025-02-19', NULL),
 (15, 'Oscary', 'Lozada', 15936662, 'oscary@gmail.com', 3, 2, '1983-03-15', NULL),
-(17, 'Anyerli', 'Zurita', 30508566, 'anyerlidelosangeles@gmail.com', 1, 2, '2004-09-23', 7);
+(17, 'Anyerli', 'Zurita', 30508566, 'anyerlidelosangeles@gmail.com', 1, 2, '2004-09-23', 7),
+(18, 'Oscar', 'Bermúdez', 30870327, 'oscarx798@gmail.com', 1, 1, '2005-02-04', 8),
+(22, 'Rebeca', 'Pereira', 30143120, 'rebepereira19@gmail.com', 3, 2, '2003-02-19', NULL);
 
 -- --------------------------------------------------------
 
@@ -193,6 +222,13 @@ CREATE TABLE `procesador` (
   `id_estado_pieza_procesador` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `procesador`
+--
+
+INSERT INTO `procesador` (`id_procesador`, `id_equipo_informatico_procesador`, `fabricante_procesador`, `nombre_procesador`, `nucleos`, `frecuencia`, `id_estado_pieza_procesador`) VALUES
+(24, 10, 'Intel', 'i7 4790', 4, 3.60, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -208,6 +244,13 @@ CREATE TABLE `ram` (
   `frecuencia_ram` int(11) NOT NULL,
   `id_estado_pieza_ram` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `ram`
+--
+
+INSERT INTO `ram` (`id_ram`, `id_equipo_informatico_ram`, `fabricante_ram`, `tipo_ram`, `capacidad_ram`, `frecuencia_ram`, `id_estado_pieza_ram`) VALUES
+(9, 10, 'Adata', 'DDR3', 16, 1333, 1);
 
 -- --------------------------------------------------------
 
@@ -279,8 +322,8 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id_usuario`, `username`, `password`, `id_rol`) VALUES
-(2, 'Arcize', '$2y$10$o3qxye6ajOELmDkuiGn2qOh1t0dFwxN8nCkbuP4j1gQt.Xmcmzavy', 1),
-(7, 'Anyiii', '$2y$10$qg5Q/Vd0c9JPnrzxtOiJHeKesDctCtGu.nnO6DapoW2FQrpnxMO7G', 2);
+(7, 'Anyiii', '$2y$10$qg5Q/Vd0c9JPnrzxtOiJHeKesDctCtGu.nnO6DapoW2FQrpnxMO7G', 2),
+(8, 'Arcize', '$2y$10$enuzQIB0ikeS1lvGhHBrm.R7zKKJiAbGFZ1/Hgu677NW0wNzkspMC', 1);
 
 --
 -- Índices para tablas volcadas
@@ -401,7 +444,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `almacenamiento`
 --
 ALTER TABLE `almacenamiento`
-  MODIFY `id_almacenamiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id_almacenamiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de la tabla `departamento`
@@ -413,7 +456,7 @@ ALTER TABLE `departamento`
 -- AUTO_INCREMENT de la tabla `equipo_informatico`
 --
 ALTER TABLE `equipo_informatico`
-  MODIFY `id_equipo_informatico` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_equipo_informatico` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `estado_equipo_informatico`
@@ -437,31 +480,31 @@ ALTER TABLE `estado_reporte_fallas`
 -- AUTO_INCREMENT de la tabla `fuente_poder`
 --
 ALTER TABLE `fuente_poder`
-  MODIFY `id_fuente_poder` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id_fuente_poder` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `motherboard`
 --
 ALTER TABLE `motherboard`
-  MODIFY `id_motherboard` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id_motherboard` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
 
 --
 -- AUTO_INCREMENT de la tabla `persona`
 --
 ALTER TABLE `persona`
-  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT de la tabla `procesador`
 --
 ALTER TABLE `procesador`
-  MODIFY `id_procesador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id_procesador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT de la tabla `ram`
 --
 ALTER TABLE `ram`
-  MODIFY `id_ram` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_ram` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `reporte_fallas`
@@ -485,7 +528,7 @@ ALTER TABLE `sexo`
 -- AUTO_INCREMENT de la tabla `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Restricciones para tablas volcadas
