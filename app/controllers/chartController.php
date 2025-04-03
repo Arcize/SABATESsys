@@ -1,7 +1,7 @@
 <?php
 include_once('app/models/chartModel.php');
 
-class chartController
+class ChartController
 {
     private $chartModel;
 

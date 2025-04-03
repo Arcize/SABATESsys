@@ -13,20 +13,12 @@
             }
             ?>
             <div class="input-box">
-                <input type="text" placeholder="Usuario" name="username" required />
-                <img
-                    src="app/views/img/user_white.svg"
-                    alt="user" />
+                <input type="text" placeholder="Usuario" name="username" required class="no-spaces" />
+                <img src="app/views/img/user_white.svg" alt="user" />
             </div>
             <div class="input-box">
-                <input
-                    type="password"
-                    placeholder="Contraseña"
-                    name="password"
-                    required />
-                <img
-                    src="app/views/img/lock.svg"
-                    alt="password" />
+                <input type="password" placeholder="Contraseña" name="password" required class="no-spaces"/>
+                <img src="app/views/img/lock.svg" alt="password" />
             </div>
             <div class="forgot">
                 <a href="#">¿Olvidaste la Contraseña?</a>

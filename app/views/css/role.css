@@ -35,6 +35,7 @@
     padding: 0.25em;
     background-color: var(--color-primario);
     color: var(--color-claro);
+    margin: 0;
 }
 .modalRoleNameInput input{
     border-top-left-radius: 0;

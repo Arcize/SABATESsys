@@ -1,6 +1,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="app/views/img/sabates_icon.png">
+<link rel="icon" href="app/views/img/sabates.ico">
 <title>SABATES</title>
 <!-- CSS -->
 <?php
@@ -9,7 +9,7 @@ $cssFiles = [
     "style.css",
     "navbar.css",
     "form.css",
-    "custom.css",
+    "customAlert.css",
     "nunitoFont.css",
     "poppinsFont.css",
     "login-register.css",
@@ -32,12 +32,9 @@ foreach ($cssFiles as $cssFile) {
 <!-- JS -->
 <?php
 $jsFiles = [
-    "jquery-3.7.1.min.js",
     "sweetalert2.all.min.js",
-    "dropdown.js",
-    "accordion.js",
+    "dropdownUserBar.js",
     "multi_step_form.js",
-    "dropdownNotifications.js",
     "chart.umd.js",
     "password_verification.js"
 ];

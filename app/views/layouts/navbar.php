@@ -90,7 +90,7 @@
             <div class="accordion">
                 <div class="accordion__content">
                     <div class="navbar__item">
-                        <a href="index.php?view=faultReport" class="navbar__link">
+                        <a href="index.php?view=faultReportTable" class="navbar__link">
                             <div class="navbar__item-content">
                                 <div class="navbar__icon">
                                     <img src="app/views/img/fault.svg" alt="">
@@ -125,3 +125,4 @@
     </nav>
 </aside>
 <script src="app/views/js/collapseNavbar.js"></script>
+<script src="app/views/js/accordion.js"></script>

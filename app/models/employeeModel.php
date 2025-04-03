@@ -48,8 +48,7 @@ class employeeModel
 
             // Ejecutar la consulta
             $stmt->execute();
-
-            echo "Registro guardado con éxito.";
+            return true;
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
@@ -73,7 +72,31 @@ class employeeModel
         }
     }
 
+    public function readPage($page, $recordsPerPage)
+    {
+        $offset = ($page - 1) * $recordsPerPage;
+        $sql = "SELECT p.*, d.nombre_departamento, s.sexo
+                    FROM persona p
+                    JOIN departamento d ON p.id_departamento = d.id_departamento
+                    JOIN sexo s ON p.id_sexo = s.id_sexo
+                    ORDER BY id_persona
+                    LIMIT :recordsPerPage OFFSET :offset";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':recordsPerPage', $recordsPerPage, PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
 
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getTotalRecords()
+    {
+        $sql = "SELECT COUNT(*) as total FROM persona";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        // Obtener el total de registros
+        return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+    }
     public function readAll()
     {
         try {
@@ -105,6 +128,7 @@ class employeeModel
             $stmt->bindParam(':fecha_nac', $this->fecha_nac);
             $stmt->bindParam(':id', $id);
             $stmt->execute();
+            return true;
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
@@ -117,9 +141,43 @@ class employeeModel
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id', $id);
             $stmt->execute();
+            return true;
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
     }
-  
+    public function verifyCedula($cedula, $id_persona)
+    {
+        try {
+            $sql = "SELECT COUNT(*) FROM persona WHERE cedula = :cedula AND id_persona != :id_persona";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':cedula', $cedula);
+            $stmt->bindParam(':id_persona', $id_persona);
+            $stmt->execute();
+            $exist = $stmt->fetchColumn() > 0;
+            return $exist;
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+    public function getCedulaPc($idPC)
+    {
+        try {
+            $sql = "SELECT persona.cedula
+                    FROM persona
+                    JOIN equipo_informatico ON persona.id_persona = equipo_informatico.id_persona
+                    WHERE equipo_informatico.id_equipo_informatico = :idPC;";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':idPC', $idPC);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+        if ($result) {
+            return $result['cedula'];
+        } else {
+            return null; // O manejar el caso en que no se encuentre el ID
+        }
+    }
 }

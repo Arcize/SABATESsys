@@ -22,9 +22,9 @@ $user = $userModel->readAll();
                 <th scope="col"><i></i></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="table-body" class="table-body">
             <?php foreach ($user as $key => $item) { ?>
-                <tr>
+                <tr class="table-row">
                     <td><?php echo $item["id_usuario"]; ?></td>
                     <td><?php echo $item["username"]; ?></td>
                     <td><?php echo $item["cedula"]; ?></td>

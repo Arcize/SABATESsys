@@ -9,7 +9,7 @@ $pcs = $pcModel->readAll();
     <div class="table-heading">
         <h3 class="h3">Datos de Equipos Informáticos</h3>
         <a href="index.php?view=pcForm">
-            <button class="table-button">Registrar</button>
+            <button class="table-button">Añadir Equipo</button>
         </a>
     </div>
     <table class="table">
@@ -27,9 +27,9 @@ $pcs = $pcModel->readAll();
                 <th scope="col"><i></i></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="table-body" class="table-body">
             <?php foreach ($pcs as $key => $item) { ?>
-                <tr>
+                <tr class="table-row">
                     <td><?php echo $item["id_equipo_informatico"]; ?></td>
                     <td><?php echo $item["fabricante_equipo_informatico"]; ?></td>
                     <td><?php echo $item["estado_equipo_informatico"]; ?></td>

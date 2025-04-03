@@ -4,8 +4,6 @@ return [
     "register",
     "dashboard",
     "employeeTable",
-    "employeeForm",
-    "employeeFormEdit",
     "pcTable",
     "pcForm",
     "pcFormNew",
@@ -14,6 +12,6 @@ return [
     "roleTable",
     "roleForm",
     "config",
-    "faultReport"
+    "faultReportTable"
 ];
 ?>

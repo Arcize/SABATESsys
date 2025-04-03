@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 21-03-2025 a las 07:04:35
+-- Tiempo de generación: 01-04-2025 a las 04:14:18
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -185,10 +185,10 @@ INSERT INTO `motherboard` (`id_motherboard`, `id_equipo_informatico_motherboard`
 
 CREATE TABLE `persona` (
   `id_persona` int(11) NOT NULL,
-  `nombre` varchar(45) NOT NULL,
-  `apellido` varchar(45) NOT NULL,
-  `cedula` int(12) NOT NULL,
-  `correo` varchar(45) NOT NULL,
+  `nombre` varchar(30) NOT NULL,
+  `apellido` varchar(30) NOT NULL,
+  `cedula` int(8) NOT NULL,
+  `correo` varchar(100) NOT NULL,
   `id_departamento` int(11) NOT NULL,
   `id_sexo` int(11) NOT NULL,
   `fecha_nac` date NOT NULL,
@@ -201,10 +201,31 @@ CREATE TABLE `persona` (
 
 INSERT INTO `persona` (`id_persona`, `nombre`, `apellido`, `cedula`, `correo`, `id_departamento`, `id_sexo`, `fecha_nac`, `id_usuario`) VALUES
 (12, 'Santiago', 'Barreto', 30508673, 'santiago@gmail.com', 1, 1, '2025-02-19', NULL),
-(15, 'Oscary', 'Lozada', 15936662, 'oscary@gmail.com', 3, 2, '1983-03-15', NULL),
 (17, 'Anyerli', 'Zurita', 30508566, 'anyerlidelosangeles@gmail.com', 1, 2, '2004-09-23', 7),
 (18, 'Oscar', 'Bermúdez', 30870327, 'oscarx798@gmail.com', 1, 1, '2005-02-04', 8),
-(22, 'Rebeca', 'Pereira', 30143120, 'rebepereira19@gmail.com', 3, 2, '2003-02-19', NULL);
+(23, 'Luis', 'Marcano', 30385225, 'luismarcano@gmail.com', 1, 1, '2005-04-19', NULL),
+(76, 'Juan', 'Pérez', 10023456, 'juan.perez@example.com', 1, 1, '1990-01-15', NULL),
+(77, 'María', 'Gómez', 11034567, 'maria.gomez@example.com', 2, 2, '1985-05-22', NULL),
+(78, 'Carlos', 'Rodríguez', 12045678, 'carlos.rodriguez@example.com', 3, 1, '1992-03-14', NULL),
+(79, 'Ana', 'Martínez', 13056789, 'ana.martinez@example.com', 1, 2, '1998-07-18', NULL),
+(80, 'Luis', 'Hernández', 14067890, 'luis.hernandez@example.com', 2, 1, '1987-09-25', NULL),
+(81, 'Lauren', 'López', 15078901, 'laura.lopez@example.com', 3, 2, '1993-11-10', NULL),
+(82, 'José', 'García', 16089012, 'jose.garcia@example.com', 1, 1, '1995-08-30', NULL),
+(84, 'Andrés', 'González', 18012345, 'andres.gonzalez@example.com', 3, 1, '1989-06-15', NULL),
+(85, 'Elena', 'Sánchez', 19023456, 'elena.sanchez@example.com', 1, 2, '1994-02-19', NULL),
+(86, 'Sofía', 'Jiménez', 20034567, 'sofia.jimenez@example.com', 2, 2, '2000-04-23', NULL),
+(87, 'Diego', 'Ramírez', 21045678, 'diego.ramirez@example.com', 3, 1, '1997-10-05', NULL),
+(88, 'Valeria', 'Cruz', 22056789, 'valeria.cruz@example.com', 1, 2, '1996-01-11', NULL),
+(89, 'Pedro', 'Castro', 23067890, 'pedro.castro@example.com', 2, 1, '1988-07-29', NULL),
+(90, 'Marta', 'Vargas', 24078901, 'marta.vargas@example.com', 3, 2, '1999-09-14', NULL),
+(91, 'David', 'Mendoza', 25089012, 'david.mendoza@example.com', 1, 1, '1993-11-01', NULL),
+(92, 'Adriana', 'Ortiz', 26090123, 'adriana.ortiz@example.com', 2, 2, '1992-03-08', NULL),
+(93, 'Francisco', 'Flores', 27012345, 'francisco.flores@example.com', 3, 1, '1990-05-17', NULL),
+(94, 'Gabriela', 'Ríos', 28023456, 'gabriela.rios@example.com', 1, 2, '1994-06-21', NULL),
+(95, 'Enrique', 'Paredes', 29034567, 'enrique.paredes@example.com', 2, 1, '1986-12-30', NULL),
+(96, 'Isabel', 'Navarro', 10045678, 'isabel.navarro@example.com', 3, 2, '1997-02-25', NULL),
+(114, 'Oscary', 'Lozada', 15936662, 'oscary@gmail.com', 3, 2, '1983-03-15', NULL),
+(158, 'Oscarina', 'Torres', 15936663, 'oscarina@gmail.com', 1, 2, '1995-11-11', NULL);
 
 -- --------------------------------------------------------
 
@@ -218,7 +239,7 @@ CREATE TABLE `procesador` (
   `fabricante_procesador` varchar(15) NOT NULL,
   `nombre_procesador` varchar(30) NOT NULL,
   `nucleos` int(11) NOT NULL,
-  `frecuencia` decimal(3,2) NOT NULL,
+  `frecuencia` decimal(4,2) NOT NULL,
   `id_estado_pieza_procesador` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -274,7 +295,7 @@ CREATE TABLE `reporte_fallas` (
 
 CREATE TABLE `rol` (
   `id_rol` int(11) NOT NULL,
-  `rol` varchar(20) NOT NULL
+  `rol` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -492,7 +513,7 @@ ALTER TABLE `motherboard`
 -- AUTO_INCREMENT de la tabla `persona`
 --
 ALTER TABLE `persona`
-  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=161;
 
 --
 -- AUTO_INCREMENT de la tabla `procesador`

@@ -232,7 +232,6 @@ class pcModel
                 $stmt->execute();
             } catch (PDOException $e) {
                 error_log("Error al actualizar procesador: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
-
             }
             try {
                 // Actualizar motherboard
@@ -245,7 +244,6 @@ class pcModel
                 $stmt->execute();
             } catch (PDOException $e) {
                 error_log("Error al actualizar motherboard: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
-
             }
             try {
                 // Actualizar fuente de poder
@@ -258,7 +256,6 @@ class pcModel
                 $stmt->execute();
             } catch (PDOException $e) {
                 error_log("Error al actualizar fuente: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
-
             }
 
 
@@ -307,6 +304,27 @@ class pcModel
             error_log($e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
             $this->db->rollBack();
             echo "Error: " . $e->getMessage();
+        }
+    }
+    public function getPcId($cedula)
+    {
+        try {
+            $sql = "SELECT equipo_informatico.id_equipo_informatico
+                    FROM persona
+                    JOIN equipo_informatico ON persona.id_persona = equipo_informatico.id_persona
+                    WHERE persona.cedula = :cedula;";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':cedula', $cedula);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        }catch (PDOException $e) {
+            error_log("Error al obtener ID de PC: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
+            return null; // O manejar el error de otra manera
+        }
+        if ($result) {
+            return $result['id_equipo_informatico'];
+        } else {
+            return null; // O manejar el caso en que no se encuentre el ID
         }
     }
 }

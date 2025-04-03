@@ -7,7 +7,7 @@ $role = $roleModel->readAll();
 <div class="view-box">
     <div class="table-heading">
         <h3 class="h3">Roles</h3>
-            <button class="table-button open-modal" data-modal="roleModal">Añadir Rol </button>
+        <button class="table-button open-modal" data-modal="roleModal" data-fetch="false">Añadir Rol </button>
     </div>
     <table class="table">
         <thead class="table-head">
@@ -18,9 +18,9 @@ $role = $roleModel->readAll();
                 <th scope="col">Acciones</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="table-body" class="table-body">
             <?php foreach ($role as $key => $item) { ?>
-                <tr>
+                <tr class="table-row">
                     <td><?php echo $item["id_rol"] ?></td>
                     <td><?php echo $item["rol"] ?></td>
                     <td><?php echo $item["rol"] ?></td>
@@ -30,15 +30,18 @@ $role = $roleModel->readAll();
             <?php } ?>
         </tbody>
     </table>
-    <div class="overlay-modal">
-        <div class="modal-box" id="roleModal">
-            <div class="modal-header">
-                <h3 class="h3">Crea un rol</h3>
-            </div>
+
+</div>
+<div class="overlay-modal">
+    <div class="modal-box" id="roleModal">
+        <div class="modal-header">
+            <h3 class="h3">Crea un rol</h3>
+        </div>
+        <form action="" method="post" class="form">
             <div class="modal-body">
                 <div class="modalRoleNameInput">
                     <label for="roleName">Nombre del Rol</label>
-                    <input type="text" class="input" id="roleName" maxlength="30">
+                    <input type="text" class="input" id="roleName" maxlength="30" required>
                 </div>
                 <div class="permissionsModule">
                     <div class="permissionsContainer">
@@ -150,8 +153,8 @@ $role = $roleModel->readAll();
             </div>
             <div class="modal-footer">
                 <button class="modal-button close-modal">Cancelar</button>
-                <button class="modal-button">Guardar</button>
+                <button class="modal-button" type="submit">Guardar</button>
             </div>
-        </div>
+        </form>
     </div>
 </div>

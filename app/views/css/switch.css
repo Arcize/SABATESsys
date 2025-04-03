@@ -12,6 +12,7 @@
     position: relative;
     cursor: pointer;
     transition: 0.2s;
+    margin: 0;
 }
 .switch::before{
     display: flex;

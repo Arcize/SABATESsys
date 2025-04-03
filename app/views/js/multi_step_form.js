@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   const slidePage = document.querySelector(".slidePage");
-  const page = document.getElementsByClassName("page");
+  const page = document.getElementsByClassName("page-form");
   const bullets = document.getElementsByClassName("bullet");
   const numbers = document.getElementsByClassName("step-number");
   const checks = document.getElementsByClassName("check");
@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let current = 0;
 
   function nextStep() {
-   /* if (validateStep(current)) {*/
+  /*  if (validateStep(current)) { */// Activar la validación
       if (current < max - 1) {
         bullets[current].classList.add("completed");
         numbers[current].classList.remove("display");
@@ -22,14 +22,14 @@ document.addEventListener("DOMContentLoaded", function () {
           btnNext.setAttribute("onclick", "submitForm()");
         }
       }
-    /*} else {
-        Swal.fire({
-            icon: 'warning',
-            text: 'Por favor, rellene todos los campos antes de continuar.',
-            customClass: {
-                popup: 'custom-swal-font'
-            }
-        });
+  /*  } else {
+      Swal.fire({
+        icon: 'warning',
+        text: 'Por favor, rellene todos los campos antes de continuar.',
+        customClass: {
+          popup: 'custom-swal-font'
+        }
+      });
     }*/
   }
 

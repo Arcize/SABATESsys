@@ -29,102 +29,125 @@
 		</div>
 		<div class="form-layout">
 			<form action="index.php?view=pc&action=pc_create" method="post" class="multi-step-form">
-				<fieldset class="page slidePage">
+				<fieldset class="page-form slidePage">
 					<legend>
 						<h4 class="h4">Información General</h4>
 					</legend>
 					<div class="pageInputs">
-
-						<label for="fabricante">Fabricante:</label>
-						<input type="text" id="fabricante" name="fabricante" class="input" required>
-
-						<label for="estado">Estado del equipo:</label>
-						<select id="estado" name="estado" class="input" required>
-							<option value="" selected>-----------------------</option>
-							<option value="1">Operativo</option>
-							<option value="2">Averiado</option>
-							<option value="3">En reparación</option>
-							<option value="4">En espera de piezas</option>
-							<option value="5">Retirado</option>
-						</select>
-
-						<label for="persona_id">ID de la persona asignada:</label>
-						<input type="text" id="persona_id" name="persona_id" class="input" required>
+						<div class="inputGroup">
+							<label for="fabricante">Fabricante:</label>
+							<input type="text" id="fabricante" name="fabricante" class="input capitalize-first only-letters no-spaces" required>
+						</div>
+						<div class="inputGroup">
+							<label for="estado">Estado del equipo:</label>
+							<select id="estado" name="estado" class="input" required>
+								<option value="" selected>Seleccione</option>
+								<option value="1">Operativo</option>
+								<option value="2">Averiado</option>
+								<option value="3">En reparación</option>
+								<option value="4">En espera de piezas</option>
+								<option value="5">Retirado</option>
+							</select>
+						</div>
+						<div class="inputGroup">
+							<label for="persona_id">ID de la persona asignada:</label>
+							<input type="text" id="persona_id" name="persona_id" class="input ci" required>
+						</div>
 					</div>
 				</fieldset>
-				<fieldset class="page">
+				<fieldset class="page-form">
 					<legend>
 						<h4 class="h4">Procesador</h4>
 					</legend>
 					<div class="pageInputs">
-						<label for="fabricante_procesador">Fabricante del procesador:</label>
-						<input type="text" id="fabricante_procesador" name="fabricante_procesador" class="input" required>
-
-						<label for="nombre_procesador">Nombre del procesador:</label>
-						<input type="text" id="nombre_procesador" name="nombre_procesador" class="input" required>
-
-						<label for="nucleos">Núcleos:</label>
-						<input type="text" id="nucleos" name="nucleos" class="input" required>
-
-						<label for="frecuencia_procesador">Frecuencia del procesador (GHz):</label>
-						<input type="text" id="frecuencia_procesador" name="frecuencia_procesador" class="input" required>
+						<div class="inputGroup">
+							<label for="fabricante_procesador">Fabricante del procesador:</label>
+							<input type="text" id="fabricante_procesador" name="fabricante_procesador" class="input capitalize-first only-letters no-spaces" required>
+						</div>
+						<div class="inputGroup">
+							<label for="nombre_procesador">Nombre del procesador:</label>
+							<input type="text" id="nombre_procesador" name="nombre_procesador" class="input no-empty-after-space" required>
+						</div>
+						<div class="inputGroup">
+							<label for="nucleos">Núcleos:</label>
+							<input type="text" id="nucleos" name="nucleos" class="input numbers" required maxlength="2">
+						</div>
+						<div class="inputGroup">
+							<label for="frecuencia_procesador">Frecuencia del procesador (GHz):</label>
+							<input type="text" id="frecuencia_procesador" name="frecuencia_procesador" class="input auto-decimal" required>
+						</div>
 					</div>
 				</fieldset>
-				<fieldset class="page">
+				<fieldset class="page-form">
 					<legend>
 						<h4 class="h4">Motherboard</h4>
 					</legend>
 					<div class="pageInputs">
-						<label for="fabricante_motherboard">Fabricante de la motherboard:</label>
-						<input type="text" id="fabricante_motherboard" name="fabricante_motherboard" class="input" required>
-
-						<label for="modelo_motherboard">Modelo de la motherboard:</label>
-						<input type="text" id="modelo_motherboard" name="modelo_motherboard" class="input" required>
+						<div class="inputGroup">
+							<label for="fabricante_motherboard">Fabricante de la motherboard:</label>
+							<input type="text" id="fabricante_motherboard" name="fabricante_motherboard" class="input" required>
+						</div>
+						<div class="inputGroup">
+							<label for="modelo_motherboard">Modelo de la motherboard:</label>
+							<input type="text" id="modelo_motherboard" name="modelo_motherboard" class="input" required>
+						</div>
 					</div>
 				</fieldset>
-				<fieldset class="page">
+				<fieldset class="page-form">
 					<legend>
 						<h4 class="h4">Fuente</h4>
 					</legend>
 					<div class="pageInputs">
-						<label for="fabricante_fuente">Fabricante de la fuente:</label>
-						<input type="text" id="fabricante_fuente" name="fabricante_fuente" class="input" required>
-
-						<label for="wattage_fuente">Wattage de la fuente:</label>
-						<input type="text" id="wattage_fuente" name="wattage_fuente" class="input" required>
+						<div class="inputGroup">
+							<label for="fabricante_fuente">Fabricante de la fuente:</label>
+							<input type="text" id="fabricante_fuente" name="fabricante_fuente" class="input" required>
+						</div>
+						<div class="inputGroup">
+							<label for="wattage_fuente">Wattage de la fuente:</label>
+							<input type="text" id="wattage_fuente" name="wattage_fuente" class="input" required>
+						</div>
 					</div>
 				</fieldset>
-				<fieldset class="page">
+				<fieldset class="page-form">
 					<legend>
 						<h4 class="h4">RAM</h4>
 					</legend>
 					<div class="pageInputs">
-						<label for="fabricante_ram">Fabricante de la RAM:</label>
-						<input type="text" id="fabricante_ram" name="fabricante_ram" class="input" required>
-
-						<label for="tipo_ram">Tipo de RAM:</label>
-						<input type="text" id="tipo_ram" name="tipo_ram" class="input" required>
-
-						<label for="frecuencia_ram">Frecuencia de la RAM (MHz):</label>
-						<input type="text" id="frecuencia_ram" name="frecuencia_ram" class="input" required>
-
-						<label for="capacidad_ram">Capacidad de la RAM (GB):</label>
-						<input type="text" id="capacidad_ram" name="capacidad_ram" class="input" required>
+						<div class="inputGroup">
+							<label for="fabricante_ram">Fabricante de la RAM:</label>
+							<input type="text" id="fabricante_ram" name="fabricante_ram" class="input" required>
+						</div>
+						<div class="inputGroup">
+							<label for="tipo_ram">Tipo de RAM:</label>
+							<input type="text" id="tipo_ram" name="tipo_ram" class="input" required>
+						</div>
+						<div class="inputGroup">
+							<label for="frecuencia_ram">Frecuencia de la RAM (MHz):</label>
+							<input type="text" id="frecuencia_ram" name="frecuencia_ram" class="input" required>
+						</div>
+						<div class="inputGroup">
+							<label for="capacidad_ram">Capacidad de la RAM (GB):</label>
+							<input type="text" id="capacidad_ram" name="capacidad_ram" class="input" required>
+						</div>
 					</div>
 				</fieldset>
-				<fieldset class="page">
+				<fieldset class="page-form">
 					<legend>
 						<h4 class="h4">Almacenamiento</h4>
 					</legend>
 					<div class="pageInputs">
-						<label for="fabricante_almacenamiento">Fabricante del almacenamiento:</label>
-						<input type="text" id="fabricante_almacenamiento" name="fabricante_almacenamiento" class="input" required>
-
-						<label for="tipo_almacenamiento">Tipo de almacenamiento:</label>
-						<input type="text" id="tipo_almacenamiento" name="tipo_almacenamiento" class="input" required>
-
-						<label for="capacidad_almacenamiento">Capacidad del almacenamiento (GB):</label>
-						<input type="text" id="capacidad_almacenamiento" name="capacidad_almacenamiento" class="input" required>
+						<div class="inputGroup">
+							<label for="fabricante_almacenamiento">Fabricante del almacenamiento:</label>
+							<input type="text" id="fabricante_almacenamiento" name="fabricante_almacenamiento" class="input" required>
+						</div>
+						<div class="inputGroup">
+							<label for="tipo_almacenamiento">Tipo de almacenamiento:</label>
+							<input type="text" id="tipo_almacenamiento" name="tipo_almacenamiento" class="input" required>
+						</div>
+						<div class="inputGroup">
+							<label for="capacidad_almacenamiento">Capacidad del almacenamiento (GB):</label>
+							<input type="text" id="capacidad_almacenamiento" name="capacidad_almacenamiento" class="input" required>
+						</div>
 					</div>
 				</fieldset>
 
@@ -135,6 +158,4 @@
 			<button class="button" type="button" onclick="nextStep()">Siguiente</button>
 		</div>
 	</div>
-
-
 </div>

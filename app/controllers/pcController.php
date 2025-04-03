@@ -31,6 +31,9 @@ class pcController
             case 'pc_edit':
                 $this->editPC();
                 break;
+            case 'pc_get':
+                $this->getPcId();
+                break;
             default:
                 break;
         }
@@ -127,5 +130,18 @@ class pcController
     {
         $id = $_GET['id'];
         $pc = $this->pcModel->readOne($id);
+    }
+    private function getPcId() {
+        $cedulaPC = $_GET['cedulaPC'];
+        $pc = $this->pcModel->getPcId($cedulaPC);
+
+        // Retornar datos como JSON
+        header('Content-Type: application/json');
+        if ($pc) {
+            echo json_encode($pc);
+            
+        } else {
+            echo json_encode(['error' => 'PC no encontrada']);
+        }
     }
 }

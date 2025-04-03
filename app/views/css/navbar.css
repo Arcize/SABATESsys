@@ -10,6 +10,7 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: var(--color-claro);
   transition: all 0.3s ease;
+  interpolate-size: allow-keywords;
 }
 .navbar__list-container {
   padding: 12px 0;

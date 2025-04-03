@@ -37,6 +37,7 @@ require_once('app/controllers/sessionController.php');
 require_once('app/controllers/employeeController.php');
 require_once('app/controllers/pcController.php');
 require_once('app/controllers/userController.php');
+require_once('app/controllers/faultReportController.php');
 
 $sessionC = new SessionController();
 
@@ -48,9 +49,24 @@ if (isset($_GET['view'])) {
 
 if (isset($_GET['view']) && $_GET['view'] === 'chartData') {
     require_once('app/controllers/chartController.php');
-    $chartController = new chartController();
+    $chartController = new ChartController();
     $chartController->chartData();
-    exit(); // Detener la ejecución para evitar salida adicional
+    exit();
+}
+if ($url[0] == "employee") {
+    $employeeController = new EmployeeController();
+    $employeeController->handleRequestEmployee();
+    exit();
+}
+if ($url[0] == "pc") {
+    $pcController = new PcController();
+    $pcController->handleRequestPC();
+    exit();
+}
+if ($url[0] == "faultReport") {
+    $faultReportController = new faultReportController();
+    $faultReportController->handleRequestFaultReport();
+    exit();
 }
 ?>
 <!DOCTYPE html>
@@ -74,14 +90,6 @@ if (isset($_GET['view']) && $_GET['view'] === 'chartData') {
         exit();
     } elseif ($url[0] == "logout") {
         $sessionC->logout();
-        exit();
-    } elseif ($url[0] == "employee") {
-        $employeeController = new EmployeeController();
-        $employeeController->handleRequestEmployee();
-        exit();
-    } elseif ($url[0] == "pc") {
-        $pcController = new PcController();
-        $pcController->handleRequestPC();
         exit();
     } else {
         $viewC = new viewController();
@@ -107,6 +115,8 @@ if (isset($_GET['view']) && $_GET['view'] === 'chartData') {
                             require_once $view;
                             ?>
                             <script src="app/views/js/modal.js"></script>
+                            
+                            <script src="app/views/js/customAlerts.js"></script>
                         </div>
                     </div>
                 </div>
@@ -118,15 +128,13 @@ if (isset($_GET['view']) && $_GET['view'] === 'chartData') {
                 "dashboard",
                 "config",
                 "employeeTable",
-                "employeeForm",
-                "employeeFormEdit",
                 "pcTable",
                 "pcForm",
                 "pcFormEdit",
                 "userTable",
                 "roleTable",
                 "roleForm",
-                "faultReport"
+                "faultReportTable"
             ];
 
             if (in_array($url[0], $restricted_views)) {
@@ -139,9 +147,14 @@ if (isset($_GET['view']) && $_GET['view'] === 'chartData') {
             }
         }
     }
+    
+    if (in_array($url[0], ['employeeTable', 'pcTable'])) {
+    echo '<script src="app/views/js/pagination.js"></script>';
+    echo '<script src="app/views/js/filterSearch.js"></script>';
+    }
     ?>
 
-
+    <script src="app/views/js/formValidation.js"></script>
 </body>
 
 </html>

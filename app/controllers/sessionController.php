@@ -16,7 +16,6 @@ class SessionController  {
         
         if ($user && $this->sessionModel->verifyPassword($password, $user['password'])) {
             $this->sessionModel->startSession($user);
-            $_SESSION['username'] = $username;
             
             error_log("Inicio de sesión exitoso para el usuario: " . $username);
             

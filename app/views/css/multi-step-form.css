@@ -9,7 +9,9 @@
   flex-direction: column;
   align-items: center;
 }
-
+legend .h4{
+  margin-bottom: 0;
+}
 .multi-step-form {
   display: flex;
   width: 600%;
@@ -17,7 +19,7 @@
 
 .form-layout {
   width: var(--form-size);
-  height: 350px;
+  height: fit-content;
   overflow: hidden;
 }
 
@@ -93,7 +95,7 @@
   display: none;
 }
 
-.page {
+.page-form {
   width: var(--form-size);
   transition: margin-left 0.2s ease-in-out;
 }

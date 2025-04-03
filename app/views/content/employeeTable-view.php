@@ -1,16 +1,31 @@
 <?php
-require_once('app/models/employeeModel.php');
-
-$employeeModel = new employeeModel();
-$employee = $employeeModel->readAll();
+include_once('app/controllers/departmentController.php');
+$departmentController = new departmentController();
+$departments = $departmentController->listDepartments();
 ?>
 
 <div class="view-box">
     <div class="table-heading">
         <h3 class="h3">Datos de Empleados</h3>
-        <a href="index.php?view=employeeForm">
-            <button class="table-button">Añadir Empleado</button>
-        </a>
+        <div class="table-actions">
+            <div class="table-filters">
+                <div class="search-filter">
+                    <div class="filter-dropdown">
+                        <button class="dropdown-btn btn filter-button">
+                            <img src="app/views/img/filter.svg" alt="Filter">
+                        </button>
+                        <div class="dropdown-content filter-dropdown-menu">
+                            <a href="#" class="dropdown-item">Opción 1</a>
+                            <a href="#" class="dropdown-item">Opción 2</a>
+                            <a href="#" class="dropdown-item">Opción 3</a>
+                        </div>
+                    </div>
+                </div>
+                <input type="text" class="input search-input" placeholder="Buscar...">
+                <button class="search-button btn"><img src="app/views/img/search.svg" alt="Search"></button>
+            </div>
+            <button class="table-button open-modal" data-modal="employeeModal" data-fetch="false">Añadir Empleado</button>
+        </div>
     </div>
     <table class="table">
         <thead class="table-head">
@@ -25,57 +40,72 @@ $employee = $employeeModel->readAll();
                 <th scope="col">Acciones</th>
             </tr>
         </thead>
-        <tbody>
-            <?php foreach ($employee as $key => $item) { ?>
-                <tr>
-                    <td><?php echo $key+1; ?></td>
-                    <td><?php echo $item["nombre"]; ?></td>
-                    <td><?php echo $item["apellido"]; ?></td>
-                    <td><?php echo $item["cedula"]; ?></td>
-                    <td><?php echo $item["nombre_departamento"]; ?></td>
-                    <td>
-                        <?php
-                        switch ($item["sexo"]) {
-                            case 'Masculino':
-                                echo 'M';
-                                break;
-                            case 'Femenino':
-                                echo 'F';
-                                break;
-                            default:
-                                echo '';
-                                break;
-                        }
-                        ?>
-                    </td>
-                    <td class="relative-container">
-                        <div class="button-container">
-                            <div>
-                                <a href="index.php?view=employeeFormEdit&action=employee_edit&id=<?php echo $item['id_persona']; ?>">
-                                    <button class="crud-button edit-button">
-                                        <img src="app/views/img/edit.svg" alt="Edit">
-                                    </button>
-                                </a>
-                            </div>
-                            <div>
-                                <a href="#">
-                                    <button class="crud-button details-button">
-                                        <img src="app/views/img/menu_white.svg" alt="Delete">
-                                    </button>
-                                </a>
-                            </div>
-                            <div>
-                                <a href="index.php?view=employee&action=employee_delete&id=<?php echo $item['id_persona']; ?>">
-                                    <button class="crud-button delete-button">
-                                        <img src="app/views/img/delete.svg" alt="Delete">
-                                    </button>
-                                </a>
-                            </div>
-
-                        </div>
-                    </td>
-                </tr>
-            <?php } ?>
+        <tbody id="table-body" class="table-body">
+        
         </tbody>
     </table>
+    <div class="table-footer">
+        <div class="page-buttons">
+            <button class="pagination-button prev btn">Anterior</button>
+            <div class="pages">
+            </div>
+            <button class="pagination-button next btn">Siguiente</button>
+        </div>
+    </div>
+</div>
+<div class="overlay-modal">
+    <div class="modal-box" id="employeeModal">
+        <div class="modal-header">
+            <h3 class="h3">Registre un empleado</h3>
+        </div>
+        <form action="index.php?view=employee&action=employee_fetch_create" method="POST" class="form" formType="employee">
+            <div class="modal-body">
+                <div class="userDetails">
+                    <input type="hidden" id="id_persona" name="id_persona" class="inputKey">
+                    <div class="inputGroup">
+                        <label for="nombre">Nombre:</label>
+                        <input class="input capitalize-first only-letters no-spaces" id="nombre" required type="text" name="nombre" maxlength="30">
+                    </div>
+                    <div class="inputGroup">
+                        <label for="apellido">Apellido:</label>
+                        <input class="input capitalize-first only-letters no-spaces" id="apellido" required type="text" name="apellido" maxlength="30">
+                    </div>
+                    <div class="inputGroup">
+                        <label for="cedula">Cédula:</label>
+                        <input class="input ci" id="cedula" required type="text" name="cedula" onkeyup="checkCedulaAvailability()">
+                        <span class="cedulaError"></span>
+                    </div>
+                    <div class="inputGroup">
+                        <label for="correo">Email:</label>
+                        <input class="input lowercase" id="correo" required type="text" name="correo" maxlength="100">
+                    </div>
+                    <div class="inputGroup">
+                        <label for="id_departamento">Departamento:</label>
+                        <select id="id_departamento" required name="id_departamento">
+                            <option value="">Seleccione</option>
+                            <?php foreach ($departments as $department) : ?>
+                                <option value="<?php echo $department['id_departamento']; ?>"><?php echo $department['nombre_departamento']; ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="inputGroup">
+                        <label for="id_sexo">Sexo:</label>
+                        <select id="id_sexo" required name="id_sexo">
+                            <option value="">Seleccione</option>
+                            <option value="1">Masculino</option>
+                            <option value="2">Femenino</option>
+                        </select>
+                    </div>
+                    <div class="inputGroup">
+                        <label for="fecha_nac">Fecha de Nacimiento:</label>
+                        <input class="input date" id="fecha_nac" required type="date" name="fecha_nac">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-button close-modal" type="button">Cancelar</button>
+                <button class="modal-button sentBtn" type="submit">Guardar</button>
+            </div>
+        </form>
+    </div>
 </div>

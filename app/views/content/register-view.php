@@ -9,28 +9,19 @@
             }
             ?>
             <div class="input-box">
-                <input
-                    type="text"
-                    placeholder="Cédula"
-                    name="id"
-                    required />
+                <input type="text" placeholder="Cédula" name="id" required class="no-spaces ci" />
                 <img
                     src="app/views/img/id.svg"
                     alt="id">
             </div>
             <div class="input-box">
-                <input type="text" placeholder="Usuario" name="username" required />
+                <input type="text" placeholder="Usuario" name="username" required class="no-spaces"/>
                 <img
                     src="app/views/img/user_white.svg"
                     alt="user" />
             </div>
             <div class="input-box">
-                <input
-                    type="password"
-                    placeholder="Contraseña"
-                    name="password"
-                    id="password"
-                    required />
+                <input type="password" placeholder="Contraseña" name="password" id="password" required class="no-spaces"/>
                 <img
                     src="app/views/img/lock.svg"
                     alt="password" />
@@ -53,61 +44,61 @@
 </div>
 
 <script>
-document.getElementById('password').addEventListener('input', function() {
-    const password = this.value;
-    const lengthCriteria = document.getElementById('length');
-    const uppercaseCriteria = document.getElementById('uppercase');
-    const lowercaseCriteria = document.getElementById('lowercase');
-    const numberCriteria = document.getElementById('number');
+    document.getElementById('password').addEventListener('input', function() {
+        const password = this.value;
+        const lengthCriteria = document.getElementById('length');
+        const uppercaseCriteria = document.getElementById('uppercase');
+        const lowercaseCriteria = document.getElementById('lowercase');
+        const numberCriteria = document.getElementById('number');
 
-    // Verificar longitud
-    if (password.length >= 8) {
-        lengthCriteria.classList.remove('invalid');
-        lengthCriteria.classList.add('valid');
-    } else {
-        lengthCriteria.classList.remove('valid');
-        lengthCriteria.classList.add('invalid');
-    }
+        // Verificar longitud
+        if (password.length >= 8) {
+            lengthCriteria.classList.remove('invalid');
+            lengthCriteria.classList.add('valid');
+        } else {
+            lengthCriteria.classList.remove('valid');
+            lengthCriteria.classList.add('invalid');
+        }
 
-    // Verificar mayúsculas
-    if (/[A-Z]/.test(password)) {
-        uppercaseCriteria.classList.remove('invalid');
-        uppercaseCriteria.classList.add('valid');
-    } else {
-        uppercaseCriteria.classList.remove('valid');
-        uppercaseCriteria.classList.add('invalid');
-    }
+        // Verificar mayúsculas
+        if (/[A-Z]/.test(password)) {
+            uppercaseCriteria.classList.remove('invalid');
+            uppercaseCriteria.classList.add('valid');
+        } else {
+            uppercaseCriteria.classList.remove('valid');
+            uppercaseCriteria.classList.add('invalid');
+        }
 
-    // Verificar minúsculas
-    if (/[a-z]/.test(password)) {
-        lowercaseCriteria.classList.remove('invalid');
-        lowercaseCriteria.classList.add('valid');
-    } else {
-        lowercaseCriteria.classList.remove('valid');
-        lowercaseCriteria.classList.add('invalid');
-    }
+        // Verificar minúsculas
+        if (/[a-z]/.test(password)) {
+            lowercaseCriteria.classList.remove('invalid');
+            lowercaseCriteria.classList.add('valid');
+        } else {
+            lowercaseCriteria.classList.remove('valid');
+            lowercaseCriteria.classList.add('invalid');
+        }
 
-    // Verificar números
-    if (/\d/.test(password)) {
-        numberCriteria.classList.remove('invalid');
-        numberCriteria.classList.add('valid');
-    } else {
-        numberCriteria.classList.remove('valid');
-        numberCriteria.classList.add('invalid');
-    }
-});
+        // Verificar números
+        if (/\d/.test(password)) {
+            numberCriteria.classList.remove('invalid');
+            numberCriteria.classList.add('valid');
+        } else {
+            numberCriteria.classList.remove('valid');
+            numberCriteria.classList.add('invalid');
+        }
+    });
 </script>
 
 <style>
-.valid::before {
-    content: '✔';
-    color: green;
-    margin-right: 5px;
-}
+    .valid::before {
+        content: '✔';
+        color: green;
+        margin-right: 5px;
+    }
 
-.invalid::before {
-    content: '✖';
-    color: red;
-    margin-right: 5px;
-}
+    .invalid::before {
+        content: '✖';
+        color: red;
+        margin-right: 5px;
+    }
 </style>
