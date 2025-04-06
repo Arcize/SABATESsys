@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 01-04-2025 a las 04:14:18
+-- Tiempo de generación: 04-04-2025 a las 03:36:59
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -135,6 +135,15 @@ CREATE TABLE `estado_reporte_fallas` (
   `estado_reporte_fallas` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Volcado de datos para la tabla `estado_reporte_fallas`
+--
+
+INSERT INTO `estado_reporte_fallas` (`id_estado_reporte_fallas`, `estado_reporte_fallas`) VALUES
+(1, 'Pendiente'),
+(2, 'En proceso'),
+(3, 'Completado');
+
 -- --------------------------------------------------------
 
 --
@@ -213,19 +222,7 @@ INSERT INTO `persona` (`id_persona`, `nombre`, `apellido`, `cedula`, `correo`, `
 (82, 'José', 'García', 16089012, 'jose.garcia@example.com', 1, 1, '1995-08-30', NULL),
 (84, 'Andrés', 'González', 18012345, 'andres.gonzalez@example.com', 3, 1, '1989-06-15', NULL),
 (85, 'Elena', 'Sánchez', 19023456, 'elena.sanchez@example.com', 1, 2, '1994-02-19', NULL),
-(86, 'Sofía', 'Jiménez', 20034567, 'sofia.jimenez@example.com', 2, 2, '2000-04-23', NULL),
-(87, 'Diego', 'Ramírez', 21045678, 'diego.ramirez@example.com', 3, 1, '1997-10-05', NULL),
-(88, 'Valeria', 'Cruz', 22056789, 'valeria.cruz@example.com', 1, 2, '1996-01-11', NULL),
-(89, 'Pedro', 'Castro', 23067890, 'pedro.castro@example.com', 2, 1, '1988-07-29', NULL),
-(90, 'Marta', 'Vargas', 24078901, 'marta.vargas@example.com', 3, 2, '1999-09-14', NULL),
-(91, 'David', 'Mendoza', 25089012, 'david.mendoza@example.com', 1, 1, '1993-11-01', NULL),
-(92, 'Adriana', 'Ortiz', 26090123, 'adriana.ortiz@example.com', 2, 2, '1992-03-08', NULL),
-(93, 'Francisco', 'Flores', 27012345, 'francisco.flores@example.com', 3, 1, '1990-05-17', NULL),
-(94, 'Gabriela', 'Ríos', 28023456, 'gabriela.rios@example.com', 1, 2, '1994-06-21', NULL),
-(95, 'Enrique', 'Paredes', 29034567, 'enrique.paredes@example.com', 2, 1, '1986-12-30', NULL),
-(96, 'Isabel', 'Navarro', 10045678, 'isabel.navarro@example.com', 3, 2, '1997-02-25', NULL),
-(114, 'Oscary', 'Lozada', 15936662, 'oscary@gmail.com', 3, 2, '1983-03-15', NULL),
-(158, 'Oscarina', 'Torres', 15936663, 'oscarina@gmail.com', 1, 2, '1995-11-11', NULL);
+(86, 'Sofía', 'Jiménez', 20034567, 'sofia.jimenez@example.com', 2, 2, '2000-04-23', NULL);
 
 -- --------------------------------------------------------
 
@@ -281,11 +278,19 @@ INSERT INTO `ram` (`id_ram`, `id_equipo_informatico_ram`, `fabricante_ram`, `tip
 
 CREATE TABLE `reporte_fallas` (
   `id_reporte_fallas` int(11) NOT NULL,
-  `id_u_estandar` int(11) NOT NULL,
+  `id_usuario` int(11) NOT NULL,
   `id_equipo_informatico` int(11) NOT NULL,
-  `fecha` datetime NOT NULL,
-  `contenido_reporte_fallas` text NOT NULL
+  `fecha_hora_reporte_fallas` timestamp NOT NULL DEFAULT current_timestamp(),
+  `contenido_reporte_fallas` text NOT NULL,
+  `id_estado_reporte_fallas` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `reporte_fallas`
+--
+
+INSERT INTO `reporte_fallas` (`id_reporte_fallas`, `id_usuario`, `id_equipo_informatico`, `fecha_hora_reporte_fallas`, `contenido_reporte_fallas`, `id_estado_reporte_fallas`) VALUES
+(25, 8, 10, '2025-04-04 00:07:34', 'asdasdasfasfaasdasasfa', 1);
 
 -- --------------------------------------------------------
 
@@ -437,7 +442,10 @@ ALTER TABLE `ram`
 -- Indices de la tabla `reporte_fallas`
 --
 ALTER TABLE `reporte_fallas`
-  ADD PRIMARY KEY (`id_reporte_fallas`);
+  ADD PRIMARY KEY (`id_reporte_fallas`),
+  ADD KEY `id_usuario_idx` (`id_usuario`),
+  ADD KEY `id_equipo_informatico_idx` (`id_equipo_informatico`),
+  ADD KEY `id_estado_reporte_fallas_idx` (`id_estado_reporte_fallas`);
 
 --
 -- Indices de la tabla `rol`
@@ -495,7 +503,7 @@ ALTER TABLE `estado_pieza`
 -- AUTO_INCREMENT de la tabla `estado_reporte_fallas`
 --
 ALTER TABLE `estado_reporte_fallas`
-  MODIFY `id_estado_reporte_fallas` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_estado_reporte_fallas` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `fuente_poder`
@@ -513,7 +521,7 @@ ALTER TABLE `motherboard`
 -- AUTO_INCREMENT de la tabla `persona`
 --
 ALTER TABLE `persona`
-  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=161;
+  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=187;
 
 --
 -- AUTO_INCREMENT de la tabla `procesador`
@@ -531,7 +539,7 @@ ALTER TABLE `ram`
 -- AUTO_INCREMENT de la tabla `reporte_fallas`
 --
 ALTER TABLE `reporte_fallas`
-  MODIFY `id_reporte_fallas` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_reporte_fallas` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT de la tabla `rol`
@@ -604,6 +612,14 @@ ALTER TABLE `procesador`
 ALTER TABLE `ram`
   ADD CONSTRAINT `id_equipo_informatico` FOREIGN KEY (`id_equipo_informatico_ram`) REFERENCES `equipo_informatico` (`id_equipo_informatico`) ON DELETE CASCADE ON UPDATE SET NULL,
   ADD CONSTRAINT `id_estado_pieza_ram` FOREIGN KEY (`id_estado_pieza_ram`) REFERENCES `estado_pieza` (`id_estado_pieza`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Filtros para la tabla `reporte_fallas`
+--
+ALTER TABLE `reporte_fallas`
+  ADD CONSTRAINT `id_equipo_informatico2` FOREIGN KEY (`id_equipo_informatico`) REFERENCES `equipo_informatico` (`id_equipo_informatico`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `id_estado_reporte_fallas` FOREIGN KEY (`id_estado_reporte_fallas`) REFERENCES `estado_reporte_fallas` (`id_estado_reporte_fallas`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `id_usuario` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

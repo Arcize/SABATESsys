@@ -1,5 +1,6 @@
 :root {
   --color-primario: #0f2c64;
+  --color-primario-transparente: rgba(var(--color-primario), 0.5);
   --color-primario-hover: #233d78;
   --color-background: #f3f8fd;
   --color-white-hover: #e0e0e0;
@@ -9,9 +10,12 @@
   --color-gris: #808080;
   --color-texto: #212121;
   --transition-standart: all 0.2s ease;
-  --spacing-medium: 18px;
-  --spacing-small: 5px;
-  --border-radius: 5px;
+  --spacing-medium: 1.125rem;
+  --spacing-small: 0.375rem;
+  --border-radius: 0.375rem;
+}
+body{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 /*Ajustes de la vista*/
 .layout {
@@ -30,6 +34,7 @@
 }
 .view-box{
   display: flex;
+  justify-content: center;
   align-items: center;
   flex-direction: column;
   width: 100%;
@@ -39,25 +44,31 @@
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
   padding: var(--spacing-medium);
 }
+
+.h2{
+  color: var(--color-primario);
+  font-weight: 700;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 2rem;
+}
 .h3{
   color: var(--color-primario);
   font-weight: 700;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 24px;
+  font-size: 1.5rem;
 }
 
 .h4{
   color: var(--color-secundario);
-  font-weight: 700;
+  font-weight: 500;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 20px;
-  margin: 20px 0;
+  font-size: 1.25rem;
 }
 .h5{
   color: var(--color-secundario);
   font-weight: 600;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size: 16px;
+  font-size: 1rem;
 }
 
 .btn{
@@ -66,6 +77,25 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   cursor: pointer;
   font-size: 14px;
-  padding: 6px 12px;
+  padding: 4px 12px 6px;
   transition: var(--transition-standart);
+}
+.error404{
+  width: 50%;
+  font-size: 1.5rem;
+  padding: 0 1.5rem;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
+  margin-bottom: 5rem;
+}
+.error404 p{
+  color: rgba(15, 44, 100, 0.7);
 }

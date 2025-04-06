@@ -110,12 +110,17 @@ if ($url[0] == "faultReport") {
 
                     <div class="principal">
                         <div class="content">
-                            <?php require_once("app/views/layouts/user-bar.php"); ?>
+                            <?php require_once("app/views/layouts/user-bar.php");
+                            if (in_array($url[0], ['employeeTable', 'pcTable', 'faultReportTable'])) {
+                                echo '<script src="app/views/js/pagination.js"></script>';
+                                echo '<script src="app/views/js/filterSearch.js"></script>';
+                            } ?>
+
                             <?php
                             require_once $view;
                             ?>
                             <script src="app/views/js/modal.js"></script>
-                            
+
                             <script src="app/views/js/customAlerts.js"></script>
                         </div>
                     </div>
@@ -147,11 +152,8 @@ if ($url[0] == "faultReport") {
             }
         }
     }
-    
-    if (in_array($url[0], ['employeeTable', 'pcTable'])) {
-    echo '<script src="app/views/js/pagination.js"></script>';
-    echo '<script src="app/views/js/filterSearch.js"></script>';
-    }
+
+
     ?>
 
     <script src="app/views/js/formValidation.js"></script>

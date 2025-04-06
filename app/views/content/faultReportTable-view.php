@@ -21,15 +21,16 @@
             <button class="table-button open-modal" data-modal="faultReportModal" data-fetch="false">Crear Reporte</button>
         </div>
     </div>
-    <table class="table">
+    <table class="table" id="faultReportTable">
         <thead class="table-head">
             <tr>
                 <th scope="col">N°</th>
-                <th scope="col">Nombre</th>
-                <th scope="col">Apellido</th>
-                <th scope="col">Cédula</th>
-                <th scope="col">Departamento</th>
-                <th scope="col">Sexo</th>
+                <th scope="col">ID Reporte</th>
+                <th scope="col">Reportado Por</th>
+                <th scope="col">ID Equipo</th>
+                <th scope="col">Fecha / Hora</th>
+                <th scope="col">Descripción</th>
+                <th scope="col">Estado</th>
                 <!-- <th scope="col">ID Usuario</th> -->
                 <th scope="col">Acciones</th>
             </tr>
@@ -52,22 +53,22 @@
         <div class="modal-header">
             <h3 class="h3">Crear Reporte de Falla</h3>
         </div>
-        <form action="index.php?view=faultReport&action=create_report" method="POST" class="form">
+        <form action="index.php?view=faultReport&action=faultReport_fetch_create" method="POST" class="form" formType="faultReport">
             <div class="modal-body">
                 <div class="userDetails">
-                <input type="hidden" id="id_fault_report" name="id_fault_report" class="inputKey">
+                <input type="hidden" id="id_fault_report" name="id_reporte_fallas" class="inputKey">
                     <div class="inputGroup">
                         <label for="cedulaPC">Cédula del Usuario:</label>
-                        <input class="input ci" id="cedulaPC" required type="text" name="cedulaPC" onkeyup="crossFields();">
+                        <input class="input ci" id="cedulaPC" required type="text" name="cedula" onkeyup="crossFields();">
                     </div>
                     <div class="inputGroup">
                         <label for="idPC">ID del Equipo:</label>
-                        <input class="input numbers" id="idPC" required type="text" name="idPC" onkeyup="crossFields();">
+                        <input class="input numbers" id="idPC" required type="text" name="id_equipo_informatico" onkeyup="crossFields();">
                     </div>
                 </div>
                 <div class="inputGroup textArea">
                     <label for="contentFaultReport">Descripción de la Falla:</label>
-                    <textarea id="contentFaultReport" required name="contentFaultReport"></textarea>
+                    <textarea id="contentFaultReport" required name="contenido_reporte_fallas"></textarea>
                 </div>
 
             </div>
@@ -78,3 +79,6 @@
         </form>
     </div>
 </div>
+<script>
+    initializePagination("faultReportTable", "faultReport");
+</script>

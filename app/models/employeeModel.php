@@ -97,22 +97,6 @@ class employeeModel
         // Obtener el total de registros
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
-    public function readAll()
-    {
-        try {
-            // Consulta SQL con JOIN para obtener los datos de persona, departamento y sexo
-            $sql = "SELECT p.*, d.nombre_departamento, s.sexo
-                    FROM persona p
-                    JOIN departamento d ON p.id_departamento = d.id_departamento
-                    JOIN sexo s ON p.id_sexo = s.id_sexo";
-            $stmt = $this->db->query($sql);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Error: " . $e->getMessage();
-            return [];
-        }
-    }
-
 
     public function update($id)
     {

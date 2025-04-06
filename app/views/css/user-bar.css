@@ -115,3 +115,24 @@
   top: 0px;
   right: 0px;
 }
+
+#notifications-menu div{
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  padding: var(--spacing-small);
+  border-bottom: 1px solid var(--color-border);
+
+}
+
+#notifications-menu span{
+  font-size: 16px;
+  font-weight: 400;
+}
+#notifications-menu p{
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-texto);
+  padding: var(--spacing-small);
+  text-align: center;
+}

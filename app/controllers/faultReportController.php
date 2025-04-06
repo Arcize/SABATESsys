@@ -15,22 +15,22 @@ class FaultReportController
         $action = isset($_GET['action']) ? $_GET['action'] : '';
 
         switch ($action) {
-            case 'create_report':
+            case 'faultReport_fetch_create':
                 $this->createReport();
                 break;
-            case 'delete_report':
+            case 'faultReport_fetch_delete':
                 $this->deleteReport();
                 break;
-            case 'update_report':
+            case 'faultReport_fetch_update':
                 $this->updateReport();
                 break;
-            case 'fetch_report':
+            case 'faultReport_fetch_one':
                 $this->fetchReport();
                 break;
-            case 'fetch_reports_page':
+            case 'faultReport_fetch_page':
                 $this->fetchReportsPage();
                 break;
-            case 'fetch_total_records':
+            case 'faultReport_fetch_total_records':
                 $this->fetchTotalRecords();
                 break;
             default:
@@ -41,8 +41,8 @@ class FaultReportController
     private function createReport()
     {
         $id_usuario = $_SESSION['id_usuario'];
-        $id_equipo_informatico = $_POST['idPC'];
-        $contenido_reporte_fallas = $_POST['contentFaultReport'];
+        $id_equipo_informatico = $_POST['id_equipo_informatico'];
+        $contenido_reporte_fallas = $_POST['contenido_reporte_fallas'];
 
         $this->faultReportsModel->setData($id_usuario, $id_equipo_informatico, $contenido_reporte_fallas);
         $result = $this->faultReportsModel->create();
@@ -58,7 +58,7 @@ class FaultReportController
 
     private function deleteReport()
     {
-        $id = $_GET['id_reporte_fallas'];
+        $id = $_GET['id_fault_report'];
         $result = $this->faultReportsModel->delete($id);
 
         // Retornar respuesta como JSON
@@ -73,7 +73,7 @@ class FaultReportController
     private function updateReport()
     {
         $id = $_POST['id_reporte_fallas'];
-        $id_usuario = $_POST['id_usuario'];
+        $id_usuario = $_SESSION['id_usuario'];
         $id_equipo_informatico = $_POST['id_equipo_informatico'];
         $contenido_reporte_fallas = $_POST['contenido_reporte_fallas'];
 
@@ -91,7 +91,7 @@ class FaultReportController
 
     private function fetchReport()
     {
-        $id = $_GET['id_reporte_fallas'];
+        $id = $_GET['id_fault_report'];
         $report = $this->faultReportsModel->readOne($id);
 
         // Retornar datos como JSON
@@ -111,7 +111,25 @@ class FaultReportController
 
         // Retornar datos como JSON
         header('Content-Type: application/json');
+        $customSort = [
+            "id_reporte_fallas",
+            "username",
+            "id_equipo_informatico",
+            "fecha_hora_reporte_fallas",
+            "contenido_reporte_fallas",
+            "id_usuario",
+            "estado_reporte_fallas",
+        ];
         if ($reports) {
+            foreach ($reports as &$report) {
+                $newSort = [];
+                foreach ($customSort as $key) {
+                    if (isset($report[$key])) {
+                        $newSort[$key] = $report[$key];
+                    }
+                }
+                $report = $newSort;
+            }
             echo json_encode($reports);
         } else {
             echo json_encode(['error' => 'No se encontraron reportes de fallas']);

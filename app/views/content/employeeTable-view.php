@@ -27,7 +27,7 @@ $departments = $departmentController->listDepartments();
             <button class="table-button open-modal" data-modal="employeeModal" data-fetch="false">Añadir Empleado</button>
         </div>
     </div>
-    <table class="table">
+    <table class="table" id="employeeTable">
         <thead class="table-head">
             <tr>
                 <th scope="col">N°</th>
@@ -41,7 +41,7 @@ $departments = $departmentController->listDepartments();
             </tr>
         </thead>
         <tbody id="table-body" class="table-body">
-        
+
         </tbody>
     </table>
     <div class="table-footer">
@@ -56,7 +56,7 @@ $departments = $departmentController->listDepartments();
 <div class="overlay-modal">
     <div class="modal-box" id="employeeModal">
         <div class="modal-header">
-            <h3 class="h3">Registre un empleado</h3>
+            <h3 class="h3">Registrar un empleado</h3>
         </div>
         <form action="index.php?view=employee&action=employee_fetch_create" method="POST" class="form" formType="employee">
             <div class="modal-body">
@@ -109,3 +109,6 @@ $departments = $departmentController->listDepartments();
         </form>
     </div>
 </div>
+<script>
+    initializePagination("employeeTable", "employee");
+</script>

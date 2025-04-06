@@ -9,7 +9,10 @@
             </button>
             <div id="notifications-menu" class="dropdown-menu">
                 <a href="#">
-                    <span>Notificación 1</span>
+                    <div>
+                        <span>Reporte de Falla</span>
+                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </div>
                 </a>
                 <a href="#">
                     <span>Notificación 2</span>
