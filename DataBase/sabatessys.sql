@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 04-04-2025 a las 03:36:59
+-- Tiempo de generación: 07-04-2025 a las 06:13:14
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -221,8 +221,7 @@ INSERT INTO `persona` (`id_persona`, `nombre`, `apellido`, `cedula`, `correo`, `
 (81, 'Lauren', 'López', 15078901, 'laura.lopez@example.com', 3, 2, '1993-11-10', NULL),
 (82, 'José', 'García', 16089012, 'jose.garcia@example.com', 1, 1, '1995-08-30', NULL),
 (84, 'Andrés', 'González', 18012345, 'andres.gonzalez@example.com', 3, 1, '1989-06-15', NULL),
-(85, 'Elena', 'Sánchez', 19023456, 'elena.sanchez@example.com', 1, 2, '1994-02-19', NULL),
-(86, 'Sofía', 'Jiménez', 20034567, 'sofia.jimenez@example.com', 2, 2, '2000-04-23', NULL);
+(187, 'Carlos', 'Ramírez', 12345678, 'carlos.ramirez@example.com', 1, 1, '0000-00-00', NULL);
 
 -- --------------------------------------------------------
 
@@ -290,7 +289,7 @@ CREATE TABLE `reporte_fallas` (
 --
 
 INSERT INTO `reporte_fallas` (`id_reporte_fallas`, `id_usuario`, `id_equipo_informatico`, `fecha_hora_reporte_fallas`, `contenido_reporte_fallas`, `id_estado_reporte_fallas`) VALUES
-(25, 8, 10, '2025-04-04 00:07:34', 'asdasdasfasfaasdasasfa', 1);
+(25, 8, 10, '2025-04-04 00:07:34', 'bbbbbbbbbbbbbbbbbbbbbb', 1);
 
 -- --------------------------------------------------------
 
@@ -521,7 +520,7 @@ ALTER TABLE `motherboard`
 -- AUTO_INCREMENT de la tabla `persona`
 --
 ALTER TABLE `persona`
-  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=187;
+  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=193;
 
 --
 -- AUTO_INCREMENT de la tabla `procesador`

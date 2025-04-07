@@ -44,6 +44,7 @@ use app\controllers\PcController;
 use app\controllers\UserController;
 use app\controllers\FaultReportController;
 use app\controllers\ChartController;
+use app\controllers\BulkUploadController;
 
 $SessionController = new SessionController();
 
@@ -56,6 +57,11 @@ if (isset($_GET['view'])) {
 if (isset($_GET['view']) && $_GET['view'] === 'chartData') {
     $chartController = new ChartController();
     $chartController->chartData();
+    exit();
+}
+if (isset($_GET['view']) && $_GET['view'] === 'bulkUpload') {
+    $bulkUploadController = new BulkUploadController();
+    $bulkUploadController->handleRequestBulkUpload();
     exit();
 }
 if ($url[0] == "employee") {
@@ -116,16 +122,16 @@ if ($url[0] == "faultReport") {
                     <div class="principal">
                         <div class="content">
                             <?php require_once __DIR__ . '/../app/views/layouts/user-bar.php';
-                            if (in_array($url[0], ['employeeTable', 'pcTable', 'faultReportTable'])) {
-                                echo '<script src="./js/pagination.js"></script>';
-                                echo '<script src="./js/filterSearch.js"></script>';
-                                echo '<script src="./js/modal.js"></script>';
-                            }
 
                             ?>
 
                             <?php
                             require_once $view;
+                            if (in_array($url[0], ['employeeTable', 'pcTable', 'faultReportTable'])) {
+                                echo '<script src="./js/pagination.js"></script>';
+                                echo '<script src="./js/filterSearch.js"></script>';
+                                echo '<script src="./js/modal.js"></script>';
+                            }
                             if ($url[0] == 'bulkDataLoad') {
                                 echo '<script src="./js/fileUpload.js"></script>';
                             }

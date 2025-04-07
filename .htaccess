@@ -1,0 +1,7 @@
+RewriteEngine On
+
+# Asegúrate de que no estás ya en la carpeta "public"
+RewriteCond %{REQUEST_URI} !^/SABATESsys/public/
+
+# Redirige todo a la carpeta "public"
+RewriteRule ^(.*)$ /SABATESsys/public/$1 [L]

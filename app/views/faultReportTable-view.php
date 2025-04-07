@@ -4,7 +4,7 @@
         <div class="table-actions">
             <div class="table-filters">
                 <div class="search-filter">
-                <div class="filter-dropdown">
+                    <div class="filter-dropdown">
                         <button class="dropdown-btn btn filter-button">
                             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#212121">
                                 <path d="M440-240q-17 0-28.5-11.5T400-280q0-17 11.5-28.5T440-320h80q17 0 28.5 11.5T560-280q0 17-11.5 28.5T520-240h-80ZM280-440q-17 0-28.5-11.5T240-480q0-17 11.5-28.5T280-520h400q17 0 28.5 11.5T720-480q0 17-11.5 28.5T680-440H280ZM160-640q-17 0-28.5-11.5T120-680q0-17 11.5-28.5T160-720h640q17 0 28.5 11.5T840-680q0 17-11.5 28.5T800-640H160Z" />
@@ -62,7 +62,7 @@
         <form action="index.php?view=faultReport&action=faultReport_fetch_create" method="POST" class="form" formType="faultReport">
             <div class="modal-body">
                 <div class="userDetails">
-                <input type="hidden" id="id_fault_report" name="id_reporte_fallas" class="inputKey">
+                    <input type="hidden" id="id_fault_report" name="id_reporte_fallas" class="inputKey">
                     <div class="inputGroup">
                         <label for="cedulaPC">Cédula del Usuario:</label>
                         <input class="input ci" id="cedulaPC" required type="text" name="cedula" onkeyup="crossFields();">
@@ -86,5 +86,7 @@
     </div>
 </div>
 <script>
-    initializePagination("faultReportTable", "faultReport");
+    document.addEventListener("DOMContentLoaded", function() {
+        initializePagination("faultReportTable", "faultReport");
+    });
 </script>

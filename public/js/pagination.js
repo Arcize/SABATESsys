@@ -1,5 +1,10 @@
 let currentPage = 1;
 let totalPages = 0;
+let currentViewName = ''; // Variable para almacenar el viewName actual
+
+// Variables para almacenar las referencias de las funciones de callback
+let prevPageHandler;
+let nextPageHandler;
 
 /**
  * Inicializa la paginación para una tabla específica.
@@ -8,6 +13,7 @@ let totalPages = 0;
  */
 async function initializePagination(tableId, viewName) {
   console.log(`Inicializando paginación para: ${tableId}, vista: ${viewName}`);
+  currentViewName = viewName; // Almacenar el viewName actual
 
   try {
     const totalRecords = await loadPageButtons(viewName);
@@ -31,12 +37,20 @@ function updateNavigationButtons(viewName) {
   const nextButton = document.querySelector(".pagination-button.next");
 
   if (prevButton && nextButton) {
-    toggleButtonState(prevButton, currentPage === 1, () =>
-      goToPrevPage(viewName)
-    );
-    toggleButtonState(nextButton, currentPage === totalPages, () =>
-      goToNextPage(viewName)
-    );
+    // Remover listeners existentes
+    if (prevPageHandler) {
+      prevButton.removeEventListener("click", prevPageHandler);
+    }
+    if (nextPageHandler) {
+      nextButton.removeEventListener("click", nextPageHandler);
+    }
+
+    // Crear y asignar nuevos listeners
+    prevPageHandler = () => goToPrevPage(viewName);
+    nextPageHandler = () => goToNextPage(viewName);
+
+    toggleButtonState(prevButton, currentPage === 1, prevPageHandler);
+    toggleButtonState(nextButton, currentPage === totalPages, nextPageHandler);
   }
 }
 
@@ -51,8 +65,9 @@ function toggleButtonState(button, isDisabled, callback) {
 
   button.classList.toggle("pagination-button-disabled", isDisabled);
 
-  button.removeEventListener("click", callback);
-  if (!isDisabled) button.addEventListener("click", callback);
+  if (!isDisabled && callback) {
+    button.addEventListener("click", callback);
+  }
 }
 
 /**
@@ -65,6 +80,8 @@ function goToPrevPage(viewName) {
     loadPage(viewName, currentPage);
     updatePagination(viewName);
   }
+  console.log(currentPage);
+
 }
 
 /**
@@ -77,6 +94,7 @@ function goToNextPage(viewName) {
     loadPage(viewName, currentPage);
     updatePagination(viewName);
   }
+  console.log(currentPage);
 }
 
 /**
@@ -150,7 +168,6 @@ async function loadPageButtons(viewName) {
  */
 function renderPaginationButtons(totalRecords) {
   const recordsPerPage = 10;
-
   let totalPages = Math.ceil(totalRecords / recordsPerPage);
 
   // Asegurar al menos un botón de página
@@ -176,6 +193,8 @@ function renderPaginationButtons(totalRecords) {
     if (i === currentPage) pageButton.classList.add("page-button-active");
     paginationContainer.appendChild(pageButton);
   }
+
+  updateNavigationButtons(currentViewName);
 }
 
 /**
@@ -265,7 +284,7 @@ document.addEventListener("click", (event) => {
   const button = event.target.closest(".page-button");
   if (button) {
     currentPage = parseInt(button.getAttribute("data-page"));
-    loadPage(viewName, currentPage);
-    updatePagination(viewName);
+    loadPage(currentViewName, currentPage);
+    updatePagination(currentViewName);
   }
 });

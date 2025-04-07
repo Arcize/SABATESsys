@@ -15,5 +15,7 @@
             "email": "oscarx798@gmail.com"
         }
     ],
-    "require": {}
+    "require": {
+        "phpoffice/phpspreadsheet": "^4.1"
+    }
 }

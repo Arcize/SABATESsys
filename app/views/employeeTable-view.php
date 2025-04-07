@@ -118,5 +118,7 @@ $departments = $departmentController->listDepartments();
     </div>
 </div>
 <script>
-    initializePagination("employeeTable", "employee");
+    document.addEventListener("DOMContentLoaded", function() {
+        initializePagination("employeeTable", "employee");
+    });
 </script>
