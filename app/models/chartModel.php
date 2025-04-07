@@ -1,6 +1,8 @@
 <?php
-include_once('app/models/DB.php');
-class chartModel
+namespace app\models;
+use app\config\DataBase;
+
+class ChartModel
 {
     private $db;
 
@@ -21,12 +23,12 @@ class chartModel
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
             $data = [];
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                 array_push($data, $row);
             }
             return $data;
-        } catch (PDOException $e) {
-            throw new Exception("Error al obtener los datos: " . $e->getMessage());
+        } catch (\PDOException $e) {
+            throw new \Exception("Error al obtener los datos: " . $e->getMessage());
         }
     }
 }

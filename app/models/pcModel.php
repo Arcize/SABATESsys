@@ -1,7 +1,9 @@
 <?php
-include_once("app\models\DB.php");
+namespace app\models;
+use app\config\DataBase;
 
-class pcModel
+
+class PcModel
 {
     private $fabricante;
     private $estado;
@@ -64,9 +66,9 @@ class pcModel
                 $stmt->bindParam(':persona_id', $this->persona_id);
                 $stmt->execute();
                 $id_equipo_informatico = $this->db->lastInsertId();
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 error_log("Error al insertar equipo informático: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
-                throw new Exception("Error al insertar equipo informático.");
+                throw new \Exception("Error al insertar equipo informático.");
             }
 
             // Insertar procesador
@@ -79,9 +81,9 @@ class pcModel
                 $stmt->bindParam(':nucleos', $this->nucleos);
                 $stmt->bindParam(':frecuencia', $this->frecuencia_procesador);
                 $stmt->execute();
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 error_log("Error al insertar procesador: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
-                throw new Exception("Error al insertar procesador.");
+                throw new \Exception("Error al insertar procesador.");
             }
 
             // Insertar motherboard
@@ -92,9 +94,9 @@ class pcModel
                 $stmt->bindParam(':modelo_motherboard', $this->modelo_motherboard);
                 $stmt->bindParam(':fabricante_motherboard', $this->fabricante_motherboard);
                 $stmt->execute();
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 error_log("Error al insertar motherboard: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
-                throw new Exception("Error al insertar motherboard.");
+                throw new \Exception("Error al insertar motherboard.");
             }
 
             // Insertar fuente de poder
@@ -105,9 +107,9 @@ class pcModel
                 $stmt->bindParam(':fabricante_fuente', $this->fabricante_fuente);
                 $stmt->bindParam(':wattage', $this->wattage_fuente);
                 $stmt->execute();
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 error_log("Error al insertar fuente de poder: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
-                throw new Exception("Error al insertar fuente de poder.");
+                throw new \Exception("Error al insertar fuente de poder.");
             }
 
             // Insertar almacenamiento
@@ -119,9 +121,9 @@ class pcModel
                 $stmt->bindParam(':tipo_almacenamiento', $this->tipo_almacenamiento);
                 $stmt->bindParam(':capacidad_almacenamiento', $this->capacidad_almacenamiento);
                 $stmt->execute();
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 error_log("Error al insertar almacenamiento: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
-                throw new Exception("Error al insertar almacenamiento.");
+                throw new \Exception("Error al insertar almacenamiento.");
             }
 
             // Insertar RAM
@@ -134,14 +136,14 @@ class pcModel
                 $stmt->bindParam(':capacidad_ram', $this->capacidad_ram);
                 $stmt->bindParam(':frecuencia_ram', $this->frecuencia_ram);
                 $stmt->execute();
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 error_log("Error al insertar RAM: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
-                throw new Exception("Error al insertar RAM.");
+                throw new \Exception("Error al insertar RAM.");
             }
 
             $this->db->commit();
             echo "Registro de equipo informático guardado con éxito.";
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->db->rollBack();
             error_log("Transacción fallida: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
             echo "Ocurrió un error. Por favor, revisa el archivo de registro.";
@@ -166,8 +168,8 @@ class pcModel
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id', $id);
             $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+            return $stmt->fetch(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
             return null;
         }
@@ -194,8 +196,8 @@ class pcModel
                     JOIN estado_equipo_informatico est ON ei.id_estado_equipo = est.id_estado_equipo_informatico
                     GROUP BY ei.id_equipo_informatico";
             $stmt = $this->db->query($sql);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
             return [];
         }
@@ -216,7 +218,7 @@ class pcModel
                 $stmt->bindParam(':persona_id', $this->persona_id);
                 $stmt->bindParam(':id', $id);
                 $stmt->execute();
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 error_log("Error al actualizar equipo informático: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
             }
             try {
@@ -230,7 +232,7 @@ class pcModel
                 $stmt->bindParam(':frecuencia', $this->frecuencia_procesador);
                 $stmt->bindParam(':id', $id);
                 $stmt->execute();
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 error_log("Error al actualizar procesador: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
             }
             try {
@@ -242,7 +244,7 @@ class pcModel
                 $stmt->bindParam(':fabricante_motherboard', $this->fabricante_motherboard);
                 $stmt->bindParam(':id', $id);
                 $stmt->execute();
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 error_log("Error al actualizar motherboard: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
             }
             try {
@@ -254,7 +256,7 @@ class pcModel
                 $stmt->bindParam(':wattage', $this->wattage_fuente);
                 $stmt->bindParam(':id', $id);
                 $stmt->execute();
-            } catch (PDOException $e) {
+            } catch (\PDOException $e) {
                 error_log("Error al actualizar fuente: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
             }
 
@@ -281,7 +283,7 @@ class pcModel
             $stmt->execute();
 
             $this->db->commit();
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             $this->db->rollBack();
             echo "Error: " . $e->getMessage();
             error_log("Error en la actualización: " . $e->getMessage());
@@ -300,7 +302,7 @@ class pcModel
             $stmt->execute();
 
             $this->db->commit();
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             error_log($e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
             $this->db->rollBack();
             echo "Error: " . $e->getMessage();
@@ -316,8 +318,8 @@ class pcModel
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':cedula', $cedula);
             $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        }catch (PDOException $e) {
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        }catch (\PDOException $e) {
             error_log("Error al obtener ID de PC: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
             return null; // O manejar el error de otra manera
         }

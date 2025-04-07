@@ -1,5 +1,8 @@
 <?php
-include_once("app/models/faultReportModel.php");
+
+namespace app\controllers;
+
+use app\models\FaultReportModel;
 
 class FaultReportController
 {

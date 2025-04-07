@@ -107,24 +107,24 @@ function updatePagination(viewName) {
  * @param {number} page - El número de página a cargar.
  */
 async function loadPage(viewName, page = 1) {
-    try {
-      const response = await fetch(
-        `index.php?view=${viewName}&action=${viewName}_fetch_page&page=${page}`
-      );
-      if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-  
-      const data = await response.json();
-      // Verificar si data es un array
-      if (Array.isArray(data)) {
-        renderTable(data);
-      } else {
-        console.log("No hay datos para mostrar.");
-        renderTable([]); // Pasar un array vacío a renderTable
-      }
-    } catch (error) {
-      console.error("Error en la carga de la página:", error);
+  try {
+    const response = await fetch(
+      `index.php?view=${viewName}&action=${viewName}_fetch_page&page=${page}`
+    );
+    if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+
+    const data = await response.json();
+    // Verificar si data es un array
+    if (Array.isArray(data)) {
+      renderTable(data);
+    } else {
+      console.log("No hay datos para mostrar.");
+      renderTable([]); // Pasar un array vacío a renderTable
     }
+  } catch (error) {
+    console.error("Error en la carga de la página:", error);
   }
+}
 
 /**
  * Carga el número total de registros desde el servidor.
@@ -149,115 +149,116 @@ async function loadPageButtons(viewName) {
  * @param {number} totalRecords - El número total de registros.
  */
 function renderPaginationButtons(totalRecords) {
-    const recordsPerPage = 10;
-    
-    let totalPages = Math.ceil(totalRecords / recordsPerPage);
-  
-    // Asegurar al menos un botón de página
-    console.log(totalRecords);
-    if (totalRecords.error) {
-      totalPages = 1;
-    }
-    const paginationContainer = document.querySelector(".pages");
-  
-    if (!paginationContainer) {
-      console.error(`Error: No se encontró el contenedor de paginación`);
-      return;
-    }
-  
-    paginationContainer.innerHTML = "";
-  
-    for (let i = 1; i <= totalPages; i++) {
-      const pageButton = document.createElement("button");
-      pageButton.classList.add("page-button", "btn");
-      pageButton.setAttribute("data-page", i);
-      pageButton.textContent = i;
-  
-      if (i === currentPage) pageButton.classList.add("page-button-active");
-      paginationContainer.appendChild(pageButton);
-    }
+  const recordsPerPage = 10;
+
+  let totalPages = Math.ceil(totalRecords / recordsPerPage);
+
+  // Asegurar al menos un botón de página
+  console.log(totalRecords);
+  if (totalRecords.error) {
+    totalPages = 1;
   }
+  const paginationContainer = document.querySelector(".pages");
+
+  if (!paginationContainer) {
+    console.error(`Error: No se encontró el contenedor de paginación`);
+    return;
+  }
+
+  paginationContainer.innerHTML = "";
+
+  for (let i = 1; i <= totalPages; i++) {
+    const pageButton = document.createElement("button");
+    pageButton.classList.add("page-button", "btn");
+    pageButton.setAttribute("data-page", i);
+    pageButton.textContent = i;
+
+    if (i === currentPage) pageButton.classList.add("page-button-active");
+    paginationContainer.appendChild(pageButton);
+  }
+}
 
 /**
  * Renderiza los datos de la tabla.
  * @param {Array} data - Los datos a renderizar.
  */
 function renderTable(data) {
-    const tableBody = document.querySelector("#table-body");
-    if (!tableBody) {
-      console.error(`Error: No se encontró el cuerpo de la tabla`);
-      return;
-    }
-  
-    tableBody.innerHTML = "";
-  
-    const recordsPerPage = 10;
-    const camposOcultar = [
-      "id_persona",
-      "id_departamento",
-      "id_sexo",
-      "id_usuario",
-      "correo",
-      "fecha_nac",
-    ];
-  
-    if (data && data.length > 0) { // Verifica si data tiene elementos
-      data.forEach((item, index) => {
-        const row = document.createElement("tr");
-        row.classList.add("table-row");
-        const startIndex = (currentPage - 1) * recordsPerPage;
-  
-        const indexCell = document.createElement("td");
-        indexCell.textContent = startIndex + index + 1;
-        row.appendChild(indexCell);
-  
-        for (const key in item) {
-          if (item.hasOwnProperty(key) && !camposOcultar.includes(key)) {
-            const cell = document.createElement("td");
-            cell.textContent = item[key];
-            row.appendChild(cell);
-          }
+  const tableBody = document.querySelector("#table-body");
+  if (!tableBody) {
+    console.error(`Error: No se encontró el cuerpo de la tabla`);
+    return;
+  }
+
+  tableBody.innerHTML = "";
+
+  const recordsPerPage = 10;
+  const camposOcultar = [
+    "id_persona",
+    "id_departamento",
+    "id_sexo",
+    "id_usuario",
+    "correo",
+    "fecha_nac",
+  ];
+
+  if (data && data.length > 0) {
+    // Verifica si data tiene elementos
+    data.forEach((item, index) => {
+      const row = document.createElement("tr");
+      row.classList.add("table-row");
+      const startIndex = (currentPage - 1) * recordsPerPage;
+
+      const indexCell = document.createElement("td");
+      indexCell.textContent = startIndex + index + 1;
+      row.appendChild(indexCell);
+
+      for (const key in item) {
+        if (item.hasOwnProperty(key) && !camposOcultar.includes(key)) {
+          const cell = document.createElement("td");
+          cell.textContent = item[key];
+          row.appendChild(cell);
         }
-  
-        const actionsCell = document.createElement("td");
-        const firstItem = Object.values(item)[0];
-        actionsCell.classList.add("relative-container");
-        actionsCell.innerHTML = `
+      }
+
+      const actionsCell = document.createElement("td");
+      const firstItem = Object.values(item)[0];
+      actionsCell.classList.add("relative-container");
+      actionsCell.innerHTML = `
           <div class="button-container">
             <button class="crud-button edit-button open-modal" data-fetch="true" data-id="${firstItem}">
-              <img src="app/views/img/edit.svg" alt="Editar">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
             </button>
             <button class="crud-button details-button">
-              <img src="app/views/img/visibility.svg" alt="Ver detalles">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#f6f6f6"><path d="M480-320q75 0 127.5-52.5T660-500q0-75-52.5-127.5T480-680q-75 0-127.5 52.5T300-500q0 75 52.5 127.5T480-320Zm0-72q-45 0-76.5-31.5T372-500q0-45 31.5-76.5T480-608q45 0 76.5 31.5T588-500q0 45-31.5 76.5T480-392Zm0 192q-134 0-244.5-72T61-462q-5-9-7.5-18.5T51-500q0-10 2.5-19.5T61-538q64-118 174.5-190T480-800q134 0 244.5 72T899-538q5 9 7.5 18.5T909-500q0 10-2.5 19.5T899-462q-64 118-174.5 190T480-200Zm0-300Zm0 220q113 0 207.5-59.5T832-500q-50-101-144.5-160.5T480-720q-113 0-207.5 59.5T128-500q50 101 144.5 160.5T480-280Z"/></svg>
             </button>
             <button class="crud-button delete-button" onclick="confirmDelete(${firstItem})">
-              <img src="app/views/img/delete.svg" alt="Eliminar">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
             </button>
           </div>
         `;
-        row.appendChild(actionsCell);
-  
-        tableBody.appendChild(row);
-      });
-    }
-  
-    const emptyRows = recordsPerPage - (data ? data.length : 0); // Maneja el caso de data null o undefined
-    let dynamicCellCount = 0;
-    if (data && data.length > 0) {
-      dynamicCellCount = Object.keys(data[0]).filter(
-        (key) => !camposOcultar.includes(key)
-      ).length;
-    }
-  
-    for (let i = 0; i < emptyRows; i++) {
-      const emptyRow = document.createElement("tr");
-      emptyRow.classList.add("empty-table-row");
-      emptyRow.innerHTML = `<td class="empty-row-cell"></td>`.repeat(
-        dynamicCellCount + 2
-      ); // +2 para index y buttons
-      tableBody.appendChild(emptyRow);
-    }
+      row.appendChild(actionsCell);
+
+      tableBody.appendChild(row);
+    });
   }
+
+  const emptyRows = recordsPerPage - (data ? data.length : 0); // Maneja el caso de data null o undefined
+  let dynamicCellCount = 0;
+  if (data && data.length > 0) {
+    dynamicCellCount = Object.keys(data[0]).filter(
+      (key) => !camposOcultar.includes(key)
+    ).length;
+  }
+
+  for (let i = 0; i < emptyRows; i++) {
+    const emptyRow = document.createElement("tr");
+    emptyRow.classList.add("empty-table-row");
+    emptyRow.innerHTML = `<td class="empty-row-cell"></td>`.repeat(
+      dynamicCellCount + 2
+    ); // +2 para index y buttons
+    tableBody.appendChild(emptyRow);
+  }
+}
 
 // Event listener para los botones de página.
 document.addEventListener("click", (event) => {

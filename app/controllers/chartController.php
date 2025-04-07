@@ -1,13 +1,14 @@
 <?php
-include_once('app/models/chartModel.php');
+namespace app\controllers;
 
+use app\models\ChartModel;
 class ChartController
 {
     private $chartModel;
 
     public function __construct()
     {
-        $this->chartModel = new chartModel();
+        $this->chartModel = new ChartModel();
     }
 
 
@@ -17,7 +18,7 @@ class ChartController
             $data = $this->chartModel->getData();
             header('Content-Type: application/json');
             echo json_encode($data);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             http_response_code(500);
             echo json_encode(['error' => $e->getMessage()]);
         }

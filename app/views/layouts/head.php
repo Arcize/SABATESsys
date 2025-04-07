@@ -1,8 +1,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="app/views/img/sabates.ico">
+<link rel="icon" href="./ico/sabates.ico">
 <title>SABATES</title>
-<!-- CSS -->
 <?php
 $cssFiles = [
     "reset.css",
@@ -21,15 +20,15 @@ $cssFiles = [
     "switch.css",
     "modal.css",
     "multi-step-form.css",
+    "fileUpload.css",
     "sweetalert2.min.css"
 ];
 
 foreach ($cssFiles as $cssFile) {
-    echo "<link rel='stylesheet' href='app/views/css/$cssFile'>\n";
+    echo "<link rel='stylesheet' href='./css/$cssFile'>\n";
 }
 ?>
 
-<!-- JS -->
 <?php
 $jsFiles = [
     "sweetalert2.all.min.js",
@@ -40,6 +39,6 @@ $jsFiles = [
 ];
 
 foreach ($jsFiles as $jsFile) {
-    echo "<script src='app/views/js/$jsFile'></script>\n";
+    echo "<script src='./js/$jsFile'></script>\n";
 }
 ?>

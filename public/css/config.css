@@ -59,7 +59,3 @@
   background-color: var(--color-primario-hover);
   transform: scale(1.02); /* Aumenta el tamaño en un 5% */
 }
-.header {
-  height: 2rem;
-  margin-bottom: 1rem;
-}

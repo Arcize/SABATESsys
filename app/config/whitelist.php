@@ -12,6 +12,7 @@ return [
     "roleTable",
     "roleForm",
     "config",
+    "bulkDataLoad",
     "faultReportTable"
 ];
 ?>

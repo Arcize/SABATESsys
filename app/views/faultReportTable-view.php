@@ -4,9 +4,11 @@
         <div class="table-actions">
             <div class="table-filters">
                 <div class="search-filter">
-                    <div class="filter-dropdown">
+                <div class="filter-dropdown">
                         <button class="dropdown-btn btn filter-button">
-                            <img src="app/views/img/filter.svg" alt="Filter">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#212121">
+                                <path d="M440-240q-17 0-28.5-11.5T400-280q0-17 11.5-28.5T440-320h80q17 0 28.5 11.5T560-280q0 17-11.5 28.5T520-240h-80ZM280-440q-17 0-28.5-11.5T240-480q0-17 11.5-28.5T280-520h400q17 0 28.5 11.5T720-480q0 17-11.5 28.5T680-440H280ZM160-640q-17 0-28.5-11.5T120-680q0-17 11.5-28.5T160-720h640q17 0 28.5 11.5T840-680q0 17-11.5 28.5T800-640H160Z" />
+                            </svg>
                         </button>
                         <div class="dropdown-content filter-dropdown-menu">
                             <a href="#" class="dropdown-item">Opción 1</a>
@@ -16,7 +18,11 @@
                     </div>
                 </div>
                 <input type="text" class="input search-input" placeholder="Buscar...">
-                <button class="search-button btn"><img src="app/views/img/search.svg" alt="Search"></button>
+                <button class="search-button btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#f6f6f6">
+                        <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
+                    </svg>
+                </button>
             </div>
             <button class="table-button open-modal" data-modal="faultReportModal" data-fetch="false">Crear Reporte</button>
         </div>

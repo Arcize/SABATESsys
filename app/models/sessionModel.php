@@ -1,12 +1,14 @@
 <?php
-require_once("app/models/userModel.php");
+namespace app\models;
+use app\models\UserModel;
+
 class SessionModel
 {
     private $userModel;
 
     public function __construct()
     {
-        $this->userModel = new userModel();
+        $this->userModel = new UserModel();
     }
 
     public function getUser($username)

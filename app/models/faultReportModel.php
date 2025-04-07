@@ -1,5 +1,7 @@
 <?php
-include_once("app/models/DB.php");
+namespace app\models;
+use app\config\DataBase;
+
 
 class FaultReportModel
 {
@@ -32,7 +34,7 @@ class FaultReportModel
             $stmt->execute();
 
             return true;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
             return false;
         }
@@ -47,8 +49,8 @@ class FaultReportModel
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id', $id);
             $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+            return $stmt->fetch(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
             return null;
         }
@@ -65,11 +67,11 @@ class FaultReportModel
                     ORDER BY id_reporte_fallas
                     LIMIT :recordsPerPage OFFSET :offset";
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':recordsPerPage', $recordsPerPage, PDO::PARAM_INT);
-            $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+            $stmt->bindParam(':recordsPerPage', $recordsPerPage, \PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
             return [];
         }
@@ -81,8 +83,8 @@ class FaultReportModel
             $sql = "SELECT COUNT(*) as total FROM reporte_fallas";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
-        } catch (PDOException $e) {
+            return $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
             return 0;
         }
@@ -101,7 +103,7 @@ class FaultReportModel
 
             $stmt->execute();
             return true;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
             return false;
         }
@@ -115,7 +117,7 @@ class FaultReportModel
             $stmt->bindParam(':id', $id);
             $stmt->execute();
             return true;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
             return false;
         }

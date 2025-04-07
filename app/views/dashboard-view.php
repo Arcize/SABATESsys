@@ -11,4 +11,4 @@
     <div class="data-panel"></div>
     <div class="data-panel"></div>
 </div>
-<script src="./app/views/js/chartScript.js"></script>
+<script src="./js/chartScript.js"></script>

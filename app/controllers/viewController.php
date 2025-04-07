@@ -1,6 +1,10 @@
 <?php
-include_once("app/models/viewModel.php");
-class viewController extends viewModel
+
+namespace app\controllers;
+
+use app\models\ViewModel;
+
+class ViewController extends ViewModel
 {
     public function getViewController($view)
     {

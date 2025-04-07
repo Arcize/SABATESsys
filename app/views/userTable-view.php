@@ -1,7 +1,7 @@
 <?php
-require_once('app/models/userModel.php');
+use app\models\UserModel;
 
-$userModel = new userModel();
+$userModel = new UserModel();
 $user = $userModel->readAll();
 ?>
 

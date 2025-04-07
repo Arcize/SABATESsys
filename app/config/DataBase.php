@@ -1,4 +1,5 @@
 <?php
+namespace app\config;
 require_once("config.php");
 
 /**
@@ -21,10 +22,10 @@ class DataBase {
         if (!isset(self::$instance)) {
             try {
                 $dsn = DB_MANAGER . ":host=" . DB_HOST . ";dbname=" . DB_NAME;
-                self::$instance = new PDO($dsn, DB_USER, DB_PASS);
-                self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            } catch (PDOException $e) {
-                throw new Exception('Error al conectarse al servidor de BD', 0);
+                self::$instance = new \PDO($dsn, DB_USER, DB_PASS);
+                self::$instance->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+            } catch (\PDOException $e) {
+                throw new \Exception('Error al conectarse al servidor de BD', 0);
             }
         }
         return self::$instance;

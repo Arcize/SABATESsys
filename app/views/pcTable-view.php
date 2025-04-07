@@ -1,7 +1,6 @@
 <?php
-require_once('app/models/pcModel.php');
-
-$pcModel = new pcModel();
+use app\models\PcModel;
+$pcModel = new PcModel();
 $pcs = $pcModel->readAll();
 ?>
 

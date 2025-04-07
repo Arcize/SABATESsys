@@ -1,6 +1,9 @@
 <?php
-require_once("app/models/DB.php");
-class userModel
+namespace app\models;
+use app\config\DataBase;
+
+
+class UserModel
 {
     private $username;
     private $password;
@@ -27,7 +30,7 @@ class userModel
     {
         $sql = "SELECT 1 FROM persona WHERE cedula = :cedula";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':cedula', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':cedula', $id, \PDO::PARAM_INT);
         $stmt->execute();
         // Devolver 1 si la identificación existe, de lo contrario 0
         return $stmt->rowCount() > 0 ? 1 : 0;
@@ -36,7 +39,7 @@ class userModel
     {
         $sql = "SELECT 1 FROM persona WHERE cedula = :cedula AND id_departamento = 1";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':cedula', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':cedula', $id, \PDO::PARAM_INT);
         $stmt->execute();
 
         // Verificar si la consulta devuelve filas
@@ -56,8 +59,8 @@ class userModel
         // Actualizar el registro en la tabla persona para incluir el id_usuario
         $sql_update = "UPDATE persona SET id_usuario = :id_usuario WHERE cedula = :cedula";
         $stmt_update = $this->db->prepare($sql_update);
-        $stmt_update->bindParam(':id_usuario', $this->id_usuario, PDO::PARAM_INT);
-        $stmt_update->bindParam(':cedula', $id, PDO::PARAM_STR);
+        $stmt_update->bindParam(':id_usuario', $this->id_usuario, \PDO::PARAM_INT);
+        $stmt_update->bindParam(':cedula', $id, \PDO::PARAM_STR);
         $stmt_update->execute();
     }
     public function register()
@@ -74,7 +77,7 @@ class userModel
             $resultQuery->closeCursor();
             $_SESSION['register_success'] = "Registro exitoso. Por favor, inicia sesión.";
             header("Location: index.php?view=login");
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             echo "Ha ocurrido un error: " . $e->getMessage(); // Mostrar el mensaje de error
         }
     }
@@ -87,8 +90,8 @@ class userModel
                     JOIN rol r on r.id_rol = u.id_rol";
                     
             $stmt = $this->db->query($sql);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
             return [];
         }
@@ -99,9 +102,9 @@ class userModel
         try {
             $sql = "SELECT * FROM usuario WHERE username = :username";
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':username', $username, PDO::PARAM_STR);
+            $stmt->bindParam(':username', $username, \PDO::PARAM_STR);
             $stmt->execute();
-            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
             if (!$user) {
                 error_log("Usuario no encontrado: " . $username);
@@ -110,7 +113,7 @@ class userModel
             }
 
             return $user;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             error_log("Ha ocurrido un error al obtener el usuario: " . $e->getMessage());
             echo "Ha ocurrido un error: " . $e->getMessage();
             return false;

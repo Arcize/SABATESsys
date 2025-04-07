@@ -1,13 +1,16 @@
 <?php
-include_once("app/models/pcModel.php");
 
-class pcController
+namespace app\controllers;
+
+use app\models\PcModel;
+
+class PcController
 {
     private $pcModel;
 
     public function __construct()
     {
-        $this->pcModel = new pcModel();
+        $this->pcModel = new PcModel();
     }
 
     public function handleRequestPC()
@@ -131,7 +134,8 @@ class pcController
         $id = $_GET['id'];
         $pc = $this->pcModel->readOne($id);
     }
-    private function getPcId() {
+    private function getPcId()
+    {
         $cedulaPC = $_GET['cedulaPC'];
         $pc = $this->pcModel->getPcId($cedulaPC);
 
@@ -139,7 +143,6 @@ class pcController
         header('Content-Type: application/json');
         if ($pc) {
             echo json_encode($pc);
-            
         } else {
             echo json_encode(['error' => 'PC no encontrada']);
         }

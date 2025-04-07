@@ -47,9 +47,9 @@ inputs.forEach(function (input) {
   }
 
   // Validar espacios múltiples (general, si aplica)
-  input.addEventListener("input", function () {
-    input.value = input.value.replace(/\s{2,}/g, " ");
-  });
+  // input.addEventListener("input", function () {
+    // input.value = input.value.replace(/\s{2,}/g, " ");
+  // });
 
   // Evitar espacios como primer carácter
   input.addEventListener("keydown", function (event) {

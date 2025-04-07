@@ -31,15 +31,21 @@
  * - Carga la vista apropiada según el parámetro 'view'.
  * - Redirige al inicio de sesión si se intenta acceder a vistas restringidas sin haber iniciado sesión.
 */
-require_once('app/views/layouts/session_start.php');
-require_once('app/controllers/viewController.php');
-require_once('app/controllers/sessionController.php');
-require_once('app/controllers/employeeController.php');
-require_once('app/controllers/pcController.php');
-require_once('app/controllers/userController.php');
-require_once('app/controllers/faultReportController.php');
+if (session_status() == PHP_SESSION_NONE) {
+    session_name("SesionUsuario");
+    session_start();
+}
+require_once __DIR__ . '/../vendor/autoload.php';
 
-$sessionC = new SessionController();
+use app\controllers\ViewController;
+use app\controllers\SessionController;
+use app\controllers\EmployeeController;
+use app\controllers\PcController;
+use app\controllers\UserController;
+use app\controllers\FaultReportController;
+use app\controllers\ChartController;
+
+$SessionController = new SessionController();
 
 if (isset($_GET['view'])) {
     $url = explode("/", $_GET['view']);
@@ -48,7 +54,6 @@ if (isset($_GET['view'])) {
 }
 
 if (isset($_GET['view']) && $_GET['view'] === 'chartData') {
-    require_once('app/controllers/chartController.php');
     $chartController = new ChartController();
     $chartController->chartData();
     exit();
@@ -73,29 +78,29 @@ if ($url[0] == "faultReport") {
 <html lang="es">
 
 <head>
-    <?php require_once("app/views/layouts/head.php"); ?>
+    <?php require_once __DIR__ . '/../app/views/layouts/head.php'; ?>
 </head>
 
 <body>
     <?php
 
     if ($url[0] == "register_user" && $_SERVER['REQUEST_METHOD'] == 'POST') {
-        $userC = new userController();
-        $userC->registerUser();
+        $userController = new UserController();
+        $userController->registerUser();
         exit();
     } elseif ($url[0] == "login_user" && $_SERVER['REQUEST_METHOD'] == 'POST') {
         $username = $_POST['username'];
         $password = $_POST['password'];
-        $sessionC->login($username, $password);
+        $SessionController->login($username, $password);
         exit();
     } elseif ($url[0] == "logout") {
-        $sessionC->logout();
+        $SessionController->logout();
         exit();
     } else {
-        $viewC = new viewController();
-        $view = $viewC->getViewController($url[0]);
+        $viewController = new ViewController();
+        $view = $viewController->getViewController($url[0]);
 
-        if ($sessionC->isLoggedIn()) {
+        if ($SessionController->isLoggedIn()) {
             if ($url[0] == "login" || $url[0] == "register") {
                 // Evita redirecciones innecesarias si ya está logueado y se intenta acceder a login o register
                 header("Location: index.php?view=dashboard");
@@ -105,23 +110,28 @@ if ($url[0] == "faultReport") {
                 <div class="layout">
                     <?php
                     // Si ya está logueado y accede a cualquier otra vista permitida
-                    require_once("app/views/layouts/navbar.php");
+                    require_once __DIR__ . '/../app/views/layouts/navbar.php';
                     ?>
 
                     <div class="principal">
                         <div class="content">
-                            <?php require_once("app/views/layouts/user-bar.php");
+                            <?php require_once __DIR__ . '/../app/views/layouts/user-bar.php';
                             if (in_array($url[0], ['employeeTable', 'pcTable', 'faultReportTable'])) {
-                                echo '<script src="app/views/js/pagination.js"></script>';
-                                echo '<script src="app/views/js/filterSearch.js"></script>';
-                            } ?>
+                                echo '<script src="./js/pagination.js"></script>';
+                                echo '<script src="./js/filterSearch.js"></script>';
+                                echo '<script src="./js/modal.js"></script>';
+                            }
+
+                            ?>
 
                             <?php
                             require_once $view;
+                            if ($url[0] == 'bulkDataLoad') {
+                                echo '<script src="./js/fileUpload.js"></script>';
+                            }
                             ?>
-                            <script src="app/views/js/modal.js"></script>
 
-                            <script src="app/views/js/customAlerts.js"></script>
+                            <script src="./js/customAlerts.js"></script>
                         </div>
                     </div>
                 </div>
@@ -155,8 +165,8 @@ if ($url[0] == "faultReport") {
 
 
     ?>
+    <script src="./js/formValidation.js"></script>
 
-    <script src="app/views/js/formValidation.js"></script>
 </body>
 
 </html>

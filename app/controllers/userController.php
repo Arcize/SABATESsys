@@ -1,11 +1,15 @@
 <?php
-require_once("app/models/userModel.php");
-class userController
+
+namespace app\controllers;
+
+use app\models\UserModel;
+
+class UserController
 {
     private $userModel;
     public function __construct()
     {
-        $this->userModel = new userModel;
+        $this->userModel = new UserModel;
     }
     public function registerUser()
     {
@@ -21,13 +25,11 @@ class userController
                     $this->userModel->register();
                     $this->userModel->updatePersonIdUser($id);
                     exit();
-                }
-                else {
+                } else {
                     $_SESSION['register_failed'] = "No es un empleado";
                     header("Location: index.php?view=register");
                 }
-            }
-            else {
+            } else {
                 $_SESSION['register_failed'] = "Rellene todos los campos";
                 echo "Input no válido";
                 header("Location: index.php?view=register");

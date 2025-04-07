@@ -63,7 +63,7 @@
 .input-box input::placeholder {
   color: rgba(255, 255, 255, 0.6);
 }
-.input-box img {
+.input-box svg {
   position: absolute;
   right: 15px;
   top: 50%;

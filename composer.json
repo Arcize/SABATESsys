@@ -1,0 +1,19 @@
+{
+    "name": "arcize/sabate-ssys",
+    "description": "Un sistema de gestión para SABATES",
+    "autoload": {
+        "psr-4": {
+            "app\\": "app/"
+        },
+        "files": [
+             "app/config/config.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Arcize",
+            "email": "oscarx798@gmail.com"
+        }
+    ],
+    "require": {}
+}
