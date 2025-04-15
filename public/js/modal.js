@@ -21,7 +21,9 @@ document.addEventListener("click", (event) => {
   const isFetchRequired = button.getAttribute("data-fetch") === "true"; // Verificar si necesita fetch
   if (isFetchRequired && id) {
     // Realizar la solicitud Fetch
-    fetch(`index.php?view=${formType}&action=${formType}_fetch_one&${idType}=${id}`)
+    fetch(
+      `index.php?view=${formType}&action=${formType}_fetch_one&${idType}=${id}`
+    )
       .then((response) => {
         if (!response.ok) {
           throw new Error("Error en la respuesta del servidor");
@@ -39,7 +41,10 @@ document.addEventListener("click", (event) => {
         // Cambiar título del modal para edición
         const modalHeader = document.querySelector(".modal-header h3");
         saveData(); // Guardar datos originales
-        modalHeader.textContent = OriginalHeader.replace(/Registrar|Crear/gi, "Editar"); // Cambiar el título a "Editar"
+        modalHeader.textContent = OriginalHeader.replace(
+          /Registrar|Crear/gi,
+          "Editar"
+        ); // Cambiar el título a "Editar"
         // Cambiar acción del formulario a actualizar
         form.action = `index.php?view=${formType}&action=${formType}_fetch_update`;
 
@@ -60,7 +65,7 @@ if (!submitListenerAdded) {
     event.preventDefault(); // Prevenir el envío del formulario por defecto
     const formData = new FormData(form); // Crear un objeto FormData con los datos del formulario
     try {
-      const sentBtn = form.querySelector(".sentBtn");
+      const sentBtn = document.querySelector(".sentBtn");
       sentBtn.disabled = true;
 
       const response = await fetch(form.action, {
@@ -75,7 +80,9 @@ if (!submitListenerAdded) {
           closeModal();
           // Actualizar la tabla después de cerrar el modal
           const currentPage = parseInt(
-            document.querySelector(".page-button-active").getAttribute("data-page")
+            document
+              .querySelector(".page-button-active")
+              .getAttribute("data-page")
           ); // Obtener la página activa
           const viewName = form.getAttribute("formType"); // Obtener el nombre de la vista
           await loadPage(viewName, currentPage); // Llama a la función loadPage para recargar los datos de la página actual
@@ -146,6 +153,19 @@ function closeModal() {
     }
     if (sentBtn) {
       sentBtn.disabled = false; // Habilitar el botón de envío
+    }
+    // **Verificación segura de la existencia del elemento único del formulario multipasos**
+    const slidePageElement = document.querySelector(".slidePage"); // Elemento único del multipasos
+    if (slidePageElement) {
+      // El elemento existe, por lo tanto, asumimos que el formulario multipasos estaba activo
+      if (typeof resetMultiStepForm === "function") {
+        resetMultiStepForm();
+      } else {
+        console.warn("La función resetMultiStepForm no está definida.");
+      }
+    } else {
+      // El elemento no existe, por lo tanto, no hacemos nada relacionado con el reseteo del multipasos
+      console.log("Formulario multipasos no detectado, no se realiza reseteo.");
     }
   }, 300); // Coincide con la duración de la animación (0.3s)
 }

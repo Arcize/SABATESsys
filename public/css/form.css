@@ -108,7 +108,7 @@ label {
 .btnArea {
   display: flex;
   justify-content: space-between;
-  width: 100%;
+  width: var(--form-size);
 }
 
 .button {

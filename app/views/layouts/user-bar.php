@@ -41,9 +41,13 @@
                 <a href="#">
                     <span>Perfil</span>
                 </a>
+            <?php if($viewData['puede_ver_configuracion']): ?>
+
                 <a href="index.php?view=config">
                     <span>Configuración</span>
                 </a>
+            <?php endif ?>
+
                 <a href="index.php?view=logout">
                     <span>Cerrar sesión</span>
                     <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#212121">

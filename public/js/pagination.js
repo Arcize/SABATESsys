@@ -213,6 +213,7 @@ function renderTable(data) {
   const recordsPerPage = 10;
   const camposOcultar = [
     "id_persona",
+    "id_equipo_informatico",
     "id_departamento",
     "id_sexo",
     "id_usuario",

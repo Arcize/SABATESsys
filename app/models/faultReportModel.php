@@ -60,7 +60,7 @@ class FaultReportModel
     {
         $offset = ($page - 1) * $recordsPerPage;
         try {
-            $sql = "SELECT fr.*, u.username, erf.estado_reporte_fallas
+            $sql = "SELECT fr.*, fr.id_equipo_informatico as id_equipo, u.username, erf.estado_reporte_fallas
                     FROM reporte_fallas fr
                     JOIN usuario u on fr.id_usuario = u.id_usuario
                     JOIN estado_reporte_fallas erf on fr.id_estado_reporte_fallas = erf.id_estado_reporte_fallas

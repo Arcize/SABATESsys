@@ -78,6 +78,7 @@ function fetchCreateSuccess() {
     },
   });
 }
+
 function fetchEditSuccess() {
   Swal.fire({
     title: "¡Éxito!",

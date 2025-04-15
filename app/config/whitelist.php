@@ -13,6 +13,7 @@ return [
     "roleForm",
     "config",
     "bulkDataLoad",
+    "inventory",
     "faultReportTable"
 ];
 ?>

@@ -1,5 +1,7 @@
 <?php
+
 namespace app\models;
+
 use app\config\DataBase;
 
 
@@ -7,7 +9,7 @@ class UserModel
 {
     private $username;
     private $password;
-    private $typeUser;
+    private $typeUser = 2;
     private $db;
     private $id_usuario;
 
@@ -81,14 +83,15 @@ class UserModel
             echo "Ha ocurrido un error: " . $e->getMessage(); // Mostrar el mensaje de error
         }
     }
-    public function readAll() {
+    public function readAll()
+    {
         try {
             // Consulta SQL con JOIN para obtener los datos de persona, departamento y sexo
             $sql = "SELECT p.cedula, u.username, p.id_usuario, r.rol
                     FROM persona p
                     JOIN usuario u ON p.id_usuario = u.id_usuario
                     JOIN rol r on r.id_rol = u.id_rol";
-                    
+
             $stmt = $this->db->query($sql);
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
@@ -118,5 +121,29 @@ class UserModel
             echo "Ha ocurrido un error: " . $e->getMessage();
             return false;
         }
+    }
+    /**
+     * Verifica si el usuario tiene un permiso específico.
+     *
+     * @param int    $userId         El ID del usuario a verificar.
+     * @param string $permissionName El nombre del permiso a buscar.
+     * @return bool                  True si el usuario tiene el permiso, false de lo contrario.
+     */
+    public function hasPermission(int $userId, string $permissionName): bool
+    {
+        $sql="SELECT COUNT(p.id_permisos)
+                                   FROM usuario u
+                                   JOIN rol r ON u.id_rol = r.id_rol
+                                   JOIN roles_permisos rp ON r.id_rol = rp.id_rol
+                                   JOIN permisos p ON rp.id_permiso = p.id_permisos
+                                   WHERE u.id_usuario = :user_id AND p.nombre_permiso = :permission_name";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':user_id', $userId);
+        $stmt->bindParam(':permission_name', $permissionName);
+        $stmt->execute();
+
+        // Si la consulta devuelve un conteo mayor que 0, significa que el usuario (a través de su rol)
+        // tiene el permiso solicitado.
+        return $stmt->fetchColumn() > 0;
     }
 }

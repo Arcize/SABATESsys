@@ -1,6 +1,6 @@
 <div class="view-box">
     <div class="error404">
-        <img src="app\views\img\404.png" alt="">
+        <img src="public\img\404.png" alt="">
         <div class="header">
             <h2 class="h2">
                 Página No Encontrada

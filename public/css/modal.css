@@ -32,6 +32,8 @@
   opacity: 0; /* Inicialmente invisible */
   transition: all 0.3s ease;
   transform: scale(0.9) translateY(100px); /* Estado inicial */
+  justify-content: center;
+  align-items: center;
 }
 .modal-active {
   display: flex;

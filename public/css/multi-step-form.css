@@ -25,9 +25,9 @@ legend .h4{
 
 .progressBar {
   display: flex;
-  margin: 20px 0 0;
   width: calc(var(--form-size) - (var(--form-size) / 9));
   justify-content: space-around;
+  margin-bottom: 1rem;
 }
 
 .bullet {

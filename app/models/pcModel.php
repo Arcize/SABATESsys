@@ -1,7 +1,8 @@
 <?php
-namespace app\models;
-use app\config\DataBase;
 
+namespace app\models;
+
+use app\config\DataBase;
 
 class PcModel
 {
@@ -58,18 +59,14 @@ class PcModel
             $this->db->beginTransaction();
 
             // Insertar equipo informático
-            try {
-                $sql = "INSERT INTO equipo_informatico (fabricante_equipo_informatico, id_estado_equipo, id_persona) VALUES (:fabricante, :estado, :persona_id)";
-                $stmt = $this->db->prepare($sql);
-                $stmt->bindParam(':fabricante', $this->fabricante);
-                $stmt->bindParam(':estado', $this->estado);
-                $stmt->bindParam(':persona_id', $this->persona_id);
-                $stmt->execute();
-                $id_equipo_informatico = $this->db->lastInsertId();
-            } catch (\PDOException $e) {
-                error_log("Error al insertar equipo informático: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
-                throw new \Exception("Error al insertar equipo informático.");
-            }
+            $sql = "INSERT INTO equipo_informatico (fabricante_equipo_informatico, id_estado_equipo, id_persona) 
+                    VALUES (:fabricante, :estado, :persona_id)";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':fabricante', $this->fabricante);
+            $stmt->bindParam(':estado', $this->estado);
+            $stmt->bindParam(':persona_id', $this->persona_id);
+            $stmt->execute();
+            $id_equipo_informatico = $this->db->lastInsertId();
 
             // Insertar procesador
             try {
@@ -142,11 +139,11 @@ class PcModel
             }
 
             $this->db->commit();
-            echo "Registro de equipo informático guardado con éxito.";
+            return true;
         } catch (\Exception $e) {
             $this->db->rollBack();
-            error_log("Transacción fallida: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
-            echo "Ocurrió un error. Por favor, revisa el archivo de registro.";
+            error_log("Error al crear PC: " . $e->getMessage());
+            return false;
         }
     }
 
@@ -170,22 +167,23 @@ class PcModel
             $stmt->execute();
             return $stmt->fetch(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            error_log("Error al leer PC: " . $e->getMessage());
             return null;
         }
     }
 
-    public function readAll()
+    public function readPage($page, $recordsPerPage)
     {
+        $offset = ($page - 1) * $recordsPerPage;
         try {
             $sql = "SELECT ei.*, 
                            p.fabricante_procesador, p.nombre_procesador, p.nucleos, p.frecuencia AS frecuencia_procesador, 
-                           m.modelo_motherboard, m.fabricante_motherboard,
-                           f.fabricante_fuente_poder, f.wattage AS wattage, 
-                           SUM(r.capacidad_ram) AS capacidad_ram_total,
-                           per.nombre, per.apellido,
+                           CONCAT(m.fabricante_motherboard, ' ' ,m.modelo_motherboard) AS motherboard,
+                           CONCAT(f.fabricante_fuente_poder, ' ' ,f.wattage, 'W') AS fuente, 
+                           CONCAT(SUM(r.capacidad_ram), 'Gb') AS capacidad_ram_total,
+                           CONCAT(per.nombre, ' ', per.apellido) AS nombre_completo,
                            est.estado_equipo_informatico AS estado_equipo_informatico,
-                           SUM(a.capacidad_almacenamiento) AS almacenamiento_total
+                           CONCAT(SUM(a.capacidad_almacenamiento), 'Gb') AS almacenamiento_total
                     FROM equipo_informatico ei
                     JOIN procesador p ON ei.id_equipo_informatico = p.id_equipo_informatico_procesador
                     JOIN motherboard m ON ei.id_equipo_informatico = m.id_equipo_informatico_motherboard
@@ -194,33 +192,45 @@ class PcModel
                     JOIN almacenamiento a ON ei.id_equipo_informatico = a.id_equipo_informatico_almacenamiento
                     JOIN persona per ON ei.id_persona = per.id_persona
                     JOIN estado_equipo_informatico est ON ei.id_estado_equipo = est.id_estado_equipo_informatico
-                    GROUP BY ei.id_equipo_informatico";
-            $stmt = $this->db->query($sql);
+                    GROUP BY ei.id_equipo_informatico, p.fabricante_procesador, p.nombre_procesador, p.nucleos,
+                            p.frecuencia, motherboard, fuente, nombre_completo, estado_equipo_informatico
+                    ORDER BY ei.id_equipo_informatico
+                    LIMIT :recordsPerPage OFFSET :offset";
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':recordsPerPage', $recordsPerPage, \PDO::PARAM_INT);
+            $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
+            $stmt->execute();
+
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
-            echo "Error: " . $e->getMessage();
+            error_log("Error al leer todas las PCs: " . $e->getMessage());
             return [];
         }
     }
-
+    public function getTotalRecords()
+    {
+        $sql = "SELECT COUNT(*) as total FROM equipo_informatico";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        // Obtener el total de registros
+        return $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
+    }
     public function update($id)
     {
         try {
             $this->db->beginTransaction();
 
-            try {
-                // Actualizar equipo informático
-                $sql = "UPDATE equipo_informatico SET fabricante_equipo_informatico = :fabricante, id_estado_equipo = :estado, id_persona = :persona_id 
-            WHERE id_equipo_informatico = :id";
-                $stmt = $this->db->prepare($sql);
-                $stmt->bindParam(':fabricante', $this->fabricante);
-                $stmt->bindParam(':estado', $this->estado);
-                $stmt->bindParam(':persona_id', $this->persona_id);
-                $stmt->bindParam(':id', $id);
-                $stmt->execute();
-            } catch (\PDOException $e) {
-                error_log("Error al actualizar equipo informático: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
-            }
+            // Actualizar equipo informático
+            $sql = "UPDATE equipo_informatico SET fabricante_equipo_informatico = :fabricante, id_estado_equipo = :estado, id_persona = :persona_id 
+                    WHERE id_equipo_informatico = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':fabricante', $this->fabricante);
+            $stmt->bindParam(':estado', $this->estado);
+            $stmt->bindParam(':persona_id', $this->persona_id);
+            $stmt->bindParam(':id', $id);
+            $stmt->execute();
+
             try {
                 // Actualizar procesador
                 $sql = "UPDATE procesador SET fabricante_procesador = :fabricante_procesador, nombre_procesador = :nombre_procesador, nucleos = :nucleos, frecuencia = :frecuencia 
@@ -283,29 +293,25 @@ class PcModel
             $stmt->execute();
 
             $this->db->commit();
-        } catch (\PDOException $e) {
+            return true;
+        } catch (\Exception $e) {
             $this->db->rollBack();
-            echo "Error: " . $e->getMessage();
-            error_log("Error en la actualización: " . $e->getMessage());
+            error_log("Error al actualizar PC: " . $e->getMessage());
+            return false;
         }
     }
 
     public function delete($id)
     {
         try {
-            $this->db->beginTransaction();
-
-            // Eliminar equipo informático
             $sql = "DELETE FROM equipo_informatico WHERE id_equipo_informatico = :id";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id', $id);
             $stmt->execute();
-
-            $this->db->commit();
+            return true;
         } catch (\PDOException $e) {
-            error_log($e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
-            $this->db->rollBack();
-            echo "Error: " . $e->getMessage();
+            error_log("Error al eliminar PC: " . $e->getMessage());
+            return false;
         }
     }
     public function getPcId($cedula)
@@ -319,7 +325,7 @@ class PcModel
             $stmt->bindParam(':cedula', $cedula);
             $stmt->execute();
             $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-        }catch (\PDOException $e) {
+        } catch (\PDOException $e) {
             error_log("Error al obtener ID de PC: " . $e->getMessage(), 3, "C:/xampp/htdocs/SABATES/error_log.txt");
             return null; // O manejar el error de otra manera
         }

@@ -25,6 +25,7 @@ class SessionModel
     {
         $_SESSION['id_usuario'] = $user['id_usuario'];
         $_SESSION['username'] = $user['username'];
+        $_SESSION['role'] = $user['id_rol'];
     }
 
     public function destroySession()

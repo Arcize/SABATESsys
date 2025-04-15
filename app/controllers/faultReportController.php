@@ -117,7 +117,7 @@ class FaultReportController
         $customSort = [
             "id_reporte_fallas",
             "username",
-            "id_equipo_informatico",
+            "id_equipo",
             "fecha_hora_reporte_fallas",
             "contenido_reporte_fallas",
             "id_usuario",

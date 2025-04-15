@@ -21,7 +21,7 @@ class UserController
                 if ($this->userModel->isAnEmployee($id)) {
                     $hashedPassword = $this->userModel->passwordHash($password);
                     $this->userModel->setData($username, $hashedPassword);
-                    $this->userModel->isAnAdmin($id);
+                    // $this->userModel->isAnAdmin($id);
                     $this->userModel->register();
                     $this->userModel->updatePersonIdUser($id);
                     exit();
@@ -35,5 +35,10 @@ class UserController
                 header("Location: index.php?view=register");
             }
         }
+    }
+    public function hasPermission($permissionName){
+        
+        $userId = $_SESSION["id_usuario"];
+        return $this->userModel->hasPermission($userId, $permissionName);
     }
 }

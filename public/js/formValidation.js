@@ -41,10 +41,11 @@ inputs.forEach(function (input) {
   // Validar campos donde no puede haber nada después de un espacio (por ejemplo, clase "no-empty-after-space")
   if (input.classList.contains("no-empty-after-space")) {
     input.addEventListener("input", function () {
-      // Si hay un espacio seguido de nada, eliminar el espacio
-      input.value = input.value.replace(/ \s*$/, "");
+      // Reemplazar múltiples espacios consecutivos por un único espacio
+      input.value = input.value.replace(/\s{2,}/g, " ");
     });
   }
+  
 
   // Validar espacios múltiples (general, si aplica)
   // input.addEventListener("input", function () {

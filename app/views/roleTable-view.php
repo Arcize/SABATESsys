@@ -1,7 +1,7 @@
 <?php
-require_once('app/models/roleModel.php');
+use app\models\RoleModel;
 
-$roleModel = new roleModel();
+$roleModel = new RoleModel();
 $role = $roleModel->readAll();
 ?>
 <div class="view-box">
