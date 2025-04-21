@@ -10,7 +10,7 @@ class RoleModel
     {
         $this->db = DataBase::getInstance();
     }
-    public function readAll()
+    public function getRoles()
     {
         try {
             $sql = "SELECT * FROM rol";

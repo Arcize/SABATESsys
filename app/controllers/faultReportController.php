@@ -36,6 +36,9 @@ class FaultReportController
             case 'faultReport_fetch_total_records':
                 $this->fetchTotalRecords();
                 break;
+            case 'assign_technician':
+                $this->assignTechnician();
+                break;
             default:
                 break;
         }
@@ -46,8 +49,9 @@ class FaultReportController
         $id_usuario = $_SESSION['id_usuario'];
         $id_equipo_informatico = $_POST['id_equipo_informatico'];
         $contenido_reporte_fallas = $_POST['contenido_reporte_fallas'];
-
-        $this->faultReportsModel->setData($id_usuario, $id_equipo_informatico, $contenido_reporte_fallas);
+        $fecha_falla = $_POST['fecha_falla'];
+        
+        $this->faultReportsModel->setData($id_usuario, $id_equipo_informatico, $contenido_reporte_fallas, $fecha_falla);
         $result = $this->faultReportsModel->create();
 
         // Retornar respuesta como JSON
@@ -79,8 +83,10 @@ class FaultReportController
         $id_usuario = $_SESSION['id_usuario'];
         $id_equipo_informatico = $_POST['id_equipo_informatico'];
         $contenido_reporte_fallas = $_POST['contenido_reporte_fallas'];
+        $fecha_falla = $_POST['fecha_falla'];
 
-        $this->faultReportsModel->setData($id_usuario, $id_equipo_informatico, $contenido_reporte_fallas);
+
+        $this->faultReportsModel->setData($id_usuario, $id_equipo_informatico, $contenido_reporte_fallas, $fecha_falla);
         $result = $this->faultReportsModel->update($id);
 
         // Retornar respuesta como JSON
@@ -119,21 +125,33 @@ class FaultReportController
             "username",
             "id_equipo",
             "fecha_hora_reporte_fallas",
-            "contenido_reporte_fallas",
             "id_usuario",
             "estado_reporte_fallas",
+            "fecha_falla",
+            "tecnico_asignado",
         ];
         if ($reports) {
-            foreach ($reports as &$report) {
+            $data = []; // Creamos un nuevo array para los datos ordenados y modificados
+            foreach ($reports as $report) {
                 $newSort = [];
                 foreach ($customSort as $key) {
-                    if (isset($report[$key])) {
+                    if (array_key_exists($key, $report)) { // Incluye la clave incluso si el valor es null
                         $newSort[$key] = $report[$key];
                     }
                 }
-                $report = $newSort;
+            
+                // Usar array_key_exists para transformar tecnico_asignado incluso si es null
+                if (array_key_exists('tecnico_asignado', $newSort)) {
+                    $newSort['tecnico_asignado'] = [
+                        'value' => $newSort['tecnico_asignado'],
+                        'tecnico_asignado_renderAs' => 'button',
+                    ];
+                }
+                
+                $data[] = $newSort; // Agregamos el reporte modificado al nuevo array
             }
-            echo json_encode($reports);
+            
+            echo json_encode($data); // Enviamos el nuevo array
         } else {
             echo json_encode(['error' => 'No se encontraron reportes de fallas']);
         }
@@ -149,6 +167,28 @@ class FaultReportController
             echo json_encode($totalRecords);
         } else {
             echo json_encode(['error' => 'No se encontraron registros']);
+        }
+    }
+
+    private function assignTechnician()
+    {
+        $technicianId = $_SESSION['id_usuario']; // ID del técnico desde la sesión
+        $reportId = $_POST['report_id']; // ID del reporte desde la solicitud
+
+        if (!$technicianId || !$reportId) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Datos insuficientes para asignar técnico']);
+            return;
+        }
+
+        $result = $this->faultReportsModel->updateTechnician($reportId, $technicianId);
+
+        // Retornar respuesta como JSON
+        header('Content-Type: application/json');
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Técnico asignado correctamente']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Error al asignar técnico']);
         }
     }
 }

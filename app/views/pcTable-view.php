@@ -104,7 +104,7 @@ $pcController = new PcController();
                         <div class="pageInputs">
                             <div class="inputGroup">
                                 <label for="fabricante">Fabricante:</label>
-                                <input type="text" id="fabricante" name="fabricante_equipo_informatico" class="input capitalize-first only-letters no-spaces" required>
+                                <input type="text" id="fabricante" name="fabricante_equipo_informatico" class="input capitalize-first only-letters no-empty-after-space" required maxlength="35">
                             </div>
                             <div class="inputGroup">
                                 <label for="estado">Estado del equipo:</label>

@@ -34,10 +34,10 @@
                 <th scope="col">ID Reporte</th>
                 <th scope="col">Reportado Por</th>
                 <th scope="col">ID Equipo</th>
-                <th scope="col">Fecha / Hora</th>
-                <th scope="col">Descripción</th>
+                <th scope="col">Fecha del Reporte</th>
                 <th scope="col">Estado</th>
-                <!-- <th scope="col">ID Usuario</th> -->
+                <th scope="col">Fecha de la Falla</th>
+                <th scope="col">Reparacion Asignada a</th>
                 <th scope="col">Acciones</th>
             </tr>
         </thead>
@@ -71,6 +71,10 @@
                         <label for="idPC">ID del Equipo:</label>
                         <input class="input numbers" id="idPC" required type="text" name="id_equipo_informatico" onkeyup="crossFields();">
                     </div>
+                    <div class="inputGroup">
+                        <label for="idPC">¿Qué día ocurrió la falla?</label>
+                        <input class="input" id="fecha_falla" required type="date" name="fecha_falla">
+                    </div>
                 </div>
                 <div class="inputGroup textArea">
                     <label for="contentFaultReport">Descripción de la Falla:</label>
@@ -89,4 +93,18 @@
     document.addEventListener("DOMContentLoaded", function() {
         initializePagination("faultReportTable", "faultReport");
     });
+</script>
+<script>
+    const inputFecha = document.getElementById('fecha_falla');
+
+    // Obtener la fecha actual
+    const fechaActual = new Date();
+
+    // Calcular la fecha de un mes atrás
+    const mesAnterior = new Date();
+    mesAnterior.setMonth(fechaActual.getMonth() - 1);
+
+    // Establecer los límites de `min` y `max`
+    inputFecha.min = mesAnterior.toISOString().split('T')[0]; // Inicio: Hace un mes
+    inputFecha.max = fechaActual.toISOString().split('T')[0]; // Fin: Hoy
 </script>

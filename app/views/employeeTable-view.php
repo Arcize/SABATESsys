@@ -44,7 +44,6 @@ $departments = $departmentController->listDepartments();
                 <th scope="col">Cédula</th>
                 <th scope="col">Departamento</th>
                 <th scope="col">Sexo</th>
-                <!-- <th scope="col">ID Usuario</th> -->
                 <th scope="col">Acciones</th>
             </tr>
         </thead>
@@ -72,11 +71,11 @@ $departments = $departmentController->listDepartments();
                     <input type="hidden" id="id_persona" name="id_persona" class="inputKey">
                     <div class="inputGroup">
                         <label for="nombre">Nombre:</label>
-                        <input class="input capitalize-first only-letters no-spaces" id="nombre" required type="text" name="nombre" maxlength="30">
+                        <input class="input capitalize-first only-letters no-spaces" id="nombre" required type="text" name="nombre" maxlength="25">
                     </div>
                     <div class="inputGroup">
                         <label for="apellido">Apellido:</label>
-                        <input class="input capitalize-first only-letters no-spaces" id="apellido" required type="text" name="apellido" maxlength="30">
+                        <input class="input capitalize-first only-letters no-spaces" id="apellido" required type="text" name="apellido" maxlength="25">
                     </div>
                     <div class="inputGroup">
                         <label for="cedula">Cédula:</label>

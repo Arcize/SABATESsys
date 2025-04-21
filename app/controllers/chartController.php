@@ -2,6 +2,7 @@
 namespace app\controllers;
 
 use app\models\ChartModel;
+
 class ChartController
 {
     private $chartModel;
@@ -11,11 +12,10 @@ class ChartController
         $this->chartModel = new ChartModel();
     }
 
-
-    public function chartData()
+    public function chartsData()
     {
         try {
-            $data = $this->chartModel->getData();
+            $data = $this->chartModel->getChartsData();
             header('Content-Type: application/json');
             echo json_encode($data);
         } catch (\Exception $e) {

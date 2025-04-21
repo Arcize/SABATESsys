@@ -111,13 +111,18 @@
 .table-row:hover {
   background-color: var(--color-white-hover);
 }
-
 .table th {
   padding: 12px 6px;
 }
 
 .table-body td {
   padding: 12px 6px;
+}
+td select{
+  border: 0;
+  width: 60%;
+  height: 100%;
+  padding: 10px 0;
 }
 .table-row{
   border-bottom: solid 1px var(--color-white-hover);

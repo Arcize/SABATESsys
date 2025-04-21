@@ -12,6 +12,7 @@ class UserModel
     private $typeUser = 2;
     private $db;
     private $id_usuario;
+    
 
     public function __construct()
     {
@@ -27,7 +28,34 @@ class UserModel
         $this->username = $username;
         $this->password = $password;
     }
-
+    public function updateRole($id, $id_role){
+        try {
+            $sql = "UPDATE usuario SET id_rol = :rol WHERE id_usuario = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':rol', $id_role, \PDO::PARAM_INT);
+            $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+            $stmt->execute();
+            return true;
+        } catch (\PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+    public function readOne($id)
+    {
+        try {
+            $sql = "SELECT u.id_usuario, u.username, p.cedula, u.id_rol
+            FROM usuario u
+            JOIN persona p on u.id_usuario = p.id_usuario
+            WHERE u.id_usuario = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id', $id);
+            $stmt->execute();
+            return $stmt->fetch(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return null;
+        }
+    }
     public function isAnEmployee($id)
     {
         $sql = "SELECT 1 FROM persona WHERE cedula = :cedula";
@@ -54,6 +82,37 @@ class UserModel
         }
         // Devolver el tipo de usuario para facilitar las pruebas y validaciones
         return $this->typeUser;
+    }
+    public function readPage($page, $recordsPerPage)
+    {
+        $offset = ($page - 1) * $recordsPerPage;
+        $sql = "SELECT u.id_usuario, u.username, p.cedula, r.rol
+                    FROM usuario u
+                    JOIN persona p ON u.id_usuario = p.id_usuario
+                    JOIN rol r ON u.id_rol = r.id_rol
+                    ORDER BY u.id_usuario
+                    LIMIT :recordsPerPage OFFSET :offset";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':recordsPerPage', $recordsPerPage, \PDO::PARAM_INT);
+        $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+    
+    public function getAllRoles(){
+        $sql = "SELECT * FROM rol";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+    public function getTotalRecords()
+    {
+        $sql = "SELECT COUNT(*) as total FROM usuario";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        // Obtener el total de registros
+        return $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
     }
     public function updatePersonIdUser($id)
     {

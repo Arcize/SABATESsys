@@ -67,9 +67,9 @@ $viewName = $url[0]; // Obtén el nombre de la vista
 // Verifica el acceso a la vista usando la clase Security
 Security::checkViewAccess($viewName);
 
-if ($viewName === 'chartData') {
+if ($viewName === 'chartsData') {
     $chartController = new ChartController();
-    $chartController->chartData();
+    $chartController->chartsData();
     exit();
 }
 if ($viewName === 'bulkUpload') {
@@ -90,6 +90,11 @@ if ($viewName === "pc") {
 if ($viewName === "faultReport") {
     $faultReportController = new FaultReportController();
     $faultReportController->handleRequestFaultReport();
+    exit();
+}
+if ($viewName === "user") {
+    $userController = new UserController();
+    $userController->handleRequestUser();
     exit();
 }
 ?>
@@ -138,11 +143,14 @@ if ($viewName === "faultReport") {
 
                                 <?php
                                 require_once $view;
-                                if (in_array($viewName, ['employeeTable', 'pcTable', 'faultReportTable'])) {
+                                if (in_array($viewName, ['employeeTable', 'pcTable', 'faultReportTable', 'userTable'])) {
                                     echo '<script src="./js/pagination.js"></script>';
                                     echo '<script src="./js/filterSearch.js"></script>';
                                     echo '<script src="./js/modal.js"></script>';
                                     echo '<script src="./js/customAlerts.js"></script>';
+                                }
+                                if (in_array($viewName, ['faultReportTable', 'userTable'])) {
+                                    echo '<script src="./js/tableSpecialActions.js"></script>';
                                 }
                                 if ($viewName == 'bulkDataLoad') {
                                     echo '<script src="./js/fileUpload.js"></script>';

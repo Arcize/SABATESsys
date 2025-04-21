@@ -189,7 +189,7 @@ async function checkCedulaPC() {
 
   if (cedulaPC.value.length > 0) {
     try {
-      const response = await fetch(`index.php?view=pc&action=pc_get&cedulaPC=${cedulaPC.value}`);
+      const response = await fetch(`index.php?view=pc&action=pc_fetch_id&cedulaPC=${cedulaPC.value}`);
       const data = await response.json();
 
       if (data > 0) {
