@@ -1,13 +1,16 @@
 <?php
-include_once("app/models/employeeModel.php");
 
-class employeeController
+namespace app\controllers;
+
+use app\models\EmployeeModel;
+
+class EmployeeController
 {
     private $employeeModel;
 
     public function __construct()
     {
-        $this->employeeModel = new employeeModel();
+        $this->employeeModel = new EmployeeModel();
     }
 
     public function handleRequestEmployee()
@@ -148,7 +151,8 @@ class employeeController
         }
     }
 
-    private function getCedulaByPc() {
+    private function getCedulaByPc()
+    {
         $idPC = $_GET['idPC'];
         $pc = $this->employeeModel->getCedulaPc($idPC);
 
@@ -156,7 +160,6 @@ class employeeController
         header('Content-Type: application/json');
         if ($pc) {
             echo json_encode($pc);
-            
         } else {
             echo json_encode(['error' => 'PC no encontrada']);
         }

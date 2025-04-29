@@ -1,0 +1,113 @@
+/* Formularios Multipasos */
+:root{
+  --form-size: 450px;
+  --bullet-size: 32px;
+}
+.form-box {
+  width: var(--form-size);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+legend .h4{
+  margin-bottom: 0;
+}
+.form-layout >.multi-step-form {
+  display: flex;
+  width: 600%;
+}
+
+.form-layout {
+  width: var(--form-size);
+  height: fit-content;
+  overflow: hidden;
+}
+
+.progressBar {
+  display: flex;
+  width: calc(var(--form-size) - (var(--form-size) / 9));
+  justify-content: space-around;
+  margin-bottom: 1rem;
+}
+
+.bullet {
+  border: solid 3px var(--color-white-hover);
+  border-radius: 50%;
+  height: var(--bullet-size);
+  width: var(--bullet-size);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4px;
+  position: relative;
+  transition: var(--transition-standart);
+}
+
+.bulletActive {
+  border-color: var(--color-primario);
+}
+
+.completed {
+  background-color: var(--color-primario);
+}
+
+.bullet::before,
+.bullet::after {
+  content: "";
+  position: absolute;
+  background-color: var(--color-white-hover);
+  height: 3px;
+  width: 32px;
+  right: -36px;
+  border-radius: var(--border-radius);
+}
+
+.bullet.completed::after {
+  background-color: var(--color-primario);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: progressBar 0.2s ease forwards;
+}
+
+@keyframes progressBar {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.bullet:last-child::after,
+.bullet:last-child::before {
+  display: none;
+}
+
+.step-number {
+  font-size: 16px;
+  color: var(--color-primario);
+  font-weight: 600;
+  font-family: "poppins", sans-serif;
+  display: none;
+}
+
+.check {
+  display: none;
+}
+
+.page-form {
+  width: var(--form-size);
+  transition: margin-left 0.2s ease-in-out;
+}
+
+.display {
+  display: block;
+}
+
+.hide {
+  display: none;
+}
+
+.pageInputs {
+  min-height: 300px;
+}

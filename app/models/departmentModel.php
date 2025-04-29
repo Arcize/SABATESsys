@@ -1,7 +1,8 @@
 <?php
-include_once('app/models/DB.php');
+namespace app\models;
+use app\config\DataBase;
 
-class departmentModel
+class DepartmentModel
 {
     private $db;
 
@@ -16,10 +17,10 @@ class departmentModel
             $sql = "SELECT * FROM departamento;";
             $stmt = $this->db->prepare($sql);
             $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
             return $data;
-        } catch (PDOException $e) {
-            throw new Exception("Error al obtener los departamentos: " . $e->getMessage());
+        } catch (\PDOException $e) {
+            throw new \Exception("Error al obtener los departamentos: " . $e->getMessage());
         }
     }
 }

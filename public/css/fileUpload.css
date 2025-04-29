@@ -1,0 +1,93 @@
+:root{
+    --color-terciario: #6891ed;
+}
+.fileUpload{
+    max-width: 500px;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.uploadZone{
+    width: 100%;
+    height: 35vh;
+    border: 2px dashed var(--color-terciario) ;
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.uploadZone p{
+    font-family: "Poppins";
+    font-size: 1.5rem;
+    color: var(--color-terciario);
+}
+.uploadZone svg{
+    fill: var(--color-terciario);
+    width: 8rem;
+    height: 8rem;
+    aspect-ratio: 1/1;
+}
+.progress-area{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.row{
+    background-color: #dde5f2;
+    border-radius: var(--border-radius);
+    padding: 0.875rem 1rem;
+    display: flex;
+    gap: 1rem;
+    font-family: "poppins";
+}
+.row svg{
+    height: 2.25rem;
+    width: 2.25rem;
+    fill: var(--color-terciario);
+}
+.row .checkFile{
+    height: 2rem;
+    width: 2rem;
+}
+.row-info{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25rem;
+}
+.upload-info{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    color: var(--color-texto);
+}
+.details{
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.upload-size{
+    font-size: 0.75rem;
+}
+.progress-bar{
+    height: 0.375rem;
+    width: 100%;
+    background-color: var(--color-claro);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+}
+.progress-bar .progress{
+    height: 100%;
+    width: 70%;
+    background-color: var(--color-terciario);
+    border-radius: inherit;
+}

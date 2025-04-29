@@ -1,13 +1,16 @@
 <?php
-include_once('app/models/departmentModel.php');
 
-class departmentController
+namespace app\controllers;
+
+use app\models\DepartmentModel;
+
+class DepartmentController
 {
     private $model;
 
     public function __construct()
     {
-        $this->model = new departmentModel();
+        $this->model = new DepartmentModel();
     }
 
     public function listDepartments()
@@ -15,11 +18,9 @@ class departmentController
         try {
             $departments = $this->model->getDepartments();
             return $departments;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo "Error: " . $e->getMessage();
             return [];
         }
     }
 }
-
-?>

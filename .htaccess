@@ -1,8 +1,7 @@
 RewriteEngine On
-Options All -Indexes
 
-# Redirigir URLs amigables para la edición
-RewriteRule ^edit/([0-9]+)/?$ index.php?view=formEdit&action=edit&id=$1 [L,QSA]
+# Asegúrate de que no estás ya en la carpeta "public"
+RewriteCond %{REQUEST_URI} !^/SABATESsys/public/
 
-# Manejar otras vistas amigables
-RewriteRule ^([a-zA-Z0-9/ñÑ-]+)/?$ index.php?view=$1 [L,QSA]
+# Redirige todo a la carpeta "public"
+RewriteRule ^(.*)$ /SABATESsys/public/$1 [L]

@@ -1,20 +1,22 @@
 <?php
-include_once("app\models\DB.php");
+namespace app\models;
+use app\config\DataBase;
 
-class roleModel
+
+class RoleModel
 {
     private $db;
     public function __construct()
     {
         $this->db = DataBase::getInstance();
     }
-    public function readAll()
+    public function getRoles()
     {
         try {
             $sql = "SELECT * FROM rol";
             $stmt = $this->db->query($sql);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
     }

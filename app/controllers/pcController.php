@@ -1,13 +1,16 @@
 <?php
-include_once("app/models/pcModel.php");
 
-class pcController
+namespace app\controllers;
+
+use app\models\PcModel;
+
+class PcController
 {
     private $pcModel;
 
     public function __construct()
     {
-        $this->pcModel = new pcModel();
+        $this->pcModel = new PcModel();
     }
 
     public function handleRequestPC()
@@ -15,131 +18,178 @@ class pcController
         $action = isset($_GET['action']) ? $_GET['action'] : '';
 
         switch ($action) {
-            case 'pc_create':
-                if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                    $this->createPC();
-                }
+            case 'pc_fetch_create':
+                $this->createPC();
                 break;
-            case 'pc_delete':
+            case 'pc_fetch_delete':
                 $this->deletePC();
                 break;
-            case 'pc_update':
-                if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                    $this->updatePC();
-                }
+            case 'pc_fetch_update':
+                $this->updatePC();
                 break;
-            case 'pc_edit':
-                $this->editPC();
+            case 'pc_fetch_one':
+                $this->fetchPCOne();
                 break;
-            case 'pc_get':
-                $this->getPcId();
+            case 'pc_fetch_page':
+                $this->fetchPcPage();
+                break;
+            case 'pc_fetch_total_records':
+                $this->fetchTotalRecords();
+                break;
+            case 'pc_fetch_id':
+                $this->fetchPcId();
                 break;
             default:
+                echo json_encode(['error' => 'Acción no válida']);
                 break;
         }
     }
 
     private function createPC()
     {
-        $fabricante = $_POST['fabricante'];
-        $estado = $_POST['estado'];
-        $persona_id = $_POST['persona_id'];
-        $fabricante_procesador = $_POST['fabricante_procesador'];
-        $nombre_procesador = $_POST['nombre_procesador'];
-        $nucleos = $_POST['nucleos'];
-        $frecuencia_procesador = $_POST['frecuencia_procesador'];
-        $fabricante_motherboard = $_POST['fabricante_motherboard'];
-        $modelo_motherboard = $_POST['modelo_motherboard'];
-        $fabricante_fuente = $_POST['fabricante_fuente'];
-        $wattage_fuente = $_POST['wattage_fuente'];
-        $fabricante_ram = $_POST['fabricante_ram'];
-        $tipo_ram = $_POST['tipo_ram'];
-        $frecuencia_ram = $_POST['frecuencia_ram'];
-        $capacidad_ram = $_POST['capacidad_ram'];
-        $fabricante_almacenamiento = $_POST['fabricante_almacenamiento'];
-        $tipo_almacenamiento = $_POST['tipo_almacenamiento'];
-        $capacidad_almacenamiento = $_POST['capacidad_almacenamiento'];
+        $data = $_POST;
+        $this->pcModel->getData(
+            $data['fabricante_equipo_informatico'],
+            $data['id_estado_equipo'],
+            $data['id_persona'],
+            $data['fabricante_procesador'],
+            $data['nombre_procesador'],
+            $data['nucleos'],
+            $data['frecuencia_procesador'],
+            $data['fabricante_motherboard'],
+            $data['modelo_motherboard'],
+            $data['fabricante_fuente_poder'],
+            $data['wattage_fuente'],
+            $data['fabricante_ram'],
+            $data['tipo_ram'],
+            $data['frecuencia_ram'],
+            $data['capacidad_ram'],
+            $data['fabricante_almacenamiento'],
+            $data['tipo_almacenamiento'],
+            $data['capacidad_almacenamiento']
+        );
+        $result = $this->pcModel->create();
 
-        // Mensajes de depuración
-        error_log("Datos recibidos para crear PC:");
-        error_log("Fabricante: $fabricante");
-        error_log("Estado: $estado");
-        error_log("Persona ID: $persona_id");
-        error_log("Fabricante Procesador: $fabricante_procesador");
-        error_log("Nombre Procesador: $nombre_procesador");
-        error_log("Núcleos: $nucleos");
-        error_log("Frecuencia Procesador: $frecuencia_procesador");
-        error_log("Fabricante Motherboard: $fabricante_motherboard");
-        error_log("Modelo Motherboard: $modelo_motherboard");
-        error_log("Fabricante Fuente: $fabricante_fuente");
-        error_log("Wattage Fuente: $wattage_fuente");
-        error_log("Fabricante RAM: $fabricante_ram");
-        error_log("Tipo RAM: $tipo_ram");
-        error_log("Frecuencia RAM: $frecuencia_ram");
-        error_log("Capacidad RAM: $capacidad_ram");
-        error_log("Fabricante Almacenamiento: $fabricante_almacenamiento");
-        error_log("Tipo Almacenamiento: $tipo_almacenamiento");
-        error_log("Capacidad Almacenamiento: $capacidad_almacenamiento");
-
-        $this->pcModel->getData($fabricante, $estado, $persona_id, $fabricante_procesador, $nombre_procesador, $nucleos, $frecuencia_procesador, $fabricante_motherboard, $modelo_motherboard, $fabricante_fuente, $wattage_fuente, $fabricante_ram, $tipo_ram, $frecuencia_ram, $capacidad_ram, $fabricante_almacenamiento, $tipo_almacenamiento, $capacidad_almacenamiento);
-        $this->pcModel->create();
-
-        header("Location: index.php?view=pcTable");
-        exit();
+        header('Content-Type: application/json');
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'PC creada correctamente', 'type' => 'create']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Error al crear la PC']);
+        }
     }
 
     private function deletePC()
     {
-        $id = $_GET['id'];
-        $this->pcModel->delete($id);
+        $id = $_GET['id_pc'];
+        $result = $this->pcModel->delete($id);
 
-        header("Location: index.php?view=pcTable");
-        exit();
+        header('Content-Type: application/json');
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'PC eliminada correctamente', 'type' => 'delete']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Error al eliminar la PC']);
+        }
     }
 
     private function updatePC()
     {
-        $id = $_POST['id'];
-        $fabricante = $_POST['fabricante'];
-        $estado = $_POST['estado'];
-        $persona_id = $_POST['persona_id'];
-        $fabricante_procesador = $_POST['fabricante_procesador'];
-        $nombre_procesador = $_POST['nombre_procesador'];
-        $nucleos = $_POST['nucleos'];
-        $frecuencia_procesador = $_POST['frecuencia_procesador'];
-        $fabricante_motherboard = $_POST['fabricante_motherboard'];
-        $modelo_motherboard = $_POST['modelo_motherboard'];
-        $fabricante_fuente = $_POST['fabricante_fuente'];
-        $wattage_fuente = $_POST['wattage_fuente'];
-        $fabricante_ram = $_POST['fabricante_ram'];
-        $tipo_ram = $_POST['tipo_ram'];
-        $frecuencia_ram = $_POST['frecuencia_ram'];
-        $capacidad_ram = $_POST['capacidad_ram'];
-        $fabricante_almacenamiento = $_POST['fabricante_almacenamiento'];
-        $tipo_almacenamiento = $_POST['tipo_almacenamiento'];
-        $capacidad_almacenamiento = $_POST['capacidad_almacenamiento'];
+        $data = $_POST;
+        $id = $data['id_persona'];
+        $this->pcModel->getData(
+            $data['fabricante_equipo_informatico'],
+            $data['id_estado_equipo'],
+            $data['id_persona'],
+            $data['fabricante_procesador'],
+            $data['nombre_procesador'],
+            $data['nucleos'],
+            $data['frecuencia_procesador'],
+            $data['fabricante_motherboard'],
+            $data['modelo_motherboard'],
+            $data['fabricante_fuente_poder'],
+            $data['wattage_fuente'],
+            $data['fabricante_ram'],
+            $data['tipo_ram'],
+            $data['frecuencia_ram'],
+            $data['capacidad_ram'],
+            $data['fabricante_almacenamiento'],
+            $data['tipo_almacenamiento'],
+            $data['capacidad_almacenamiento']
+        );
+        $result = $this->pcModel->update($id);
 
-        $this->pcModel->getData($fabricante, $estado, $persona_id, $fabricante_procesador, $nombre_procesador, $nucleos, $frecuencia_procesador, $fabricante_motherboard, $modelo_motherboard, $fabricante_fuente, $wattage_fuente, $fabricante_ram, $tipo_ram, $frecuencia_ram, $capacidad_ram, $fabricante_almacenamiento, $tipo_almacenamiento, $capacidad_almacenamiento);
-        $this->pcModel->update($id);
-
-        header("Location: index.php?view=pcTable");
-        exit();
+        header('Content-Type: application/json');
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'PC actualizada correctamente', 'type' => 'edit']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Error al actualizar la PC']);
+        }
     }
 
-    private function editPC()
+    private function fetchPCOne()
     {
-        $id = $_GET['id'];
+        $id = $_GET['id_pc'];
         $pc = $this->pcModel->readOne($id);
-    }
-    private function getPcId() {
-        $cedulaPC = $_GET['cedulaPC'];
-        $pc = $this->pcModel->getPcId($cedulaPC);
 
-        // Retornar datos como JSON
         header('Content-Type: application/json');
         if ($pc) {
             echo json_encode($pc);
-            
+        } else {
+            echo json_encode(['error' => 'PC no encontrada']);
+        }
+    }
+
+    private function fetchPcPage()
+    {
+        $page = isset($_GET['page']) ? $_GET['page'] : 1; // Página actual
+        $recordsPerPage = isset($_GET['recordsPerPage']) ? $_GET['recordsPerPage'] : 10; // Número de registros por página
+        $PCs = $this->pcModel->readPage($page, $recordsPerPage);
+        
+        $customSort = [
+            "id_equipo_informatico",
+            "fabricante_equipo_informatico",
+            "estado_equipo_informatico",
+            "nombre_completo",
+            "fabricante_procesador_nombre",
+            "nombre_procesador",
+            "motherboard",
+            "fuente",
+            "capacidad_ram_total",
+            "almacenamiento_total",
+        ];
+        if ($PCs) {
+            foreach ($PCs as &$PC) {
+                $newSort = [];
+                foreach ($customSort as $key) {
+                    if (isset($PC[$key])) {
+                        $newSort[$key] = $PC[$key];
+                    }
+                }
+                $PC = $newSort;
+            }
+            echo json_encode($PCs);
+        } else {
+            echo json_encode(['error' => 'No se encontraron reportes de fallas']);
+        }
+    }
+    private function fetchTotalRecords()
+    {
+        $totalRecords = $this->pcModel->getTotalRecords();
+        if ($totalRecords) {
+            // Retornar datos como JSON
+            header('Content-Type: application/json');
+            echo json_encode($totalRecords);
+        } else {
+            echo json_encode(['error' => 'No se encontraron registros']);
+        }
+    }
+    private function fetchPcId()
+    {
+        $cedulaPC = $_GET['cedulaPC'];
+        $pc = $this->pcModel->getPcId($cedulaPC);
+
+        header('Content-Type: application/json');
+        if ($pc) {
+            echo json_encode($pc);
         } else {
             echo json_encode(['error' => 'PC no encontrada']);
         }

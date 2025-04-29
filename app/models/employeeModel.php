@@ -1,6 +1,8 @@
 <?php
-include_once("app\models\DB.php");
-class employeeModel
+namespace app\models;
+use app\config\DataBase;
+
+class EmployeeModel
 {
     private $nombre;
     private $apellido;
@@ -9,7 +11,6 @@ class employeeModel
     private $departamento;
     private $sexo;
     private $fecha_nac;
-    private $usuario;
     private $db;
 
 
@@ -49,7 +50,7 @@ class employeeModel
             // Ejecutar la consulta
             $stmt->execute();
             return true;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
     }
@@ -65,8 +66,8 @@ class employeeModel
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id', $id);
             $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+            return $stmt->fetch(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
             return null;
         }
@@ -79,14 +80,11 @@ class employeeModel
                     FROM persona p
                     JOIN departamento d ON p.id_departamento = d.id_departamento
                     JOIN sexo s ON p.id_sexo = s.id_sexo
-                    ORDER BY id_persona
-                    LIMIT :recordsPerPage OFFSET :offset";
+                    ORDER BY id_persona";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':recordsPerPage', $recordsPerPage, PDO::PARAM_INT);
-        $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     public function getTotalRecords()
@@ -95,7 +93,7 @@ class employeeModel
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         // Obtener el total de registros
-        return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        return $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
     }
 
     public function update($id)
@@ -113,7 +111,7 @@ class employeeModel
             $stmt->bindParam(':id', $id);
             $stmt->execute();
             return true;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
     }
@@ -126,7 +124,7 @@ class employeeModel
             $stmt->bindParam(':id', $id);
             $stmt->execute();
             return true;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
     }
@@ -140,7 +138,7 @@ class employeeModel
             $stmt->execute();
             $exist = $stmt->fetchColumn() > 0;
             return $exist;
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
     }
@@ -154,8 +152,8 @@ class employeeModel
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':idPC', $idPC);
             $stmt->execute();
-            $result = $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
         if ($result) {
