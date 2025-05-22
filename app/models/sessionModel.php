@@ -11,9 +11,9 @@ class SessionModel
         $this->userModel = new UserModel();
     }
 
-    public function getUser($username)
+    public function getUser($cedula)
     {
-        return $this->userModel->getUserByUsername($username);
+        return $this->userModel->getUserByCedula($cedula);
     }
 
     public function verifyPassword($password, $hash)
@@ -24,7 +24,6 @@ class SessionModel
     public function startSession($user)
     {
         $_SESSION['id_usuario'] = $user['id_usuario'];
-        $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['id_rol'];
     }
 

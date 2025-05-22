@@ -58,7 +58,7 @@ const defaultOptions = {
 const centerTextPlugin = {
   id: "doughnutText",
   beforeDraw: (chart) => {
-    if (chart.config.type === "doughnut") {
+    if (chart.config.type === "doughnut" && chart.config.options.showCenterText) {
       const { width } = chart;
       const { ctx } = chart;
       const total = chart.data.datasets[0].data.reduce(
@@ -67,7 +67,7 @@ const centerTextPlugin = {
       );
       const percentage =
         total > 0
-          ? Math.round((chart.data.datasets[0].data[0] / total) * 100)
+          ? Math.round((chart.data.datasets[0].data[1] / total) * 100)
           : 0;
 
       ctx.save();
@@ -97,72 +97,90 @@ function updateOrCreateChart(chartId, chartData) {
       console.error(
         `No se encontró el panel con el identificador ${chartData.panel}`
       );
-          return;
-      }
-      canvas = document.createElement("canvas");
-      canvas.id = canvasId;
+      return;
+    }
+    canvas = document.createElement("canvas");
+    canvas.id = canvasId;
     panel.appendChild(canvas);
   }
 
   const ctx = canvas.getContext("2d");
 
+  // Evento de click para redirigir según el segmento
+  const onClick = function (event, elements) {
+    if (elements.length > 0) {
+      const chart = Chart.getChart(canvasId);
+      const index = elements[0].index;
+      const label = chart.data.labels[index];
+
+      // Redirigir según el gráfico y el label seleccionado
+      if (chartId === "empleados") {
+        // Ejemplo: filtro por estado de empleados
+        window.location.href = `index.php?view=userTable&estado=${encodeURIComponent(label)}`;
+      } else if (chartId === "roles") {
+        // Ejemplo: filtro por rol
+        window.location.href = `index.php?view=userTable&rol=${encodeURIComponent(label)}`;
+      } else if (chartId === "reportes_fallas") {
+        // Ejemplo: filtro por día de la semana
+        window.location.href = `index.php?view=userTable&dia=${encodeURIComponent(label)}`;
+      }
+      // Agrega más condiciones según tus necesidades
+    }
+  };
+
   // Si ya existe una gráfica, actualizarla
   if (Chart.getChart(canvasId)) {
-      const chart = Chart.getChart(canvasId);
-      chart.data.labels = chartData.labels;
-      chart.data.datasets[0].data = chartData.data;
-      chart.update();
+    const chart = Chart.getChart(canvasId);
+    chart.data.labels = chartData.labels;
+    chart.data.datasets[0].data = chartData.data;
+    chart.options.onClick = onClick; // Actualiza el evento onClick
+    chart.update();
   } else {
-      // Crear una nueva gráfica con configuraciones específicas
-      new Chart(ctx, {
-          type: chartData.type || "doughnut", // Usa el tipo especificado o 'doughnut' por defecto
-          data: {
-              labels: chartData.labels, // Etiquetas (e.g., días de la semana)
-              datasets: [
-                  {
-                      data: chartData.data, // Datos (e.g., número de reportes)
-                      backgroundColor: chartData.backgroundColor || chartColors, // Colores personalizados
-                  },
-              ],
+    // Crear una nueva gráfica con configuraciones específicas
+    new Chart(ctx, {
+      type: chartData.type || "doughnut",
+      data: {
+        labels: chartData.labels,
+        datasets: [
+          {
+            data: chartData.data,
+            backgroundColor: chartData.backgroundColor || chartColors,
           },
-          options: {
-              ...defaultOptions,
-              plugins: {
-                  ...defaultOptions.plugins,
-                  title: { ...defaultOptions.plugins.title, text: chartData.title },
-                  legend: {
-                      display: chartData.type !== "bar", // Oculta la leyenda si es una gráfica de barras
-                      position: "bottom"
-                  },
+        ],
+      },
+      options: {
+        ...defaultOptions,
+        showCenterText: chartData.showCenterText,
+        plugins: {
+          ...defaultOptions.plugins,
+          title: { ...defaultOptions.plugins.title, text: chartData.title },
+          legend: {
+            display: chartData.type !== "bar",
+            position: "bottom"
+          },
+        },
+        scales:
+          chartData.type === "doughnut"
+            ? {}
+            : {
+                x: {
+                  grid: { display: false },
+                  ticks: { display: true },
+                  beginAtZero: true,
+                },
+                y: {
+                  grid: { display: false },
+                  ticks: { display: true, stepSize: 1 },
+                  beginAtZero: true,
+                },
               },
-              scales:
-                  chartData.type === "doughnut"
-                      ? {}
-                      : {
-                          // Deshabilita las escalas para gráficas de dona
-                          x: {
-                              grid: {
-                                  display: false, // Oculta las líneas de escala en el eje X
-                              },
-                              ticks: {
-                                  display: true, // Muestra las etiquetas del eje X
-                              },
-                              beginAtZero: true,
-                          },
-                          y: {
-                              grid: {
-                                  display: false, // Oculta las líneas de escala en el eje X
-                              },
-                              ticks: {
-                                  display: true,
-                                  stepSize: 1, // Intervalo entre los ticks
-                              },
-                              beginAtZero: true,
-                          },
-                      },
-          },
-          plugins: [centerTextPlugin], // Agregar el plugin aquí
-      });
+        onClick: onClick,
+        onHover: function(event, elements) {
+          event.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+        },
+      },
+      plugins: [centerTextPlugin],
+    });
   }
 }
 

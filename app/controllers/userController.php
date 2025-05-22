@@ -28,8 +28,71 @@ class UserController
             case 'user_fetch_update':
                 $this->fetchUserUpdate();
                 break;
+            case 'update_password':
+                $this->updatePassword();
+                break;
+            case 'dashboard_config':
+                $this->dashboardSetup();
+                break;
             default:
                 break;
+        }
+    }
+
+    private function dashboardSetup()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $userId = $_SESSION['id_usuario'];
+            // Leer el cuerpo de la petición (JSON)
+            $input = file_get_contents('php://input');
+            $data = json_decode($input, true);
+
+            // Si solo envías la configuración:
+            $config = json_encode($data);
+
+            // Guardar la configuración en la base de datos
+            $result = $this->userModel->saveDashboardConfig($userId, $config);
+
+            if ($result) {
+                echo json_encode(['success' => true, 'message' => 'Configuración guardada correctamente']);
+            } else {
+                echo json_encode(['error' => 'Error al guardar la configuración']);
+            }
+        } else {
+            echo json_encode(['error' => 'Método no permitido']);
+        }
+    }
+    public function getDashboardConfig()
+    {
+        $userId = $_SESSION['id_usuario'];
+        $config = $this->userModel->getDashboardConfig($userId);
+        return $config !== false ? $config : null;
+    }
+    private function updatePassword()
+    {
+        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+            $cedula = $_POST['cedula'];
+            if (!isset($cedula) || empty($cedula)) {
+                $id_usuario = $_SESSION['id_usuario'];
+            }
+            $newPassword = $_POST['newPassword'];
+            $confirmPassword = $_POST['confirmPassword'];
+
+            if ($newPassword !== $confirmPassword) {
+                echo json_encode(['error' => 'Las contraseñas no coinciden']);
+                return;
+            }
+
+            $hashedPassword = $this->userModel->passwordHash($newPassword);
+            $result = $this->userModel->updatePassword($cedula, $hashedPassword);
+
+            if ($result) {
+                echo json_encode(['success' => true, 'message' => 'Contraseña actualizada correctamente']);
+            } else {
+                echo json_encode(['error' => 'Error al actualizar la contraseña']);
+            }
+        } else {
+            echo json_encode(['error' => 'Método no permitido']);
         }
     }
     private function fetchUserOne()
@@ -46,9 +109,7 @@ class UserController
     }
     private function fetchUserPage()
     {
-        $page = isset($_GET['page']) ? $_GET['page'] : 1; // Página actual
-        $recordsPerPage = isset($_GET['recordsPerPage']) ? $_GET['recordsPerPage'] : 10; // Número de registros por página
-        $users = $this->userModel->readPage($page, $recordsPerPage);
+        $users = $this->userModel->readPage();
         if ($users) {
             $data = [];
             foreach ($users as $user) {
@@ -59,7 +120,7 @@ class UserController
                 // Modifica la columna 'rol' para incluir la información del acordeón
                 $rowData['rol'] = [
                     'value' => $user['rol'], // Asume que la columna en tu tabla se llama 'rol'
-                    "rol_renderAs"=> "accordion",
+                    "rol_renderAs" => "accordion",
                     'options' => $rolesOptions
                 ];
                 $data[] = $rowData;
@@ -84,15 +145,13 @@ class UserController
     {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $id = $_POST['id'];
-            $username = $_POST['username'];
             $password = $_POST['password'];
-            if ($username && $password && $id) {
+            if ($password && $id) {
                 if ($this->userModel->isAnEmployee($id)) {
                     $hashedPassword = $this->userModel->passwordHash($password);
-                    $this->userModel->setData($username, $hashedPassword);
-                    // $this->userModel->isAnAdmin($id);
-                    $this->userModel->register();
-                    $this->userModel->updatePersonIdUser($id);
+                    $this->userModel->setData($hashedPassword);
+                    $idLast = $this->userModel->register();
+                    $this->userModel->updatePersonIdUser($idLast, $id);
                     exit();
                 } else {
                     $_SESSION['register_failed'] = "No es un empleado";
@@ -117,6 +176,11 @@ class UserController
         } else {
             echo json_encode(['success' => false, 'message' => 'Error al actualizar el empleado']);
         }
+    }
+    public function isSecurityQuestionsSetup()
+    {
+        $userId = $_SESSION["id_usuario"];
+        return $this->userModel->isSecurityQuestionsSetup($userId);
     }
     public function hasPermission($permissionName)
     {

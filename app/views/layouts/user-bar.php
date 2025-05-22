@@ -1,33 +1,41 @@
 <header class="user-bar">
+
     <div class="nav-menu">
-        <button onclick="toggleNavbar()">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#212121">
-                <path d="M160-240q-17 0-28.5-11.5T120-280q0-17 11.5-28.5T160-320h640q17 0 28.5 11.5T840-280q0 17-11.5 28.5T800-240H160Zm0-200q-17 0-28.5-11.5T120-480q0-17 11.5-28.5T160-520h640q17 0 28.5 11.5T840-480q0 17-11.5 28.5T800-440H160Zm0-200q-17 0-28.5-11.5T120-680q0-17 11.5-28.5T160-720h640q17 0 28.5 11.5T840-680q0 17-11.5 28.5T800-640H160Z" />
-            </svg>
-        </button>
-    </div>
-    <div class="user-controls">
-        <div class="notifications">
-            <button class="dropdown-button" onclick="toggleNotificationsMenu()">
+        <?php if (!isset($_SESSION["securityQuestions"])): ?>
+            <button id="navbar-toggle-button">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#212121">
-                    <path d="M200-200q-17 0-28.5-11.5T160-240q0-17 11.5-28.5T200-280h40v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h40q17 0 28.5 11.5T800-240q0 17-11.5 28.5T760-200H200ZM480-80q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80Z" />
+                    <path d="M160-240q-17 0-28.5-11.5T120-280q0-17 11.5-28.5T160-320h640q17 0 28.5 11.5T840-280q0 17-11.5 28.5T800-240H160Zm0-200q-17 0-28.5-11.5T120-480q0-17 11.5-28.5T160-520h640q17 0 28.5 11.5T840-480q0 17-11.5 28.5T800-440H160Zm0-200q-17 0-28.5-11.5T120-680q0-17 11.5-28.5T160-720h640q17 0 28.5 11.5T840-680q0 17-11.5 28.5T800-640H160Z" />
                 </svg>
             </button>
-            <div id="notifications-menu" class="dropdown-menu">
-                <a href="#">
-                    <div>
-                        <span>Reporte de Falla</span>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                    </div>
-                </a>
-                <a href="#">
-                    <span>Notificación 2</span>
-                </a>
-                <a href="#">
-                    <span>Notificación 3</span>
-                </a>
+        <?php endif ?>
+    </div>
+
+
+    <div class="user-controls">
+        <?php if (!isset($_SESSION["securityQuestions"])): ?>
+            <div class="notifications">
+                <button class="dropdown-button" onclick="toggleNotificationsMenu()">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#212121">
+                        <path d="M200-200q-17 0-28.5-11.5T160-240q0-17 11.5-28.5T200-280h40v-280q0-83 50-147.5T420-792v-28q0-25 17.5-42.5T480-880q25 0 42.5 17.5T540-820v28q80 20 130 84.5T720-560v280h40q17 0 28.5 11.5T800-240q0 17-11.5 28.5T760-200H200ZM480-80q-33 0-56.5-23.5T400-160h160q0 33-23.5 56.5T480-80Z" />
+                    </svg>
+                </button>
+                <div id="notifications-menu" class="dropdown-menu">
+                    <a href="#">
+                        <div>
+                            <span>Reporte de Falla</span>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                        </div>
+                    </a>
+                    <a href="#">
+                        <span>Notificación 2</span>
+                    </a>
+                    <a href="#">
+                        <span>Notificación 3</span>
+                    </a>
+                </div>
             </div>
-        </div>
+        <?php endif ?>
+
         <div class="user-dropdown">
             <button class="dropdown-button" onclick="toggleUserDropdown()">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#212121">
@@ -38,15 +46,17 @@
                 </svg>
             </button>
             <div id="user-menu" class="dropdown-menu">
-                <a href="#">
-                    <span>Perfil</span>
-                </a>
-            <?php if($viewData['puede_ver_configuracion']): ?>
+                <?php if (!isset($_SESSION["securityQuestions"])): ?>
+                    <a href="#">
+                        <span>Perfil</span>
+                    </a>
+                    <?php if ($viewData['puede_ver_configuracion']): ?>
 
-                <a href="index.php?view=config">
-                    <span>Configuración</span>
-                </a>
-            <?php endif ?>
+                        <a href="index.php?view=config">
+                            <span>Configuración</span>
+                        </a>
+                    <?php endif ?>
+                <?php endif ?>
 
                 <a href="index.php?view=logout">
                     <span>Cerrar sesión</span>

@@ -98,12 +98,26 @@
   transition: var(--transition-standart);
 }
 /* Opcional: Si quieres desactivar animaciones iniciales */
-.navbar-preload {
-  transition: none;
+.navbar.no-transition {
+  transition: none !important;
 }
 .accordion__content a:hover {
   background-color: var(
     --color-primario-hover
   ); /* Añadir color de fondo al pasar el ratón */
   text-decoration: none; /* Asegurarse de que no haya subrayado al pasar el ratón */
+}
+
+.navbar.navbar-loading .accordion__content {
+  transition: none !important; /* Anulación más fuerte */
+}
+
+/* Opcional: Si la rotación de la flecha también tiene animación y quieres evitarla al inicio */
+.navbar.navbar-loading .imgArrow {
+  transition: none !important; /* Anulación más fuerte */
+}
+
+/* ¡NUEVO Y MUY IMPORTANTE! Desactivar la transición para el contenedor .accordion */
+.navbar.navbar-loading .accordion {
+  transition: none !important; /* Anulación más fuerte */
 }

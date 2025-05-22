@@ -35,6 +35,7 @@ class ChartModel
                 'type' => 'doughnut', // Tipo de gráfica
                 'labels' => array_column($data1, 'estado'),
                 'data' => array_column($data1, 'total'),
+                'showCenterText' => true, // Mostrar texto en el centro
             ];
             $sql2 = "SELECT rol.rol AS rol,
                      COUNT(*) AS total

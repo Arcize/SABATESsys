@@ -5,28 +5,28 @@
   background-color: var(#f6f6f6);
   font-family: "Poppins", sans-serif;
 }
-.image-box{
+.image-box {
   grid-column: 1 / 4;
   background: url(../public/img/blue-geometric.jpg) no-repeat center/cover;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-.welcome-box{
+.welcome-box {
   color: var(--color-claro);
   display: flex;
   flex-direction: column;
   gap: 1rem;
   align-items: center;
 }
-.welcome-box h1{
+.welcome-box h1 {
   font-size: 3rem;
   font-weight: 600;
 }
-.welcome-box p{
+.welcome-box p {
   font-size: 1.5rem;
 }
-.login-register-box{
+.login-register-box {
   background-color: var(--color-claro);
   grid-column: 4 / 6;
   display: flex;
@@ -35,35 +35,78 @@
   align-items: center;
   position: relative;
 }
-.img-header{
+.img-header {
   display: flex;
   justify-content: center;
   position: absolute;
   top: 10%;
 }
-.img-header img{
+.img-header img {
   width: 40%;
   height: auto;
 }
-.login-register-header{
+.login-register-header {
   font-size: 2rem;
   color: var(--color-primario);
   font-weight: 600;
   text-align: center;
   margin-bottom: 2rem;
 }
-.login-register-form{
+.login-register-form {
   width: 60%;
 }
 .alertSession {
   text-align: center;
 }
-
+.forgotBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  align-items: center;
+}
 .input-box {
   width: 100%;
   height: 50px;
-  margin: 15px 0;
+  margin: 1.25rem 0;
   position: relative;
+}
+.input-box .clue {
+  position: absolute;
+  top: 50%;
+  right: -2.5rem;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+
+.criteria {
+  position: absolute;
+  background-color: #f6f6f6;
+  z-index: 3;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 0;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: var(--border-radius);
+  width: 100%;
+  display: none;
+}
+.input-box .clue:hover ~ .criteria {
+  display: block;
+
+}
+
+.criteria h6 {
+  font-size: 1rem;
+}
+.criteria ul {
+  list-style: disc;
+  list-style-position: inside;
+  font-size: .875rem;
+  padding-left: 1rem;
+  margin: 0.250rem;
 }
 .input-box input {
   width: 100%;
@@ -86,7 +129,7 @@
   transform: translateY(-50%);
 }
 
-.forgot{
+.forgot {
   display: flex;
   justify-content: center;
   font-size: 14.5px;
@@ -118,14 +161,13 @@
 .login-register {
   display: flex;
   justify-content: center;
-  font-size: .875rem;
+  font-size: 0.875rem;
   margin: 1.25rem 0 1rem;
 }
 .login-register a {
   text-decoration: none;
   font-weight: 600;
   color: var(--color-texto);
-
 }
 .login-register a:hover {
   text-decoration: underline;
@@ -134,16 +176,16 @@
 .password-box {
   height: fit-content;
 }
-.password-box h6{
+.password-box h6 {
   margin-bottom: 4px;
   font-size: 16px;
 }
 
-.password-box ul{
+.password-box ul {
   margin-bottom: 15px;
   padding: 0 15px;
 }
-.password-box li{
+.password-box li {
   margin-left: 10px;
   font-size: 14px;
 }

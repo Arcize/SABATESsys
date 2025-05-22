@@ -17,31 +17,38 @@
             }
             ?>
             <div class="input-box">
-                <input type="text" placeholder="Cédula" name="id" required class="no-spaces ci" />
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                <input type="text" placeholder="Cédula" name="id" id="cedula" required class="no-spaces ci" required/>
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#6e6e6e">
                     <path d="M160-80q-33 0-56.5-23.5T80-160v-440q0-33 23.5-56.5T160-680h200v-120q0-33 23.5-56.5T440-880h80q33 0 56.5 23.5T600-800v120h200q33 0 56.5 23.5T880-600v440q0 33-23.5 56.5T800-80H160Zm80-160h240v-18q0-17-9.5-31.5T444-312q-20-9-40.5-13.5T360-330q-23 0-43.5 4.5T276-312q-17 8-26.5 22.5T240-258v18Zm320-60h160v-60H560v60Zm-200-60q25 0 42.5-17.5T420-420q0-25-17.5-42.5T360-480q-25 0-42.5 17.5T300-420q0 25 17.5 42.5T360-360Zm200-60h160v-60H560v60ZM440-600h80v-200h-80v200Z" />
                 </svg>
-            </div>
-            <div class="input-box">
-                <input type="text" placeholder="Usuario" name="username" required class="no-spaces" />
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#f6f6f6">
-                    <path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
-                </svg>
+                
+                <div class="ciError inputErrorLoginRegister">
+                    
+                </div>
             </div>
             <div class="input-box">
                 <input type="password" placeholder="Contraseña" name="password" id="password" required class="no-spaces" />
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#6e6e6e">
                     <path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm240-200q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80Z" />
                 </svg>
-            </div>
-            <div class="password-box">
-                <ul id="password-criteria">
+                <svg class="clue" xmlns="http://www.w3.org/2000/svg" height="36px" viewBox="0 -960 960 960" width="36px" fill="#6e6e6e">
+                    <path d="M478-240q21 0 35.5-14.5T528-290q0-21-14.5-35.5T478-340q-21 0-35.5 14.5T428-290q0 21 14.5 35.5T478-240Zm-36-154h74q0-33 7.5-52t42.5-52q26-26 41-49.5t15-56.5q0-56-41-86t-97-30q-57 0-92.5 30T342-618l66 26q5-18 22.5-39t53.5-21q32 0 48 17.5t16 38.5q0 20-12 37.5T506-526q-44 39-54 59t-10 73Zm38 314q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z" />
+                </svg>
+                <div class="criteria">
                     <h6>La contraseña debe contener:</h6>
-                    <li id="length" class="invalid">Al menos 8 caracteres</li>
-                    <li id="uppercase" class="invalid">Al menos una letra mayúscula</li>
-                    <li id="lowercase" class="invalid">Al menos una letra minúscula</li>
-                    <li id="number" class="invalid">Al menos un número</li>
-                </ul>
+                    <ul id="password-criteria">
+                        <li id="length">Al menos 8 caracteres</li>
+                        <li id="uppercase" >Al menos una letra mayúscula</li>
+                        <li id="lowercase" >Al menos una letra minúscula</li>
+                        <li id="number">Al menos un número</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="input-box">
+                <input type="password" placeholder="Confirme su Contraseña" name="passwordConfirm" id="passwordConfirm" required class="no-spaces" />
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#6e6e6e">
+                    <path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm240-200q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80Z" />
+                </svg>
             </div>
             <button type="submit" class="btnIn">Registrarte</button>
             <div class="login-register">
@@ -52,61 +59,49 @@
 </div>
 
 <script>
-    document.getElementById('password').addEventListener('input', function() {
-        const password = this.value;
-        const lengthCriteria = document.getElementById('length');
-        const uppercaseCriteria = document.getElementById('uppercase');
-        const lowercaseCriteria = document.getElementById('lowercase');
-        const numberCriteria = document.getElementById('number');
+    cedulaInput = document.getElementById('cedula');
+    cedulaInput.addEventListener('input', async function() {
+        
+        const cedula = document.getElementById('cedula').value;
+        const response = await fetch(`?view=employee&action=get_Cedula&cedula=${cedula}`);
+        const data = await response.json();
 
-        // Verificar longitud
-        if (password.length >= 8) {
-            lengthCriteria.classList.remove('invalid');
-            lengthCriteria.classList.add('valid');
+        if (data.exist) {
+            document.querySelector('.ciError').innerHTML = "La cédula ya existe";
+            document.querySelector('.btnIn').disabled = true;
         } else {
-            lengthCriteria.classList.remove('valid');
-            lengthCriteria.classList.add('invalid');
-        }
-
-        // Verificar mayúsculas
-        if (/[A-Z]/.test(password)) {
-            uppercaseCriteria.classList.remove('invalid');
-            uppercaseCriteria.classList.add('valid');
-        } else {
-            uppercaseCriteria.classList.remove('valid');
-            uppercaseCriteria.classList.add('invalid');
-        }
-
-        // Verificar minúsculas
-        if (/[a-z]/.test(password)) {
-            lowercaseCriteria.classList.remove('invalid');
-            lowercaseCriteria.classList.add('valid');
-        } else {
-            lowercaseCriteria.classList.remove('valid');
-            lowercaseCriteria.classList.add('invalid');
-        }
-
-        // Verificar números
-        if (/\d/.test(password)) {
-            numberCriteria.classList.remove('invalid');
-            numberCriteria.classList.add('valid');
-        } else {
-            numberCriteria.classList.remove('valid');
-            numberCriteria.classList.add('invalid');
+            document.querySelector('.ciError').innerHTML = "";
+            document.querySelector('.btnIn').disabled = false;
         }
     });
+
+    const password = document.getElementById('password');
+    const passwordConfirm = document.getElementById('passwordConfirm');
+    const submitBtn = document.querySelector('.btnIn');
+
+    function checkPasswordsMatch(showError = false) {
+        const errorDiv = passwordConfirm.parentElement.querySelector('.inputErrorLoginRegister') || document.createElement('div');
+        errorDiv.className = 'inputErrorLoginRegister';
+        if (password.value !== passwordConfirm.value && showError && passwordConfirm.value !== "") {
+            errorDiv.textContent = "Las contraseñas no coinciden";
+            submitBtn.disabled = true;
+        } else {
+            errorDiv.textContent = "";
+            // Solo habilita si no hay otros errores
+            if (document.querySelector('.ciError').textContent === "") {
+                submitBtn.disabled = false;
+            }
+        }
+        if (!passwordConfirm.parentElement.querySelector('.inputErrorLoginRegister')) {
+            passwordConfirm.parentElement.appendChild(errorDiv);
+        }
+    }
+
+    // Solo muestra el error al escribir en el segundo campo
+    password.addEventListener('input', function() {
+        checkPasswordsMatch(false);
+    });
+    passwordConfirm.addEventListener('input', function() {
+        checkPasswordsMatch(true);
+    });
 </script>
-
-<style>
-    .valid::before {
-        content: '✔';
-        color: green;
-        margin-right: 5px;
-    }
-
-    .invalid::before {
-        content: '✖';
-        color: red;
-        margin-right: 5px;
-    }
-</style>

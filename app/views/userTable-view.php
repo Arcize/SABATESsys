@@ -10,17 +10,18 @@ $roles = $roleController->listRoles();
     <div class="table-heading">
         <h3 class="h3">Usuarios</h3>
         <div class="table-actions">
-            <a href="index.php?view=roleTable">
+            <!-- <a href="index.php?view=roleTable">
                 <button class="table-button">Gestionar Roles</button>
-            </a>
+            </a> -->
         </div>
     </div>
     <table class="table row-border hover" id="userTable">
         <thead class="table-head">
             <tr>
                 <th scope="col">N°</th>
-                <th scope="col">Usuario</th>
                 <th scope="col">Cédula</th>
+                <th scope="col">Nombre Completo</th>
+                <th scope="col">Departamento</th>
                 <th scope="col">Rol</th>
             </tr>
         </thead>
@@ -64,12 +65,42 @@ $roles = $roleController->listRoles();
 </div>
 <script>
     $(document).ready(function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var rol = urlParams.get('rol');
+
         $('#userTable').DataTable({
+            columnDefs: [{
+                targets: [4],
+                searchable: true,
+                render: function(data, type, row) {
+                    if (type === 'filter' && data && data.value !== "Administrador") {
+                        // En el modo 'filter', devolvemos el valor seleccionado del select
+                        return data.value;
+                    }
+                    // En otros modos ('display', 'type', 'sort'), devolvemos el HTML del select
+                    if (data && data.value === "Administrador") {
+                        return data.value;
+                    } else if (data && data.options) {
+                        let optionsHtml = data.options
+                            .slice(1)
+                            .map(rol => `
+                                <option value="${rol.id_rol}" ${data.value === rol.rol ? "selected" : ""}>${rol.rol}</option>
+                            `)
+                            .join("");
+                        return `
+                            <select class="edit-on-change" data-user-id="${row.id_usuario}" data-field="rol">
+                                ${optionsHtml}
+                            </select>`;
+                    }
+                    return data; // En caso de que 'data' sea null o undefined
+                }
+            }],
             ...commonDatatableConfig, // Configuración común
             ajax: {
                 url: 'index.php?view=user&action=user_fetch_page',
                 dataSrc: ''
             },
+
             columns: [{
                     title: "N°",
                     data: null,
@@ -78,27 +109,46 @@ $roles = $roleController->listRoles();
                     },
                 },
                 {
-                    data: 'username'
+                    data: 'cedula'
                 },
                 {
-                    data: 'cedula'
+                    data: 'nombre_completo'
+                },
+                {
+                    data: 'nombre_departamento'
                 },
                 {
                     data: 'rol',
                     render: function(data, type, row) {
-                        let optionsHtml = data.options
-                            .map(rol => `
-                <option value="${rol.id_rol}" ${data.value === rol.rol ? "selected" : ""}>${rol.rol}</option>
-            `)
-                            .join("");
+                        if (type === 'filter') {
+                            // Solo devuelve el valor seleccionado para el filtro
+                            return data.value;
+                        }
+                        if (data.value === "Administrador") {
+                            return data.value;
+                        } else {
+                            let optionsHtml = data.options
+                                .slice(1) // Omitir el primer elemento si es necesario
+                                .map(rol => `
+                    <option value="${rol.id_rol}" ${data.value === rol.rol ? "selected" : ""}>${rol.rol}</option>
+                `)
+                                .join("");
 
-                        return `
-            <select class="edit-on-change" data-user-id="${row.id_usuario}" data-field="rol">
-                ${optionsHtml}
-            </select>`;
+                            return `
+                <select class="edit-on-change" data-user-id="${row.id_usuario}" data-field="rol">
+                    ${optionsHtml}
+                </select>`;
+                        }
                     }
                 }
-            ]
+            ],
+            initComplete: function() {
+                // Aplicar el filtro si el parámetro 'rol' existe
+                if (rol) {
+                    this.api().search(rol).draw();
+                }
+            }
+
         });
     });
 </script>

@@ -7,12 +7,11 @@ use app\config\DataBase;
 
 class UserModel
 {
-    private $username;
+    private $id_usuario;
     private $password;
     private $typeUser = 2;
     private $db;
-    private $id_usuario;
-    
+
 
     public function __construct()
     {
@@ -23,12 +22,59 @@ class UserModel
         $passwordHash = password_hash($password, PASSWORD_DEFAULT);
         return $passwordHash;
     }
-    public function setData($username, $password)
+
+    public function saveDashboardConfig($userId, $config)
     {
-        $this->username = $username;
+        try {
+            $sql = "INSERT INTO dashboard_config (id_usuario_dashboard, dashboard_config) 
+                    VALUES (:id_usuario, :config)
+                    ON DUPLICATE KEY UPDATE dashboard_config = :config";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id_usuario', $userId, \PDO::PARAM_INT);
+            $stmt->bindParam(':config', $config, \PDO::PARAM_STR);
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }
+    
+    public function updatePassword($cedula, $hashedPassword)
+    {
+        try {
+            $sql = "SELECT u.id_usuario 
+                        FROM persona p
+                        JOIN usuario u ON p.id_usuario = u.id_usuario
+                        WHERE p.cedula = :cedula";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':cedula', $cedula);
+            $stmt->execute();
+            $user = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            if (!$user) {
+                return false; // Cedula no encontrada
+            }
+
+            $id_usuario = $user['id_usuario'];
+
+
+            $sql = "UPDATE usuario SET password = :password WHERE id_usuario = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':password', $hashedPassword, \PDO::PARAM_STR);
+            $stmt->bindParam(':id', $id_usuario, \PDO::PARAM_INT);
+            $stmt->execute();
+            return true;
+        } catch (\PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }
+    public function setData($password)
+    {
         $this->password = $password;
     }
-    public function updateRole($id, $id_role){
+    public function updateRole($id, $id_role)
+    {
         try {
             $sql = "UPDATE usuario SET id_rol = :rol WHERE id_usuario = :id";
             $stmt = $this->db->prepare($sql);
@@ -83,24 +129,31 @@ class UserModel
         // Devolver el tipo de usuario para facilitar las pruebas y validaciones
         return $this->typeUser;
     }
-    public function readPage($page, $recordsPerPage)
+    public function readPage()
     {
-        $offset = ($page - 1) * $recordsPerPage;
-        $sql = "SELECT u.id_usuario, u.username, p.cedula, r.rol
+        $sql = "SELECT u.id_usuario, p.cedula, r.rol, concat(p.nombre, ' ', p.apellido) as nombre_completo, d.nombre_departamento
                     FROM usuario u
                     JOIN persona p ON u.id_usuario = p.id_usuario
                     JOIN rol r ON u.id_rol = r.id_rol
-                    ORDER BY u.id_usuario
-                    LIMIT :recordsPerPage OFFSET :offset";
+                    JOIN departamento d ON p.id_departamento = d.id_departamento
+                    ORDER BY u.id_usuario";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindParam(':recordsPerPage', $recordsPerPage, \PDO::PARAM_INT);
-        $stmt->bindParam(':offset', $offset, \PDO::PARAM_INT);
         $stmt->execute();
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
-    
-    public function getAllRoles(){
+
+    public function isSecurityQuestionsSetup($id)
+    {
+        $sql = "SELECT COUNT(*) AS total FROM usuario_pregunta WHERE id_usuario = :id;";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':id', $id, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_ASSOC)['total'] > 0;
+    }
+
+    public function getAllRoles()
+    {
         $sql = "SELECT * FROM rol";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
@@ -114,32 +167,42 @@ class UserModel
         // Obtener el total de registros
         return $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
     }
-    public function updatePersonIdUser($id)
+    public function updatePersonIdUser($idLast, $id)
     {
-        $this->id_usuario = $this->db->lastInsertId();
         // Actualizar el registro en la tabla persona para incluir el id_usuario
         $sql_update = "UPDATE persona SET id_usuario = :id_usuario WHERE cedula = :cedula";
         $stmt_update = $this->db->prepare($sql_update);
-        $stmt_update->bindParam(':id_usuario', $this->id_usuario, \PDO::PARAM_INT);
+        $stmt_update->bindParam(':id_usuario', $idLast, \PDO::PARAM_INT);
         $stmt_update->bindParam(':cedula', $id, \PDO::PARAM_STR);
         $stmt_update->execute();
     }
     public function register()
     {
         try {
-            $sql = "INSERT INTO usuario (username, password, id_rol) VALUES ('$this->username', '$this->password', $this->typeUser)";
-            $resultQuery = $this->db->query($sql);
-            if ($resultQuery) {
+            $this->db->beginTransaction();
 
-                echo "Registro exitoso";
+            $sql = "INSERT INTO usuario (password, id_rol) VALUES (:password, :id_rol)";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':password', $this->password, \PDO::PARAM_STR);
+            $stmt->bindParam(':id_rol', $this->typeUser, \PDO::PARAM_INT);
+
+            $result = $stmt->execute();
+            $id_usuario = $this->db->lastInsertId();
+
+            $this->db->commit();
+
+            if ($result) {
+                $_SESSION['register_success'] = "Registro exitoso. Por favor, inicia sesión.";
+                header("Location: index.php?view=login");
+                return $id_usuario;
             } else {
                 echo "Error en la ejecución de la consulta";
+                return false;
             }
-            $resultQuery->closeCursor();
-            $_SESSION['register_success'] = "Registro exitoso. Por favor, inicia sesión.";
-            header("Location: index.php?view=login");
         } catch (\PDOException $e) {
-            echo "Ha ocurrido un error: " . $e->getMessage(); // Mostrar el mensaje de error
+            $this->db->rollBack();
+            echo "Ha ocurrido un error: " . $e->getMessage();
+            return false;
         }
     }
     public function readAll()
@@ -159,17 +222,19 @@ class UserModel
         }
     }
 
-    public function getUserByUsername($username)
+    public function getUserByCedula($cedula)
     {
         try {
-            $sql = "SELECT * FROM usuario WHERE username = :username";
+            $sql = "SELECT u.* FROM usuario u
+				JOIN persona p on p.id_usuario = u.id_usuario
+				WHERE p.cedula = :cedula";
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':username', $username, \PDO::PARAM_STR);
+            $stmt->bindParam(':cedula', $cedula, \PDO::PARAM_STR);
             $stmt->execute();
             $user = $stmt->fetch(\PDO::FETCH_ASSOC);
 
             if (!$user) {
-                error_log("Usuario no encontrado: " . $username);
+                error_log("Usuario no encontrado: " . $cedula);
             } else {
                 error_log("Usuario encontrado: " . print_r($user, true));
             }
@@ -190,7 +255,7 @@ class UserModel
      */
     public function hasPermission(int $userId, string $permissionName): bool
     {
-        $sql="SELECT COUNT(p.id_permisos)
+        $sql = "SELECT COUNT(p.id_permisos)
                                    FROM usuario u
                                    JOIN rol r ON u.id_rol = r.id_rol
                                    JOIN roles_permisos rp ON r.id_rol = rp.id_rol
@@ -204,5 +269,20 @@ class UserModel
         // Si la consulta devuelve un conteo mayor que 0, significa que el usuario (a través de su rol)
         // tiene el permiso solicitado.
         return $stmt->fetchColumn() > 0;
+    }
+
+    public function getDashboardConfig($userId)
+    {
+        try {
+            $sql = "SELECT dashboard_config FROM dashboard_config WHERE id_usuario_dashboard = :id_usuario";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id_usuario', $userId, \PDO::PARAM_INT);
+            $stmt->execute();
+            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+            return $result ? $result['dashboard_config'] : false;
+        } catch (\PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
     }
 }

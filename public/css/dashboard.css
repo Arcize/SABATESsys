@@ -1,9 +1,10 @@
 /*Controlan la apariencia del layout de los paneles, asi como los paneles mismos*/
 .data-panels {
-  height: 100%; /* O cualquier otra altura que necesites */
+  height: calc(100% - 46px - var(--spacing-medium));
   flex-grow: 1;
   margin: -9px;
 }
+
 .data-panel {
   background-color: #ffffff;
   border-radius: var(--border-radius);
@@ -15,4 +16,10 @@
   color: var(--color-texto);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-size: 16px;
+}
+
+.grid-loading > .grid-stack-item {
+  transition: none !important;
+  /* Alternativamente, si sabes qué propiedades anima Gridstack (top, left, width, height): */
+  /* transition-property: none !important; */
 }

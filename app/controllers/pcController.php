@@ -51,7 +51,7 @@ class PcController
         $this->pcModel->getData(
             $data['fabricante_equipo_informatico'],
             $data['id_estado_equipo'],
-            $data['id_persona'],
+            $data['cedula'],
             $data['fabricante_procesador'],
             $data['nombre_procesador'],
             $data['nucleos'],
@@ -94,11 +94,11 @@ class PcController
     private function updatePC()
     {
         $data = $_POST;
-        $id = $data['id_persona'];
+        $id = $data['id_equipo_informatico'];
         $this->pcModel->getData(
             $data['fabricante_equipo_informatico'],
             $data['id_estado_equipo'],
-            $data['id_persona'],
+            $data['cedula'],
             $data['fabricante_procesador'],
             $data['nombre_procesador'],
             $data['nucleos'],
@@ -127,7 +127,7 @@ class PcController
 
     private function fetchPCOne()
     {
-        $id = $_GET['id_pc'];
+        $id = $_GET['id_equipo_informatico'];
         $pc = $this->pcModel->readOne($id);
 
         header('Content-Type: application/json');
@@ -140,9 +140,7 @@ class PcController
 
     private function fetchPcPage()
     {
-        $page = isset($_GET['page']) ? $_GET['page'] : 1; // Página actual
-        $recordsPerPage = isset($_GET['recordsPerPage']) ? $_GET['recordsPerPage'] : 10; // Número de registros por página
-        $PCs = $this->pcModel->readPage($page, $recordsPerPage);
+        $PCs = $this->pcModel->readPage();
         
         $customSort = [
             "id_equipo_informatico",

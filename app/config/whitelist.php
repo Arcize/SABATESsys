@@ -2,8 +2,11 @@
 return [
     "login",
     "register",
+    "forgotPassword",
+    "securityQuestions",
     "dashboard",
     "employeeTable",
+    "activitiesReportTable",
     "pcTable",
     "pcForm",
     "pcFormNew",
@@ -14,6 +17,7 @@ return [
     "config",
     "bulkDataLoad",
     "inventory",
+    "faultReportV",
     "faultReportTable"
 ];
 ?>

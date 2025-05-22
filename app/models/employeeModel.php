@@ -1,5 +1,7 @@
 <?php
+
 namespace app\models;
+
 use app\config\DataBase;
 
 class EmployeeModel
@@ -30,6 +32,19 @@ class EmployeeModel
         $this->fecha_nac = $fecha_nac;
     }
 
+    public function getCedula($cedula)
+    {
+        // Verifica si la cédula ya existe en la base de datos
+        $sql = "SELECT COUNT(*) AS existe_usuario
+                FROM persona p
+                JOIN usuario u ON p.id_usuario = u.id_usuario
+                WHERE p.cedula = :cedula;";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':cedula', $cedula);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+
+    }
     public function create()
     {
         try {
@@ -73,9 +88,8 @@ class EmployeeModel
         }
     }
 
-    public function readPage($page, $recordsPerPage)
+    public function readPage()
     {
-        $offset = ($page - 1) * $recordsPerPage;
         $sql = "SELECT p.*, d.nombre_departamento, s.sexo
                     FROM persona p
                     JOIN departamento d ON p.id_departamento = d.id_departamento

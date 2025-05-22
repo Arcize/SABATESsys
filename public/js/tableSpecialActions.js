@@ -1,50 +1,84 @@
+const tableId = "faultReportTable"; // Replace with your actual table ID
 async function acceptRepair(reportId) {
-  
-    try {
-      const response = await fetch("index.php?view=faultReport&action=assign_technician", {
-        method: 'POST',
+
+  try {
+    const body = new URLSearchParams({
+      report_id: reportId,
+      state: 2,
+    })
+    const response = await fetch(
+      "index.php?view=faultReport&action=assign_technician",
+      {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+          "Content-Type": "application/x-www-form-urlencoded",
         },
-        body: `report_id=${encodeURIComponent(reportId)}&action=accept_repair`
-      });
-  
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log('Server response (Accept Repair):', responseData);
-        $(`#${tableId}`).DataTable().ajax.reload(null, false); // false mantiene la página actual
-        // Here you can update the user interface
-      } else {
-        console.error('Error accepting repair:', response.status);
-        const errorData = await response.json();
-        console.error('Error details:', errorData);
-        showMessage('Error accepting repair', 'error');
+        body: body,
+
       }
-    } catch (error) {
-      console.error('Network error accepting repair:', error);
-      showMessage('Network error', 'error');
+    );
+
+    if (response.ok) {
+      acceptRepairSuccess();
+      const responseData = await response.json();
+      console.log("Server response (Accept Repair):", responseData);
+      $(`#${tableId}`).DataTable().ajax.reload(null, false); // false mantiene la página actual
+      // Here you can update the user interface
+    } else {
+      console.error("Error accepting repair:", response.status);
+      const errorData = await response.json();
+      console.error("Error details:", errorData);
+      showMessage("Error accepting repair", "error");
     }
+  } catch (error) {
+    console.error("Network error accepting repair:", error);
+    showMessage("Network error", "error");
   }
-  
-  document.addEventListener('click', function(event) {
-    if (event.target.classList.contains('accept-repair-button')) {
-      const reportId = event.target.dataset.reportId;
-      if (reportId) {
-        acceptRepair(reportId);
-      } else {
-        console.error('Report ID not found on the button.');
+}
+
+async function rejectRepair(reportId) {
+  try {
+    const body = new URLSearchParams({
+      report_id: reportId,
+      state: 1,
+    })
+    const response = await fetch(
+      "index.php?view=faultReport&action=unassign_technician",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: body,
       }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Error rejecting repair:", response.status, errorData);
+      showMessage("Error rejecting repair", "error");
+      return;
     }
-  });
-  
-  // Example function to show messages (make sure it's defined or move it as well)
-  function showMessage(message, type) {
-    const messageDiv = document.createElement('div');
-    messageDiv.textContent = message;
-    messageDiv.classList.add('message', type);
-    document.body.appendChild(messageDiv);
-  
-    setTimeout(() => {
-      messageDiv.remove();
-    }, 3000);
+    rejectRepairSuccess();
+
+    const responseData = await response.json();
+    console.log("Server response (Reject Repair):", responseData);
+    $(`#${tableId}`).DataTable().ajax.reload(null, false); // Mantiene la página actual
+    // Aquí puedes actualizar la interfaz de usuario
+  } catch (error) {
+    console.error("Network error rejecting repair:", error);
+    showMessage("Network error", "error");
   }
+}
+
+// Example function to show messages (make sure it's defined or move it as well)
+function showMessage(message, type) {
+  const messageDiv = document.createElement("div");
+  messageDiv.textContent = message;
+  messageDiv.classList.add("message", type);
+  document.body.appendChild(messageDiv);
+
+  setTimeout(() => {
+    messageDiv.remove();
+  }, 3000);
+}

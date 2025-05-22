@@ -27,9 +27,6 @@ class FaultReportController
             case 'faultReport_fetch_update':
                 $this->updateReport();
                 break;
-            case 'faultReport_fetch_one':
-                $this->fetchReport();
-                break;
             case 'faultReport_fetch_page':
                 $this->fetchReportsPage();
                 break;
@@ -39,6 +36,13 @@ class FaultReportController
             case 'assign_technician':
                 $this->assignTechnician();
                 break;
+            case 'unassign_technician':
+                $this->unassignTechnician();
+                break;
+            case 'generateReport':
+                $this->generateReport();
+                break;
+
             default:
                 break;
         }
@@ -51,19 +55,20 @@ class FaultReportController
         $contenido_reporte_fallas = $_POST['contenido_reporte_fallas'];
         $fecha_falla = $_POST['fecha_falla'];
         $id_tipo_falla = $_POST['id_tipo_falla'];
-        
+
         $this->faultReportsModel->setData($id_usuario, $id_equipo_informatico, $contenido_reporte_fallas, $fecha_falla, $id_tipo_falla);
         $result = $this->faultReportsModel->create();
 
-        // Retornar respuesta como JSON
         header('Content-Type: application/json');
-        if ($result) {
+        if ($result['success'] && $result['id']) {
+            $id_reporte_fallas = $result['id'];
+            $this->faultReportsModel->createTracking($id_reporte_fallas, null, $id_usuario);
+
             echo json_encode(['success' => true, 'message' => 'Reporte de fallas creado correctamente', 'type' => 'create']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Error al crear el reporte de fallas']);
         }
     }
-
     private function deleteReport()
     {
         $id = $_GET['id_fault_report'];
@@ -101,10 +106,11 @@ class FaultReportController
         }
     }
 
-    private function fetchReport()
+    private function generateReport()
     {
-        $id = $_GET['id_fault_report'];
-        $report = $this->faultReportsModel->readOne($id);
+        $id = $_POST['id_fault_report'];
+        $type = $_POST['id_type_report'];
+        $report = $this->faultReportsModel->readOne($id, $type);
 
         // Retornar datos como JSON
         header('Content-Type: application/json');
@@ -117,9 +123,7 @@ class FaultReportController
 
     private function fetchReportsPage()
     {
-        $page = isset($_GET['page']) ? $_GET['page'] : 1; // Página actual
-        $recordsPerPage = isset($_GET['recordsPerPage']) ? $_GET['recordsPerPage'] : 10; // Número de registros por página
-        $reports = $this->faultReportsModel->readPage($page, $recordsPerPage);
+        $reports = $this->faultReportsModel->readPage();
 
         // Retornar datos como JSON
         header('Content-Type: application/json');
@@ -147,6 +151,7 @@ class FaultReportController
     {
         $technicianId = $_SESSION['id_usuario']; // ID del técnico desde la sesión
         $reportId = $_POST['report_id']; // ID del reporte desde la solicitud
+        $state = $_POST['state']; // Nuevo estado desde la solicitud
 
         if (!$technicianId || !$reportId) {
             header('Content-Type: application/json');
@@ -154,14 +159,41 @@ class FaultReportController
             return;
         }
 
-        $result = $this->faultReportsModel->updateTechnician($reportId, $technicianId);
+        $result = $this->faultReportsModel->updateTechnician($reportId, $technicianId, $state);
 
         // Retornar respuesta como JSON
         header('Content-Type: application/json');
         if ($result) {
+            // Crear registro en la tabla seguimiento
+            $this->faultReportsModel->createTracking($reportId, 'Reporte aceptado', $technicianId);
+
             echo json_encode(['success' => true, 'message' => 'Técnico asignado correctamente']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Error al asignar técnico']);
+        }
+    }
+    private function unassignTechnician()
+    {
+        $reportId = $_POST['report_id'];
+        $state = $_POST['state'];
+
+        if (!$reportId) {
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => 'Datos insuficientes para asignar técnico']);
+            return;
+        }
+
+        // Registrar en seguimiento el rechazo del técnico ANTES de quitar el técnico asignado
+        $id_usuario = $_SESSION['id_usuario'];
+        $result = $this->faultReportsModel->deleteTechnician($reportId, $state);
+        $this->faultReportsModel->createTracking($reportId, 'Reporte Rechazado', $id_usuario, true);
+
+
+        header('Content-Type: application/json');
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Técnico rechazó el reporte correctamente']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Error al rechazar el reporte']);
         }
     }
 }

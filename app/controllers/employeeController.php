@@ -42,6 +42,8 @@ class EmployeeController
             case 'get_Cedula_By_Pc':
                 $this->getCedulaByPc();
                 break;
+            case 'get_Cedula':
+                $this->getCedula();
             default:
                 break;
         }
@@ -148,6 +150,19 @@ class EmployeeController
             echo json_encode(["exist" => $exist]);
         } else {
             echo json_encode(['error' => 'No se encontraron registros']);
+        }
+    }
+
+    private function getCedula()
+    {
+        $cedula = $_GET['cedula'];
+        $employee = $this->employeeModel->getCedula($cedula);
+        // Retornar datos como JSON
+        header('Content-Type: application/json');
+        if ($employee) {
+            echo json_encode(["exist" => $employee]);
+        } else {
+            echo json_encode(["error" => 'No se encontraron registros']);
         }
     }
 

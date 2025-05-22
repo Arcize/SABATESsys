@@ -22,8 +22,8 @@
 .modal-box {
   margin: auto;
   background-color: #ffffff;
-  width: 60%;
-  max-width: 600px;
+  min-width: 600px;
+  max-width: 50vw;
   height: fit-content;
   padding: 2.5em;
   border-radius: var(--border-radius);
@@ -58,6 +58,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
+  gap: 1rem;
 }
 .modal-footer {
   display: flex;

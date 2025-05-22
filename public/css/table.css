@@ -26,8 +26,7 @@ table.dataTable > thead > tr > td {
   background-color: transparent;
 }
 div.dt-container .dt-search input {
-  padding: 0 5px;
-  height: 30px;
+  padding: 6px 12px;
   border-radius: var(--border-radius);
 }
 .dt-paging-button {
@@ -36,77 +35,6 @@ div.dt-container .dt-search input {
 .table-actions {
   display: flex;
   gap: 15px;
-}
-.table-filters {
-  display: flex;
-  height: 32px;
-}
-.filter-dropdown {
-  position: relative;
-  height: 100%;
-}
-.filter-button {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-  height: 100%;
-  border: solid 1px rgba(0, 0, 0, 0.2);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f6f6f6;
-  padding: 0px 8px;
-}
-.filter-dropdown-menu {
-  display: none;
-  position: absolute;
-  left: 0;
-  top: calc(100% + 8px);
-  background-color: #ffffff;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-  border-radius: var(--border-radius);
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-}
-.filter-dropdown-menu a {
-  font-size: 14px;
-  color: var(--color-texto);
-  padding: 10px 16px;
-  text-decoration: none;
-  display: block;
-  transition: var(--transition-standart);
-}
-.filter-dropdown-menu a:hover:first-child {
-  border-top-left-radius: var(--border-radius);
-  border-top-right-radius: var(--border-radius);
-}
-.filter-dropdown-menu a:hover:last-child {
-  border-bottom-left-radius: var(--border-radius);
-  border-bottom-right-radius: var(--border-radius);
-}
-.filter-dropdown-menu a:hover {
-  background-color: var(--color-white-hover);
-  transition: var(--transition-standart);
-}
-.filter-dropdown-menu-visible {
-  display: block;
-}
-.search-input {
-  border-radius: 0;
-  border: solid 1px rgba(0, 0, 0, 0.2);
-  border-left: none;
-  border-right: none;
-  font-size: 16px;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  width: 15vw;
-  max-width: 200px;
-  height: 100%;
-}
-.search-input:focus,
-.search-input:valid {
-  border: solid 1px rgba(0, 0, 0, 0.2);
-  border-left: none;
-  border-right: none;
 }
 .search-button {
   background-color: var(--color-primario);
@@ -148,7 +76,7 @@ div.dt-container .dt-search input {
 td select {
   border: 0;
   width: 60%;
-  max-width: 150px;
+  max-width: 170px;
   height: 100%;
 }
 .table-row {
@@ -158,10 +86,28 @@ td select {
 .table td:last-child {
   padding: 0;
 }
+#faultReportTable td:nth-last-child(2) {
+  padding: 0;
+}
 #userTable td:nth-child(4) {
   padding: 0;
 }
-.table-body .empty-row-cell {
+div.dt-buttons > .dt-button,
+div.dt-buttons > div.dt-button-split .dt-button {
+  background-color: var(--color-primario);
+  color: var(--color-claro);
+  border-radius: var(--border-radius);
+  padding: 6px 12px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+div.dt-buttons > .dt-button:hover:not(.disabled),
+div.dt-buttons
+  > div.dt-button-split
+  .dt-button:hover:not(.disabled){
+  background-color: var(--color-primario);
+  }
+  .table-body
+  .empty-row-cell {
   border: none;
   height: 39px;
 }
@@ -194,20 +140,81 @@ td select {
   align-items: center;
   justify-content: center;
 }
-.edit-button {
+.green-button {
   background-color: #4caf50;
 }
-.delete-button {
+.red-button {
   background-color: #f44336;
 }
-.details-button {
+.yellow-button {
   background-color: #ffc107;
 }
+.cyan-button {
+  background-color: #00bcd4;
+}
+.date-filter {
+  border: solid 1px rgba(0, 0, 0, 0.2);
+  padding: 6px 12px;
+  border-radius: var(--border-radius);
+}
+.date-filter-container {
+  display: flex;
+  gap: 5px;
+}
+.reset-button {
+  padding: 6px 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.dark-button {
+  background-color: rgb(81, 81, 81);
+}
+.actions-dropdown-container {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  overflow: visible;
+}
+.actions-dropdown-menu {
+  background-color: #fff;
+  position: absolute;
+  top: 0;
+  transform: translateY(-25%);
+  right: 70%;
+  border-radius: var(--border-radius);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+.crud-option {
+  background-color: transparent;
+  width: 100%;
+  padding: 8px 12px;
+}
+.crud-option:hover {
+  background-color: var(--color-white-hover);
+}
+
+.states {
+  color: var(--color-claro);
+  padding: 4px 8px;
+  border-radius: var(--border-radius);
+}
+.status-pending {
+  background-color: #ffa500;
+}
+.status-accepted {
+  background-color: #007bff;
+}
+.status-completed {
+  background-color: #28a745;
+}
+
 div.dt-container .dt-paging .dt-paging-button.current,
 div.dt-container .dt-paging .dt-paging-button.current:hover {
   border: 0;
   background-color: var(--color-primario);
   color: var(--color-claro) !important;
+  border-radius: var(--border-radius);
 }
 
 div.dt-container .dt-paging .dt-paging-button {
@@ -228,4 +235,5 @@ div.dt-container .dt-paging .dt-paging-button:hover {
   border: 0;
   background: none;
   background-color: var(--color-primario);
+  border-radius: var(--border-radius);
 }

@@ -7,7 +7,7 @@ use app\controllers\UserController;
 $userController = new UserController;
 ?>
 
-<aside class="navbar">
+<aside class="navbar navbar-loading">
     <nav class="navbar__nav">
         <div class="navbar__header">
             <h1 class="page_header">SABATES</h1>
@@ -40,7 +40,7 @@ $userController = new UserController;
                     </a>
                 </div>
             <?php endif ?>
-            <?php if ($viewData['puede_ver_inventario']): ?>
+            <!-- <?php if ($viewData['puede_ver_inventario']): ?>
                 <div class="navbar__item">
                     <a href="index.php?view=inventory" class="navbar__link">
                         <div class="navbar__item-content">
@@ -53,110 +53,66 @@ $userController = new UserController;
                         </div>
                     </a>
                 </div>
-            <?php endif; ?>
+            <?php endif; ?> -->
 
-            <?php if ($viewData['puede_ver_empleados'] or $viewData['puede_ver_equipos']): ?>
+
+            <?php if ($viewData['puede_ver_empleados']): ?>
                 <div class="navbar__item">
-                    <a class="accordion__header navbar__link">
+                    <a href="index.php?view=employeeTable" class="navbar__link">
                         <div class="navbar__item-content">
                             <div class="navbar__icon">
                                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#f6f6f6">
-                                    <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
+                                    <path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-240v-32q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v32q0 33-23.5 56.5T720-160H240q-33 0-56.5-23.5T160-240Z" />
                                 </svg>
                             </div>
-                            <div class="navbar__text">Consultar</div>
-                        </div>
-                        <div class="arrow">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#f6f6f6" class="imgArrow">
-                                <path d="M459-381 314-526q-3-3-4.5-6.5T308-540q0-8 5.5-14t14.5-6h304q9 0 14.5 6t5.5 14q0 2-6 14L501-381q-5 5-10 7t-11 2q-6 0-11-2t-10-7Z" />
-                            </svg>
+                            <div class="navbar__text">Empleados</div>
                         </div>
                     </a>
                 </div>
-
-                <div class="accordion">
-                    <div class="accordion__content">
-                        <?php if ($viewData['puede_ver_empleados']): ?>
-                            <div class="navbar__item">
-                                <a href="index.php?view=employeeTable" class="navbar__link">
-                                    <div class="navbar__item-content">
-                                        <div class="navbar__icon">
-                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#f6f6f6">
-                                                <path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-240v-32q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v32q0 33-23.5 56.5T720-160H240q-33 0-56.5-23.5T160-240Z" />
-                                            </svg>
-                                        </div>
-                                        <div class="navbar__text">Empleados</div>
-                                    </div>
-                                </a>
+            <?php endif; ?>
+            <?php if ($viewData['puede_ver_equipos']): ?>
+                <div class="navbar__item">
+                    <a href="index.php?view=pcTable" class="navbar__link">
+                        <div class="navbar__item-content">
+                            <div class="navbar__icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#f6f6f6">
+                                    <path d="M80-120q-17 0-28.5-11.5T40-160q0-17 11.5-28.5T80-200h800q17 0 28.5 11.5T920-160q0 17-11.5 28.5T880-120H80Zm80-120q-33 0-56.5-23.5T80-320v-440q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v440q0 33-23.5 56.5T800-240H160Z" />
+                                </svg>
                             </div>
-                        <?php endif; ?>
-                        <?php if ($viewData['puede_ver_equipos']): ?>
-                        <div class="navbar__item">
-                            <a href="index.php?view=pcTable" class="navbar__link">
-                                <div class="navbar__item-content">
-                                    <div class="navbar__icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="22px" viewBox="0 -960 960 960" width="22px" fill="#f6f6f6">
-                                            <path d="M80-120q-17 0-28.5-11.5T40-160q0-17 11.5-28.5T80-200h800q17 0 28.5 11.5T920-160q0 17-11.5 28.5T880-120H80Zm80-120q-33 0-56.5-23.5T80-320v-440q0-33 23.5-56.5T160-840h640q33 0 56.5 23.5T880-760v440q0 33-23.5 56.5T800-240H160Z" />
-                                        </svg>
-                                    </div>
-                                    <div class="navbar__text">Equipos</div>
-                                </div>
-                            </a>
+                            <div class="navbar__text">Equipos</div>
                         </div>
-                        <?php endif; ?>
-                    </div>
+                    </a>
                 </div>
             <?php endif; ?>
             <div class="navbar__item">
-                <a class="accordion__header navbar__link">
+                <a href="index.php?view=faultReportTable" class="navbar__link">
                     <div class="navbar__item-content">
                         <div class="navbar__icon">
                             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#f6f6f6">
-                                <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h168q13-36 43.5-58t68.5-22q38 0 68.5 22t43.5 58h168q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm80-160h280v-80H280v80Zm0-160h400v-80H280v80Zm0-160h400v-80H280v80Zm200-190q13 0 21.5-8.5T510-820q0-13-8.5-21.5T480-850q-13 0-21.5 8.5T450-820q0 13 8.5 21.5T480-790Z" />
+                                <path d="M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm0-160q17 0 28.5-11.5T520-480v-160q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v160q0 17 11.5 28.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
                             </svg>
                         </div>
-                        <div class="navbar__text">Reportes</div>
-                    </div>
-                    <div class="arrow">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#f6f6f6" class="imgArrow">
-                            <path d="M459-381 314-526q-3-3-4.5-6.5T308-540q0-8 5.5-14t14.5-6h304q9 0 14.5 6t5.5 14q0 2-6 14L501-381q-5 5-10 7t-11 2q-6 0-11-2t-10-7Z" />
-                        </svg>
+                        <div class="navbar__text">Fallas</div>
                     </div>
                 </a>
             </div>
-            <div class="accordion">
-                <div class="accordion__content">
-                    <div class="navbar__item">
-                        <a href="index.php?view=faultReportTable" class="navbar__link">
-                            <div class="navbar__item-content">
-                                <div class="navbar__icon">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#f6f6f6">
-                                        <path d="M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm0-160q17 0 28.5-11.5T520-480v-160q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v160q0 17 11.5 28.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
-                                    </svg>
-                                </div>
-                                <div class="navbar__text">Fallas</div>
-                            </div>
-                        </a>
-                    </div>
-                    <?php if ($viewData['puede_ver_actividad']): ?>
+            <?php if ($viewData['puede_ver_actividad']): ?>
 
-                        <div class="navbar__item">
-                            <a href="" class="navbar__link">
-                                <div class="navbar__item-content">
-                                    <div class="navbar__icon">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#f6f6f6">
-                                            <path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm280-240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z" />
-                                        </svg>
-                                    </div>
-                                    <div class="navbar__text">Actividades</div>
-                                </div>
-                            </a>
+                <div class="navbar__item">
+                    <a href="index.php?view=activitiesReportTable" class="navbar__link">
+                        <div class="navbar__item-content">
+                            <div class="navbar__icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#f6f6f6">
+                                    <path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm280-240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z" />
+                                </svg>
+                            </div>
+                            <div class="navbar__text">Actividades</div>
                         </div>
-                    <?php endif ?>
+                    </a>
                 </div>
-            </div>
+            <?php endif ?>
         </div>
     </nav>
 </aside>
-<script src="./js/collapseNavbar.js"></script>
 <script src="./js/accordion.js"></script>
+<script src="./js/collapseNavbar.js"></script>

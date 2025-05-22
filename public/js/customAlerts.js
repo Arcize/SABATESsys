@@ -1,6 +1,4 @@
-const viewName = form.getAttribute("formType");
-const idName =  inputKey.getAttribute("id");
-function confirmDelete(id) {
+function confirmDelete(id, viewName, idName) {
   Swal.fire({
     title: "¿Estás seguro?",
     text: "No podrás revertir esto.",
@@ -77,6 +75,42 @@ function fetchEditSuccess() {
   Swal.fire({
     title: "¡Éxito!",
     text: "Tu registro ha sido actualizado.",
+    icon: "success",
+    timer: 2000,
+    customClass: {
+      popup: "custom-swal-font",
+    },
+  });
+}
+
+function acceptRepairSuccess() {
+  Swal.fire({
+    title: "¡Éxito!",
+    text: "Reparación aceptada.",
+    icon: "success",
+    timer: 2000,
+    customClass: {
+      popup: "custom-swal-font",
+    },
+  });
+}
+
+function pleaseLoadImg() {
+  Swal.fire({
+    title: "¡Error!",
+    text: "Por favor, sube al menos una imagen para el reporte.",
+    icon: "error",
+    timer: 2000,
+    customClass: {
+      popup: "custom-swal-font",
+    },
+  });
+}
+
+function rejectRepairSuccess() {
+  Swal.fire({
+    title: "¡Éxito!",
+    text: "Reparación rechazada.",
     icon: "success",
     timer: 2000,
     customClass: {

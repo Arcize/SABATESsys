@@ -31,6 +31,7 @@
  * - Carga la vista apropiada según el parámetro 'view'.
  * - Redirige al inicio de sesión si se intenta acceder a vistas restringidas sin haber iniciado sesión.
 */
+define('APP_ROOT_PATH', dirname(__DIR__));
 if (session_status() == PHP_SESSION_NONE) {
     session_name("SesionUsuario");
     session_start();
@@ -45,8 +46,13 @@ use app\controllers\UserController;
 use app\controllers\FaultReportController;
 use app\controllers\ChartController;
 use app\controllers\BulkUploadController;
+use app\controllers\SecurityQuestionsController;
+use app\controllers\ActivitiesReportController;
+use app\controllers\UploadController;
 use app\helpers\PermissionHelper;
 use app\helpers\Security; // Importa la clase Security
+use app\helpers\PdfHelper;
+use Dompdf\Helpers;
 
 // Inicializa los controladores que se usan globalmente
 $SessionController = new SessionController();
@@ -92,9 +98,28 @@ if ($viewName === "faultReport") {
     $faultReportController->handleRequestFaultReport();
     exit();
 }
+if ($viewName === "securityQuestions") {
+    $securityQuestionsController = new SecurityQuestionsController();
+    $securityQuestionsController->handleRequestSecurityQuestions();
+    exit();
+}
 if ($viewName === "user") {
     $userController = new UserController();
     $userController->handleRequestUser();
+    exit();
+}
+if ($viewName === "activitiesReport") {
+    $activitiesReportController = new ActivitiesReportController();
+    $activitiesReportController->handleRequestActivitiesReport();
+    exit();
+}
+if ($viewName === "upload") {
+    $uploadController = new UploadController();
+    $uploadController->handleUpload();
+    exit();
+}
+if ($viewName === "pdf") {
+    PdfHelper::generatePdf($_POST['htmlContent']);
     exit();
 }
 ?>
@@ -113,9 +138,9 @@ if ($viewName === "user") {
         $userController->registerUser();
         exit();
     } elseif ($viewName == "login_user" && $_SERVER['REQUEST_METHOD'] == 'POST') {
-        $username = $_POST['username'];
+        $cedula = $_POST['cedula'];
         $password = $_POST['password'];
-        $SessionController->login($username, $password);
+        $SessionController->login($cedula, $password);
         exit();
     } elseif ($viewName == "logout") {
         $SessionController->logout();
@@ -125,11 +150,26 @@ if ($viewName === "user") {
         $view = $viewController->getViewController($viewName);
 
         if ($SessionController->isLoggedIn()) {
-            if ($viewName == "login" || $viewName == "register") {
+            if ($viewName == "login" || $viewName == "register" || $viewName == "forgotPassword") {
                 // Evita redirecciones innecesarias si ya está logueado y se intenta acceder a login o register
                 header("Location: index.php?view=dashboard");
                 exit();
             } else {
+                if (!$userController->isSecurityQuestionsSetup()) {
+                    $_SESSION['securityQuestions'] = false;
+    ?>
+                    <div class="principal">
+                        <div class="content">
+                            <?php
+                            require_once __DIR__ . '/../app/views/layouts/user-bar.php';
+
+                            require_once __DIR__ . '/../app/views/layouts/securityQuestions.php';
+                            exit();
+                            ?>
+                        </div>
+                    </div>
+                <?php
+                } else {
                 ?>
                     <div class="layout">
                         <?php
@@ -143,27 +183,46 @@ if ($viewName === "user") {
 
                                 <?php
                                 require_once $view;
-                                if (in_array($viewName, ['employeeTable', 'pcTable', 'faultReportTable', 'userTable'])) {
+                                if (in_array($viewName, ['employeeTable', 'pcTable', 'faultReportTable', 'userTable', 'activitiesReportTable'])) {
                                     echo '<script src="./js/datatableConfig.js"></script>';
+                                    echo '<script src="./js/dropzone.min.js"></script>';
                                     echo '<script src="./js/modal.js"></script>';
                                     echo '<script src="./js/customAlerts.js"></script>';
+                                    echo '<script src="./js/html2canvas.min.js"></script>';
+                                    echo '<script src="./js/dataTables.dateTime.min.js"></script>';
+                                    // echo '<script src="./js/dataTables.responsive.min.js"></script>';
+
                                 }
                                 if (in_array($viewName, ['faultReportTable', 'userTable'])) {
                                     echo '<script src="./js/tableSpecialActions.js"></script>';
                                 }
+                                if ($viewName == 'activitiesReportTable') {
+                                    // echo '<script src="./js/dropzone.min.js"></script>';
+                                    // echo '<script src="./js/dropzoneActivities.js"></script>';
+                                }
                                 if ($viewName == 'bulkDataLoad') {
                                     echo '<script src="./js/fileUpload.js"></script>';
+                                }
+                                if ($viewName == 'pcTable') {
+                                    echo '<script src="./js/multi_step_form.js"></script>';
+                                }
+
+                                if ($viewName == 'dashboard') {
+                                    echo '<script src="./js/chart.umd.js"></script>';
                                 }
                                 ?>
 
                             </div>
                         </div>
                     </div>
-                <?php
+    <?php
+                }
             }
         } else {
             // Si no está logueado, permite acceso solo a ciertas vistas
-            $publicViews = ["login", "register", "forgot-password", "reset-password"]; // Añade aquí las vistas públicas
+            echo '<script src="./js/forgotPassword.js"></script>';
+
+            $publicViews = ["login", "register", "forgotPassword"]; // Añade aquí las vistas públicas
             if (!in_array($viewName, $publicViews)) {
                 header("Location: index.php?view=login");
                 exit();
