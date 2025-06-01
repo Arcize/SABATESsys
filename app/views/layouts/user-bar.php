@@ -20,18 +20,10 @@
                     </svg>
                 </button>
                 <div id="notifications-menu" class="dropdown-menu">
-                    <a href="#">
-                        <div>
-                            <span>Reporte de Falla</span>
-                            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                        </div>
-                    </a>
-                    <a href="#">
-                        <span>Notificación 2</span>
-                    </a>
-                    <a href="#">
-                        <span>Notificación 3</span>
-                    </a>
+                    <div class="notification-list" id="notification-list">
+                        <div style="text-align:center; color:#888; padding:1em;">Cargando notificaciones...</div>
+                    </div>
+                    <button id="see-all-notifications">Ver todas</button>
                 </div>
             </div>
         <?php endif ?>
@@ -47,7 +39,7 @@
             </button>
             <div id="user-menu" class="dropdown-menu">
                 <?php if (!isset($_SESSION["securityQuestions"])): ?>
-                    <a href="#">
+                    <a href="index.php?view=perfil">
                         <span>Perfil</span>
                     </a>
                     <?php if ($viewData['puede_ver_configuracion']): ?>
@@ -60,11 +52,103 @@
 
                 <a href="index.php?view=logout">
                     <span>Cerrar sesión</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#212121">
-                        <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z" />
-                    </svg>
                 </a>
             </div>
         </div>
     </div>
 </header>
+
+<?php
+// Obtener el id_usuario y el id_rol de la sesión
+$id_usuario = $_SESSION['id_usuario'] ?? null;
+$id_rol = $_SESSION['id_rol'] ?? null;
+$tipo_notificacion = null;
+$id_destino = null;
+if ($id_usuario && $id_rol) {
+    // Si es admin o técnico, mostrar por rol, si es usuario normal, mostrar individuales
+    if (isset($_SESSION['es_admin']) && $_SESSION['es_admin']) {
+        $tipo_notificacion = 'rol';
+        $id_destino = $id_rol;
+    } else if (isset($_SESSION['es_tecnico']) && $_SESSION['es_tecnico']) {
+        $tipo_notificacion = 'rol';
+        $id_destino = $id_rol;
+    } else {
+        $tipo_notificacion = 'individual';
+        $id_destino = $id_usuario;
+    }
+}
+?>
+
+<script>
+    function fetchNotifications() {
+        let tipo = 'individual';
+        let id_destino = <?php echo isset($_SESSION['id_usuario']) ? (int)$_SESSION['id_usuario'] : 'null'; ?>;
+        <?php if (isset($_SESSION['role'])): ?>
+            <?php if ($_SESSION['role'] == 1): ?>
+                tipo = 'rol';
+                id_destino = 1; // Administrador
+            <?php elseif ($_SESSION['role'] == 3): ?>
+                tipo = 'rol';
+                id_destino = 3; // Técnico
+            <?php endif; ?>
+        <?php endif; ?>
+        fetch(`index.php?view=notificaciones&action=fetch&tipo=${tipo}&id_destino=${id_destino}`)
+            .then(response => response.json())
+            .then(data => {
+                const list = document.getElementById('notification-list');
+                const notifButton = document.querySelector('.notifications > button');
+                if (!list) return;
+                // Calcular cantidad de no leídas
+                let unreadCount = 0;
+                if (Array.isArray(data)) {
+                    unreadCount = data.filter(n => !n.leida).length;
+                }
+                // Actualizar badge dinámico
+                if (notifButton) {
+                    if (unreadCount > 0) {
+                        notifButton.setAttribute('data-count', unreadCount);
+                    } else {
+                        notifButton.removeAttribute('data-count');
+                    }
+                }
+                if (!data || data.length === 0) {
+                    list.innerHTML = '<div style="text-align:center; color:#888; padding:1em;">No hay notificaciones nuevas.</div>';
+                    return;
+                }
+                list.innerHTML = data.map(n => {
+                    // Extraer el código de reporte si existe en el mensaje o usar id_reporte_asociado
+                    let codigoReporte = null;
+                    if (n.codigo_reporte_fallas) {
+                        codigoReporte = n.codigo_reporte_fallas;
+                    } else {
+                        // Intentar extraer del mensaje si no viene directo
+                        const match = n.mensaje.match(/#([A-Za-z0-9\-_]+)/);
+                        if (match) {
+                            codigoReporte = match[1];
+                        }
+                    }
+                    let href = '#';
+                    if (codigoReporte) {
+                        href = `index.php?view=faultReportTable&codigo=${encodeURIComponent(codigoReporte)}`;
+                    }
+                    return `
+                        <a href="${href}" class="notification-item${n.leida ? '' : ' unread'}">
+                            <div class="notification-content">
+                                <div class="notification-header">
+                                    <span class="notification-title">Nuevo Reporte de Falla</span>
+                                    <span class="notification-date">${n.fecha_creacion ? new Date(n.fecha_creacion).toLocaleString('es-ES') : ''}</span>
+                                </div>
+                                <p class="notification-message">${n.mensaje}</p>
+                            </div>
+                        </a>
+                    `;
+                }).join('');
+            })
+            .catch(() => {
+                const list = document.getElementById('notification-list');
+                if (list) list.innerHTML = '<div style="text-align:center; color:#888; padding:1em;">Error al cargar notificaciones.</div>';
+            });
+    }
+    setInterval(fetchNotifications, 5000);
+    document.addEventListener('DOMContentLoaded', fetchNotifications);
+</script>

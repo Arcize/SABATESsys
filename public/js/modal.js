@@ -173,6 +173,9 @@ document.addEventListener("click", (event) => {
           }
         });
 
+        // --- BLOQUEAR CAMPOS EN MODO EDICIÓN ---
+        setReadonlyFields(currentForm, true);
+
         // Manejo de formularios multipasos
         if (currentForm.classList.contains("multi-step-form")) {
           console.log("Formulario multipasos detectado.");
@@ -240,7 +243,52 @@ document.addEventListener("click", (event) => {
           }
         }
 
-        // --------------------------------------------------------
+        // --- NUEVO: Rellenar participantes en modo edición ---
+        if (
+          formType === "activitiesReport" &&
+          Array.isArray(data.participants)
+        ) {
+          window.participantes = data.participants;
+          if (typeof renderParticipantes === "function") {
+            renderParticipantes();
+          } else {
+            // Si no existe la función global, implementa aquí una versión mínima:
+            const list = document.getElementById("participantes-list");
+            const hidden = document.getElementById("participantes-hidden");
+            const input = document.getElementById("participantes-input");
+            const error = document.getElementById("participantes-error");
+            if (list && hidden) {
+              list.innerHTML = "";
+              window.participantes.forEach((persona) => {
+                const span = document.createElement("span");
+                span.className = "participante-span";
+                span.textContent = persona.cedula + " - " + persona.nombre;
+                const x = document.createElement("span");
+                x.className = "participante-remove";
+                x.textContent = " ×";
+                x.style.cursor = "pointer";
+                x.addEventListener("click", function () {
+                  window.participantes = window.participantes.filter(
+                    (p) => p.cedula !== persona.cedula
+                  );
+                  if (typeof renderParticipantes === "function")
+                    renderParticipantes();
+                });
+                span.appendChild(x);
+                list.appendChild(span);
+              });
+              hidden.value = window.participantes
+                .map((p) => p.cedula)
+                .join(",");
+              if (window.participantes.length === 0) {
+                if (error) error.style.display = "";
+              } else {
+                if (error) error.style.display = "none";
+              }
+              if (input) input.disabled = window.participantes.length >= 4;
+            }
+          }
+        }
 
         openModalWithAnimations(overlay, modal);
       })
@@ -249,6 +297,8 @@ document.addEventListener("click", (event) => {
       );
   } else {
     // Modo creación o modal sin fetch
+    // --- DESBLOQUEAR CAMPOS EN MODO CREACIÓN ---
+    setReadonlyFields(currentForm, false);
     openModalWithAnimations(overlay, modal);
   }
 });
@@ -264,6 +314,32 @@ document.addEventListener("submit", async (event) => {
   const sentBtn = form.querySelector(".sentBtn");
   const dropzoneElement = form.querySelector("#dropzone-area");
   const formType = form.getAttribute("formType");
+
+  // --- VALIDACIÓN DE PARTICIPANTES ANTES DE BLOQUEAR EL FORMULARIO ---
+  if (
+    formType === "activitiesReport" &&
+    typeof window.participantes !== "undefined" &&
+    window.participantes.length === 0
+  ) {
+    const input = document.getElementById("participantes-input");
+    const error = document.getElementById("participantes-error");
+    if (window.Swal) {
+      Swal.fire({
+        icon: "warning",
+        title: "Debe agregar al menos un participante",
+        text: "No puede guardar el reporte sin participantes.",
+        confirmButtonText: "Aceptar",
+        customClass: {
+          popup: "custom-swal-font",
+        },
+      });
+    } else {
+      alert("Debe agregar al menos un participante.");
+    }
+    if (error) error.style.display = "";
+    if (input) input.focus();
+    return; // NO continuar, NO bloquear el formulario
+  }
 
   // **VERIFICACIÓN CRUCIAL PARA EVITAR EL DOBLE ENVÍO**
   if (form._isSubmitting) {
@@ -315,8 +391,9 @@ async function handleFormResponse(response, form, sentBtn) {
   try {
     data = await response.json();
   } catch (e) {
+    // Si el backend retorna un error de validación (participantes) ya se mostró SweetAlert, así que no muestres otro alert.
+    // Solo muestra el alert si no es el error esperado.
     console.error("Error al parsear la respuesta JSON del servidor:", e);
-    // Si no se puede parsear JSON, asume que algo salió mal.
     data = { success: false, message: "Respuesta inválida del servidor." };
   }
 
@@ -352,11 +429,15 @@ async function handleFormResponse(response, form, sentBtn) {
     // Mostrar un mensaje de éxito al usuario (opcional, si tienes una librería de toasts)
     // showToast('success', data.message);
   } else {
-    // Mostrar mensaje de error del servidor
-    console.error("Operación fallida:", data.message);
-    alert(
-      `Error: ${data.message || "Hubo un problema al procesar su solicitud."}`
-    );
+    // Mostrar mensaje de error del servidor SOLO si no es el de participantes
+    if (
+      data.message &&
+      data.message.includes("Debe agregar al menos un participante")
+    ) {
+      // Ya se mostró SweetAlert en el submit, no muestres alert aquí.
+    } else {
+      console.error("Operación fallida:", data.message);
+    }
     // No cerrar el modal en caso de error para que el usuario pueda corregir.
   }
 
@@ -379,6 +460,8 @@ function saveOriginalState(modal) {
 
 function openModalWithAnimations(overlay, modal) {
   if (!overlay || !modal) return;
+  // Eliminar display:none si existe
+  overlay.style.removeProperty('display');
   overlay.classList.add("overlay-active");
   modal.classList.add("modal-active");
   setTimeout(() => {
@@ -461,6 +544,62 @@ function closeModal(overlay, modal) {
           "Formulario multipasos no detectado, no se realiza reseteo."
         );
       }
+
+      // --- NUEVO: Reiniciar módulos de RAM y almacenamiento si es el modal de PC ---
+      if (modal.id === "pcModal") {
+        // RAM
+        const ramContainer = document.getElementById("ram-modules");
+        if (ramContainer) {
+          ramContainer.innerHTML = `
+            <div class="ram-module">
+              <h5 class="ram-title">Módulo 1</h5>
+              <div class="form-row">
+                <div class="inputGroup">
+                  <label>Fabricante de la RAM:</label>
+                  <input type="text" name="fabricante_ram[]" class="input" required>
+                </div>
+                <div class="inputGroup">
+                  <label>Frecuencia de la RAM (MHz):</label>
+                  <input type="text" name="frecuencia_ram[]" class="input" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="inputGroup">
+                  <label>Capacidad de la RAM (GB):</label>
+                  <input type="text" name="capacidad_ram[]" class="input" required>
+                </div>
+                <button type="button" class="remove-ram btn-mini">Eliminar Módulo</button>
+              </div>
+            </div>
+          `;
+        }
+        // Almacenamiento
+        const storageContainer = document.getElementById("storage-modules");
+        if (storageContainer) {
+          storageContainer.innerHTML = `
+            <div class="storage-module">
+              <h5 class="storage-title">Módulo 1</h5>
+              <div class="form-row">
+                <div class="inputGroup">
+                  <label for="fabricante_almacenamiento">Fabricante del almacenamiento:</label>
+                  <input type="text" id="fabricante_almacenamiento" name="fabricante_almacenamiento[]" class="input" required>
+                </div>
+                <div class="inputGroup">
+                  <label for="tipo_almacenamiento">Tipo de almacenamiento:</label>
+                  <input type="text" id="tipo_almacenamiento" name="tipo_almacenamiento[]" class="input" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="inputGroup">
+                  <label for="capacidad_almacenamiento">Capacidad del almacenamiento (GB):</label>
+                  <input type="text" id="capacidad_almacenamiento" name="capacidad_almacenamiento[]" class="input" required>
+                </div>
+                <button type="button" class="remove-storage btn-mini">Eliminar Módulo</button>
+              </div>
+            </div>
+          `;
+        }
+      }
     }
 
     // --- Limpiar Dropzone al cerrar el modal (solo si no fue un éxito de guardado) ---
@@ -478,6 +617,23 @@ function closeModal(overlay, modal) {
 
     // Eliminar el modal de la lista de activos
     delete activeModals[modal.id];
+
+    // --- LIMPIEZA DE PARTICIPANTES SI ES EL MODAL DE ACTIVIDADES ---
+    if (modal.id === "activitiesReportModal") {
+      // Variables del campo participantes
+      const input = document.getElementById("participantes-input");
+      const suggestions = document.getElementById("participantes-suggestions");
+      const list = document.getElementById("participantes-list");
+      const hidden = document.getElementById("participantes-hidden");
+      const error = document.getElementById("participantes-error");
+      if (window.participantes) window.participantes = [];
+      if (input) input.value = "";
+      if (suggestions) suggestions.innerHTML = "";
+      if (list) list.innerHTML = "";
+      if (hidden) hidden.value = "";
+      if (error) error.style.display = "none";
+      if (input) input.disabled = false;
+    }
   }, 300); // Duración de la animación de cierre
 }
 
@@ -488,4 +644,138 @@ document.addEventListener("click", (event) => {
   if (modalBox && modalBox.classList.contains("modal-active")) {
     event.stopPropagation();
   }
+});
+
+const activitiesReportForm = document.getElementById("activitiesReportForm");
+if (activitiesReportForm) {
+  activitiesReportForm.addEventListener("submit", function (e) {
+    if (window.participantes && window.participantes.length === 0) {
+      if (window.Swal) {
+        Swal.fire({
+          icon: "warning",
+          title: "Debe agregar al menos un participante",
+          text: "No puede guardar el reporte sin participantes.",
+          confirmButtonText: "Aceptar",
+          customClass: {
+            popup: "custom-swal-font",
+          },
+        });
+      } else {
+        alert("Debe agregar al menos un participante.");
+      }
+      // Solo mostrar error si existe el elemento
+      const error = document.getElementById("participantes-error");
+      if (error) error.style.display = "";
+      e.preventDefault();
+      const input = document.getElementById("participantes-input");
+      if (input) input.focus();
+    }
+  });
+}
+
+// --- NUEVA FUNCIÓN: Bloquear/desbloquear campos con data-readonly-on-edit ---
+function setReadonlyFields(form, readonly) {
+  if (!form) return;
+  const fields = form.querySelectorAll('[data-readonly-on-edit="true"]');
+  fields.forEach((field) => {
+    if (readonly) {
+      field.setAttribute("readonly", "readonly");
+      // Si es un select, NO usar disabled, solo aplicar clase visual
+      if (field.tagName === "SELECT") {
+        field.classList.add("readonly-select");
+        field.removeAttribute("disabled");
+      }
+    } else {
+      field.removeAttribute("readonly");
+      if (field.tagName === "SELECT") field.classList.remove("readonly-select");
+    }
+  });
+}
+
+// Agregar el CSS para la clase readonly-select
+document.addEventListener('DOMContentLoaded', function() {
+  const style = document.createElement('style');
+  style.innerHTML = `
+    .readonly-select {
+      pointer-events: none;
+      // background-color: #eee !important;
+      color: #555;
+    }
+  `;
+  document.head.appendChild(style);
+});
+
+// --- Notificación SweetAlert para asignar/reasignar equipo ---
+document.addEventListener("submit", async (event) => {
+  if (!event.target.classList.contains("form")) return;
+  const form = event.target;
+  const formType = form.getAttribute("formType");
+  // Detectar si es el formulario de asignar o reasignar equipo
+  if (
+    (form.closest("#assignPcModal") || form.closest("#reassignPcModal")) &&
+    formType === "pc"
+  ) {
+    event.preventDefault();
+    const sentBtn = form.querySelector(".sentBtn");
+    if (sentBtn) sentBtn.disabled = true;
+    try {
+      const formData = new FormData(form);
+      const response = await fetch(form.action, {
+        method: form.method,
+        body: formData,
+      });
+      const data = await response.json();
+      if (data.success) {
+        // Cerrar modal
+        const modal = form.closest(".modal-box");
+        const overlay = modal ? modal.closest(".overlay-modal") : null;
+        closeModal(overlay, modal);
+        // Notificación SweetAlert (estilo customAlerts.js)
+        Swal.fire({
+          title: "¡Éxito!",
+          text: data.message || "Operación realizada correctamente.",
+          icon: "success",
+          timer: 2000,
+          customClass: {
+            popup: "custom-swal-font",
+          },
+        });
+        // Recargar tabla si existe
+        const tableId = document.querySelector(".table")?.id;
+        if (tableId) {
+          $(`#${tableId}`).DataTable().ajax.reload(null, false);
+        }
+      } else if (data.message && data.message.includes('ya tiene un equipo asignado')) {
+        Swal.fire({
+          title: "No permitido",
+          text: data.message,
+          icon: "warning",
+          customClass: {
+            popup: "custom-swal-font",
+          },
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: data.message || "Ocurrió un error",
+          icon: "error",
+          customClass: {
+            popup: "custom-swal-font",
+          },
+        });
+      }
+    } catch (e) {
+      Swal.fire({
+        title: "Error",
+        text: "Error de red o servidor",
+        icon: "error",
+        customClass: {
+          popup: "custom-swal-font",
+        },
+      });
+    }
+    if (sentBtn) sentBtn.disabled = false;
+    return;
+  }
+  // ...existing code...
 });

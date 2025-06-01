@@ -10,6 +10,7 @@ class ActivitiesReportModel
     private $actividad;
     private $fecha_actividad;
     private $descripcion;
+    private $id_tipo_actividad;
     private $db;
 
     public function __construct()
@@ -17,12 +18,13 @@ class ActivitiesReportModel
         $this->db = DataBase::getInstance();
     }
 
-    public function setData($id_usuario, $actividad, $fecha_actividad, $descripcion)
+    public function setData($id_usuario, $actividad, $fecha_actividad, $descripcion, $id_tipo_actividad = null)
     {
         $this->id_usuario = $id_usuario;
         $this->actividad = $actividad;
         $this->fecha_actividad = $fecha_actividad;
         $this->descripcion = $descripcion;
+        $this->id_tipo_actividad = $id_tipo_actividad;
     }
 
     // Genera un código único para el reporte de actividades
@@ -79,14 +81,15 @@ class ActivitiesReportModel
             $this->db->beginTransaction();
 
             $codigo = $this->generateUniqueReportCode();
-            $sql = "INSERT INTO reporte_actividades (codigo_reporte_actividades, id_usuario, fecha_actividad, titulo_reporte, contenido_reporte) 
-                    VALUES (:codigo, :id_usuario, :fecha_actividad, :actividad, :descripcion)";
+            $sql = "INSERT INTO reporte_actividades (codigo_reporte_actividades, id_usuario, fecha_actividad, titulo_reporte, contenido_reporte, id_tipo_reporte) 
+                    VALUES (:codigo, :id_usuario, :fecha_actividad, :actividad, :descripcion, :id_tipo_actividad)";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':codigo', $codigo);
             $stmt->bindParam(':id_usuario', $this->id_usuario);
             $stmt->bindParam(':fecha_actividad', $this->fecha_actividad);
             $stmt->bindParam(':actividad', $this->actividad);
             $stmt->bindParam(':descripcion', $this->descripcion);
+            $stmt->bindParam(':id_tipo_actividad', $this->id_tipo_actividad, \PDO::PARAM_INT);
             $stmt->execute();
 
             $reportId = $this->db->lastInsertId();
@@ -202,6 +205,8 @@ class ActivitiesReportModel
                     FROM reporte_actividades r
                     LEFT JOIN evidencia_reporte_actividades i 
                     ON r.id_reporte_actividades = i.id_actividad
+                    INNER JOIN tipo_actividad t
+                    ON r.id_tipo_reporte = t.id_tipo_actividad
                     WHERE r.id_reporte_actividades = :id
                     GROUP BY r.id_reporte_actividades;";
 
@@ -255,7 +260,6 @@ class ActivitiesReportModel
         try {
             $sql = "UPDATE reporte_actividades SET
                     titulo_reporte = :titulo_reporte,
-                    fecha_actividad = :fecha_actividad,
                     contenido_reporte = :contenido_reporte
                 WHERE id_reporte_actividades = :id";
 
@@ -264,7 +268,6 @@ class ActivitiesReportModel
             // Aquí es donde vinculas los valores del array $reportData
             // A la consulta SQL usando los nombres correctos de los parámetros
             $stmt->bindParam(':titulo_reporte', $reportData['titulo_reporte']);
-            $stmt->bindParam(':fecha_actividad', $reportData['fecha_actividad']);
             $stmt->bindParam(':contenido_reporte', $reportData['contenido_reporte']);
             $stmt->bindParam(':id', $id, \PDO::PARAM_INT); // Asegúrate de vincular el ID como entero
 
@@ -295,5 +298,70 @@ class ActivitiesReportModel
             echo "Error: " . $e->getMessage();
             return false;
         }
+    }
+
+    public function searchParticipants($query)
+    {
+        // Busca por cédula o nombre en la tabla persona
+        $sql = "SELECT cedula, CONCAT(nombre, ' ', apellido) AS nombre FROM persona WHERE cedula LIKE :q OR nombre LIKE :q OR apellido LIKE :q LIMIT 10";
+        $stmt = $this->db->prepare($sql);
+        $like = "%$query%";
+        $stmt->bindParam(':q', $like);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Asocia participantes a un reporte de actividad
+     * @param int $reportId
+     * @param array $cedulas Array de cédulas
+     * @return bool
+     */
+    public function addParticipantsToReport($reportId, $cedulas)
+    {
+        if (!is_array($cedulas) || empty($cedulas)) return false;
+        $sql = "INSERT INTO participante_reporte_actividad (id_reporte_actividad, cedula) VALUES (:id_actividad, :cedula)";
+        $stmt = $this->db->prepare($sql);
+        foreach ($cedulas as $cedula) {
+            $stmt->bindValue(':id_actividad', $reportId, \PDO::PARAM_INT);
+            $stmt->bindValue(':cedula', $cedula, \PDO::PARAM_STR);
+            if (!$stmt->execute()) return false;
+        }
+        return true;
+    }
+
+    /**
+     * Elimina todos los participantes asociados a un reporte.
+     * @param int $reportId
+     * @return bool
+     */
+    public function deleteParticipantsFromReport($reportId)
+    {
+        $sql = "DELETE FROM participante_reporte_actividad WHERE id_reporte_actividad = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', $reportId, \PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    /**
+     * Obtiene los participantes de un reporte
+     * @param int $reportId
+     * @return array
+     */
+    public function getParticipantsByReport($reportId)
+    {
+        $sql = "SELECT p.cedula, CONCAT(p.nombre, ' ', p.apellido) as nombre FROM participante_reporte_actividad pra JOIN persona p ON pra.cedula = p.cedula WHERE pra.id_reporte_actividad = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', $reportId, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function getTipoActividadNombre($id_tipo_actividad)
+    {
+        $stmt = $this->db->prepare("SELECT tipo_actividad FROM tipo_actividad WHERE id_tipo_actividad = ?");
+        $stmt->execute([$id_tipo_actividad]);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $row ? $row['tipo_actividad'] : '';
     }
 }

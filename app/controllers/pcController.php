@@ -39,6 +39,15 @@ class PcController
             case 'pc_fetch_id':
                 $this->fetchPcId();
                 break;
+            case 'assign_pc':
+                $this->assignPC();
+                break;
+            case 'unassign_pc':
+                $this->unassignPC();
+                break;
+            case 'generateReport':
+                $this->generateReport();
+                break;
             default:
                 echo json_encode(['error' => 'Acción no válida']);
                 break;
@@ -51,7 +60,6 @@ class PcController
         $this->pcModel->getData(
             $data['fabricante_equipo_informatico'],
             $data['id_estado_equipo'],
-            $data['cedula'],
             $data['fabricante_procesador'],
             $data['nombre_procesador'],
             $data['nucleos'],
@@ -61,7 +69,7 @@ class PcController
             $data['fabricante_fuente_poder'],
             $data['wattage_fuente'],
             $data['fabricante_ram'],
-            $data['tipo_ram'],
+            $data['tipo_ram'], // string único
             $data['frecuencia_ram'],
             $data['capacidad_ram'],
             $data['fabricante_almacenamiento'],
@@ -98,7 +106,6 @@ class PcController
         $this->pcModel->getData(
             $data['fabricante_equipo_informatico'],
             $data['id_estado_equipo'],
-            $data['cedula'],
             $data['fabricante_procesador'],
             $data['nombre_procesador'],
             $data['nucleos'],
@@ -108,7 +115,7 @@ class PcController
             $data['fabricante_fuente_poder'],
             $data['wattage_fuente'],
             $data['fabricante_ram'],
-            $data['tipo_ram'],
+            $data['tipo_ram'], // string único
             $data['frecuencia_ram'],
             $data['capacidad_ram'],
             $data['fabricante_almacenamiento'],
@@ -190,6 +197,55 @@ class PcController
             echo json_encode($pc);
         } else {
             echo json_encode(['error' => 'PC no encontrada']);
+        }
+    }
+
+    private function assignPC()
+    {
+        $id_equipo = $_POST['id_equipo_informatico'];
+        $cedula = $_POST['cedula'];
+        $result = $this->pcModel->assignToPerson($id_equipo, $cedula);
+        header('Content-Type: application/json');
+        if ($result === 'already_assigned') {
+            echo json_encode(['success' => false, 'message' => 'Esta persona ya tiene un equipo asignado.']);
+        } else if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Equipo asignado correctamente']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Error al asignar el equipo']);
+        }
+    }
+
+    private function unassignPC()
+    {
+        $id_equipo = $_POST['id_equipo_informatico'];
+        $result = $this->pcModel->unassignFromPerson($id_equipo);
+        header('Content-Type: application/json');
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Equipo desasignado correctamente']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Error al desasignar el equipo']);
+        }
+    }
+
+    /**
+     * Devuelve todos los datos necesarios para el reporte de un equipo informático.
+     * Entrada: POST id_equipo_informatico
+     * Salida: JSON con todos los datos del equipo (incluyendo módulos de RAM y almacenamiento)
+     */
+    private function generateReport()
+    {
+        $id = $_POST['id_equipo_informatico'] ?? null;
+        if (!$id) {
+            echo json_encode(['error' => 'ID de equipo no proporcionado']);
+            return;
+        }
+        $pc = $this->pcModel->readOne($id);
+
+        header('Content-Type: application/json');
+        if ($pc) {
+            echo json_encode($pc);
+        } else {
+            echo json_encode(['error' => 'Equipo no encontrado']);
         }
     }
 }

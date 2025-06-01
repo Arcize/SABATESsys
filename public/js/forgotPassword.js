@@ -179,7 +179,12 @@ function renderQuestions(questions, box, cedula) {
 
           // Validar que las contraseñas coincidan
           if (newPassword !== confirmPassword) {
-            alert("Las contraseñas no coinciden. Intenta nuevamente.");
+            Swal.fire({
+              icon: 'error',
+              title: 'Las contraseñas no coinciden',
+              text: 'Intenta nuevamente.',
+              showConfirmButton: true
+            });
             return;
           }
 
@@ -203,27 +208,49 @@ function renderQuestions(questions, box, cedula) {
 
             // Manejar la respuesta positiva o negativa
             if (data.success) {
-              alert("Contraseña actualizada exitosamente.");
+              Swal.fire({
+                icon: 'success',
+                title: '¡Contraseña actualizada exitosamente!',
+                showConfirmButton: true
+              });
               console.log("Actualización exitosa:", data);
               // Aquí puedes redirigir o realizar otra acción
             } else {
-              alert("Error al actualizar la contraseña. Intenta nuevamente.");
+              Swal.fire({
+                icon: 'error',
+                title: 'Error al actualizar la contraseña',
+                text: 'Intenta nuevamente.',
+                showConfirmButton: true
+              });
               console.log("Actualización fallida:", data);
             }
           } catch (error) {
             console.error("Error en la solicitud:", error);
-            alert("Ocurrió un error al actualizar la contraseña.");
+            Swal.fire({
+              icon: 'error',
+              title: 'Ocurrió un error al actualizar la contraseña.',
+              showConfirmButton: true
+            });
           }
         });
         console.log("Validación exitosa:", data);
         // Aquí puedes redirigir o realizar otra acción
       } else {
-        alert("Respuestas incorrectas. Intenta nuevamente.");
+        Swal.fire({
+          icon: 'error',
+          title: 'Respuesta incorrecta',
+          text: 'Intenta nuevamente.',
+          showConfirmButton: true
+        });
         console.log("Validación fallida:", data);
       }
     } catch (error) {
       console.error("Error en la solicitud:", error);
-      alert("Ocurrió un error al validar las respuestas.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Ocurrió un error al validar la respuesta.',
+        showConfirmButton: true
+      });
     }
   });
 }

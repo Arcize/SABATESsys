@@ -39,6 +39,9 @@ class ActivitiesReportController
             case 'activitiesReport_delete_temp_file':
                 $this->deleteTempFiles();
                 break;
+            case 'searchParticipants':
+                $this->searchParticipantsAjax();
+                break;
             default:
                 break;
         }
@@ -208,22 +211,33 @@ class ActivitiesReportController
         $titulo = $_POST['titulo_reporte'];
         $fecha_actividad = $_POST['fecha_actividad'];
         $descripcion = $_POST['contenido_reporte'];
+        $id_tipo_actividad = $_POST['id_tipo_actividad'];
+        $participantes = isset($_POST['participantes']) ? explode(',', $_POST['participantes']) : [];
 
-        // Bandera para el éxito general de la operación
         $all_success = false;
         $message = 'Error desconocido al crear el reporte.';
-        $report_id = null; // Inicializar a null
+        $report_id = null;
 
         try {
-            // Lógica original: crear el reporte y obtener el ID
-            $this->activitiesReportModel->setData($id_usuario, $titulo, $fecha_actividad, $descripcion);
-            $report_id = $this->activitiesReportModel->create(); // CRÍTICO: Debe devolver el ID o false
+            // Crear el reporte principal (ajusta el modelo si es necesario para guardar id_tipo_actividad)
+            $this->activitiesReportModel->setData($id_usuario, $titulo, $fecha_actividad, $descripcion, $id_tipo_actividad);
+            $report_id = $this->activitiesReportModel->create();
 
             if (!$report_id) {
                 $message = 'Error al crear el reporte principal en la base de datos.';
-                // Si el reporte principal falla, no hay necesidad de procesar imágenes
-                throw new \Exception($message); // Lanza excepción para ir al catch
+                throw new \Exception($message);
             }
+
+            // Guardar participantes
+            if (empty($participantes)) {
+                $message = 'Debe agregar al menos un participante.';
+                throw new \Exception($message);
+            }
+            if (count($participantes) > 4) {
+                $message = 'No puede haber más de 4 participantes.';
+                throw new \Exception($message);
+            }
+            $this->activitiesReportModel->addParticipantsToReport($report_id, $participantes);
 
             // --- LÓGICA PARA ARCHIVOS ---
             $tempUploadDir = '../tmp/'; // Ajusta si es necesario
@@ -364,8 +378,18 @@ class ActivitiesReportController
             exit;
         }
 
+        // --- VALIDACIÓN: Participantes ---
+        $participantes = isset($_POST['participantes']) ? explode(',', $_POST['participantes']) : [];
+        if (empty($participantes) || (count($participantes) === 1 && $participantes[0] === "")) {
+            echo json_encode(['success' => false, 'message' => 'Debe agregar al menos un participante.']);
+            exit;
+        }
+        if (count($participantes) > 4) {
+            echo json_encode(['success' => false, 'message' => 'No puede haber más de 4 participantes.']);
+            exit;
+        }
+
         $reportData = [
-            'fecha_actividad'   => $_POST['fecha_actividad'] ?? null,
             'titulo_reporte'    => $_POST['titulo_reporte'] ?? null,
             'contenido_reporte' => $_POST['contenido_reporte'] ?? null,
             // ... otros campos ...
@@ -373,6 +397,10 @@ class ActivitiesReportController
         if (!$this->activitiesReportModel->update($reportId, $reportData)) {
             error_log("ADVERTENCIA: Fallo al actualizar los datos principales del reporte ID: {$reportId}");
         }
+
+        // --- SOLO ACTUALIZA PARTICIPANTES SI HAY AL MENOS UNO ---
+        $this->activitiesReportModel->deleteParticipantsFromReport($reportId);
+        $this->activitiesReportModel->addParticipantsToReport($reportId, $participantes);
 
         // --- INICIO: Lógica de Sincronización de Imágenes ---
 
@@ -466,8 +494,8 @@ class ActivitiesReportController
             $isFileInTemp = file_exists($sourcePath);
             $isFileInFinal = file_exists($destinationPathPhysical);
 
-            error_log("DEBUG:   Existe en Temporal: " . ($isFileInTemp ? "S\xc3\x8d" : "NO"));
-            error_log("DEBUG:   Existe en Final: " . ($isFileInFinal ? "S\xc3\x8d" : "NO"));
+            error_log("DEBUG:   Existe en Temporal: " . ($isFileInTemp ? "S\xc3\x8D" : "NO"));
+            error_log("DEBUG:   Existe en Final: " . ($isFileInFinal ? "S\xc3\x8D" : "NO"));
 
             if ($isFileInTemp) {
                 // Es una imagen NUEVA que se subió al temporal
@@ -543,30 +571,37 @@ class ActivitiesReportController
 
         header('Content-Type: application/json');
         if ($report) {
-            // Obtener imágenes asociadas al reporte desde el modelo
-            // Debes tener un método en tu modelo que devuelva las imágenes asociadas a un reporte
-            // Ejemplo: getImagesByReportId($id)
             $images = $this->activitiesReportModel->getImagesByReportId($id);
+            $participants = $this->activitiesReportModel->getParticipantsByReport($id);
 
-            // Formatear las imágenes para el frontend
+            // Nombre de la categoría y el id_tipo_actividad normalizado
+            $categoria = '';
+            $id_tipo_actividad = null;
+            if (isset($report['id_tipo_reporte']) || isset($report['id_tipo_actividad'])) {
+                $id_tipo_actividad = $report['id_tipo_reporte'] ?? $report['id_tipo_actividad'];
+                $categoria = $this->activitiesReportModel->getTipoActividadNombre($id_tipo_actividad);
+            }
+
             $existingImages = [];
             if (is_array($images)) {
                 foreach ($images as $img) {
                     $existingImages[] = [
-                        'name' => $img['name'], // nombre del archivo
-                        'size' => $img['size'], // tamaño en bytes
-                        'type' => $img['type']  // tipo MIME
+                        'name' => $img['name'],
+                        'size' => $img['size'],
+                        'type' => $img['type']
                     ];
                 }
             }
 
-            // Combinar datos del reporte con las imágenes
             $reportData = [
                 'id_reporte_actividades' => $report['id_reporte_actividades'],
                 'fecha_actividad'        => $report['fecha_actividad'],
                 'titulo_reporte'         => $report['titulo_reporte'],
                 'contenido_reporte'      => $report['contenido_reporte'],
-                'existingImages'         => $existingImages
+                'categoria'              => $categoria,
+                'id_tipo_actividad'      => $id_tipo_actividad,
+                'existingImages'         => $existingImages,
+                'participants'           => $participants
             ];
 
             echo json_encode($reportData);
@@ -579,11 +614,54 @@ class ActivitiesReportController
     {
         $reports = $this->activitiesReportModel->readPage();
 
+        // Agregar participantes, nombre de categoría y id_tipo_actividad a cada reporte
+        if (
+            $reports && is_array($reports)
+        ) {
+            foreach ($reports as &$report) {
+                // Participantes
+                $participants = $this->activitiesReportModel->getParticipantsByReport($report['id_reporte_actividades']);
+                if (is_array($participants)) {
+                    $report['participantes'] = array_map(function ($p) {
+                        if (is_array($p) && isset($p['cedula']) && isset($p['nombre'])) {
+                            return $p['cedula'] . ' - ' . $p['nombre'];
+                        }
+                        return $p;
+                    }, $participants);
+                } else {
+                    $report['participantes'] = [];
+                }
+                // Normalizar id_tipo_actividad y obtener nombre de la categoría
+                if (isset($report['id_tipo_reporte']) || isset($report['id_tipo_actividad'])) {
+                    $id_tipo = $report['id_tipo_reporte'] ?? $report['id_tipo_actividad'];
+                    $report['id_tipo_actividad'] = $id_tipo; // Siempre incluirlo con este nombre
+                    $report['categoria'] = $this->activitiesReportModel->getTipoActividadNombre($id_tipo);
+                } else {
+                    $report['id_tipo_actividad'] = null;
+                    $report['categoria'] = null;
+                }
+            }
+            unset($report);
+        }
+
         header('Content-Type: application/json');
         if ($reports) {
             echo json_encode($reports);
         } else {
             echo json_encode(['error' => 'No se encontraron reportes de actividades']);
         }
+    }
+
+    public function searchParticipantsAjax()
+    {
+        $q = isset($_GET['q']) ? trim($_GET['q']) : '';
+        if (strlen($q) < 2) {
+            echo json_encode([]);
+            exit;
+        }
+        $results = $this->activitiesReportModel->searchParticipants($q);
+        header('Content-Type: application/json');
+        echo json_encode($results);
+        exit;
     }
 }

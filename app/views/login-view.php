@@ -1,7 +1,7 @@
 <div class="fullContainer">
     <div class="image-box">
         <div class="welcome-box">
-            <h1>¡Bienvenido de Vuelta!</h1>
+            <h1>¡Bienvenido!</h1>
             <p>Sistema de Reportes de SABATES</p>
         </div>
     </div>

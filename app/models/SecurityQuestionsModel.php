@@ -90,4 +90,53 @@ class SecurityQuestionsModel
             echo "Error: " . $e->getMessage();
         }
     }
+    public function getUserQuestionsBySession($id_usuario)
+    {
+        try {
+            $sql = "SELECT ps.id_pregunta, ps.texto_pregunta, up.respuesta
+                    FROM usuario_pregunta up
+                    JOIN preguntas_seguridad ps ON up.id_pregunta = ps.id_pregunta
+                    WHERE up.id_usuario = :id_usuario";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id_usuario', $id_usuario);
+            $stmt->execute();
+            $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            // No devolver el hash de la respuesta, solo la pregunta y un campo vacío para respuesta
+            return array_map(function($row) {
+                return [
+                    'id_pregunta' => $row['id_pregunta'],
+                    'pregunta' => $row['texto_pregunta'],
+                    'respuesta' => '' // El usuario debe rellenar
+                ];
+            }, $rows);
+        } catch (\PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return [];
+        }
+    }
+
+    public function updateUserQuestions($id_usuario, $preguntas)
+    {
+        try {
+            // Eliminar preguntas previas
+            $sql = "DELETE FROM usuario_pregunta WHERE id_usuario = :id_usuario";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id_usuario', $id_usuario);
+            $stmt->execute();
+            // Insertar nuevas preguntas y respuestas
+            foreach ($preguntas as $pregunta) {
+                $hash = password_hash($pregunta['respuesta'], PASSWORD_DEFAULT);
+                $sql = "INSERT INTO usuario_pregunta (id_usuario, id_pregunta, respuesta) VALUES (:id_usuario, :id_pregunta, :respuesta)";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':id_usuario', $id_usuario);
+                $stmt->bindParam(':id_pregunta', $pregunta['id_pregunta']);
+                $stmt->bindParam(':respuesta', $hash);
+                $stmt->execute();
+            }
+            return true;
+        } catch (\PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }
 }

@@ -49,6 +49,8 @@ use app\controllers\BulkUploadController;
 use app\controllers\SecurityQuestionsController;
 use app\controllers\ActivitiesReportController;
 use app\controllers\UploadController;
+use app\controllers\NotificacionesController;
+
 use app\helpers\PermissionHelper;
 use app\helpers\Security; // Importa la clase Security
 use app\helpers\PdfHelper;
@@ -113,6 +115,11 @@ if ($viewName === "activitiesReport") {
     $activitiesReportController->handleRequestActivitiesReport();
     exit();
 }
+if ($viewName === "notificaciones") {
+    $notificacionesController = new NotificacionesController();
+    $notificacionesController->handleRequest();
+    exit();
+}
 if ($viewName === "upload") {
     $uploadController = new UploadController();
     $uploadController->handleUpload();
@@ -152,7 +159,11 @@ if ($viewName === "pdf") {
         if ($SessionController->isLoggedIn()) {
             if ($viewName == "login" || $viewName == "register" || $viewName == "forgotPassword") {
                 // Evita redirecciones innecesarias si ya está logueado y se intenta acceder a login o register
-                header("Location: index.php?view=dashboard");
+                if (isset($_SESSION['role']) && $_SESSION['role'] == 1) {
+                    header("Location: index.php?view=dashboard");
+                } else {
+                    header("Location: index.php?view=inicio");
+                }
                 exit();
             } else {
                 if (!$userController->isSecurityQuestionsSetup()) {
@@ -188,7 +199,6 @@ if ($viewName === "pdf") {
                                     echo '<script src="./js/dropzone.min.js"></script>';
                                     echo '<script src="./js/modal.js"></script>';
                                     echo '<script src="./js/customAlerts.js"></script>';
-                                    echo '<script src="./js/html2canvas.min.js"></script>';
                                     echo '<script src="./js/dataTables.dateTime.min.js"></script>';
                                     // echo '<script src="./js/dataTables.responsive.min.js"></script>';
 
@@ -210,6 +220,8 @@ if ($viewName === "pdf") {
                                 if ($viewName == 'dashboard') {
                                     echo '<script src="./js/chart.umd.js"></script>';
                                 }
+                                // --- NUEVO: Comprobación de estado de empleado ---
+                                echo '<script src="./js/employeeSessionCheck.js"></script>';
                                 ?>
 
                             </div>

@@ -112,7 +112,9 @@
 
         .timeline-event {
             position: relative;
-            margin-bottom: 25px;
+            margin-bottom: 6px;
+            padding-left: 20px;
+            border-left: 3px solid #0077b6;
         }
 
         .timeline-content {
@@ -254,7 +256,7 @@ $imagenSrc = 'data:image/png;base64,' . $imagenData;
         return strtr($formato, $meses);
     }
     ?>
-    <h2 class="h2">Detalles del Reporte</h2>
+    <h2 class="h2">Detalles del Reporte de Falla</h2>
     <h3 class="h3">Código: <?= htmlspecialchars($row['codigo_reporte_fallas'] ?? '') ?></h3>
     <table>
         <tr>
@@ -326,9 +328,7 @@ $imagenSrc = 'data:image/png;base64,' . $imagenData;
         <tr class="table_report_header">
             <th colspan="2">Línea de tiempo</th>
         </tr>
-        <tr>
-            <td colspan="2">
-                <div class="timeline-vertical">
+
                     <?php foreach ($row['seguimiento'] as $evento): ?>
                         <?php
                         $estadoClaseTimeline = match ($evento['id_estado_reporte'] ?? null) {
@@ -337,47 +337,61 @@ $imagenSrc = 'data:image/png;base64,' . $imagenData;
                             3 => 'timeline-completed',
                             default => '',
                         };
+                        $accionLower = strtolower(urldecode($evento['accion'] ?? ''));
+                        $esRechazo = str_contains($accionLower, 'rechazado');
+                        $esCompletado = ($evento['id_estado_reporte'] == 3);
+                        $mostrarMotivo = (
+                            ($esRechazo || $esCompletado)
+                            && !empty($evento['descripcion'])
+                        );
                         ?>
-                        <div class="timeline-event">
-                            <div class="timeline-content" style="margin-left: 20px;">
-                                <div class="timeline-date"><?= fecha_espanol($evento['fecha_seguimiento']) ?></div>
-                                <div class="timeline-desc">
-                                    <strong><?= htmlspecialchars(urldecode($evento['accion'])) ?></strong>
-                                    <?php if ($evento['nombre_tecnico']): ?>
-                                        <br>
-                                        Técnico: <?= htmlspecialchars($evento['nombre_tecnico'] . ' ' . $evento['apellido_tecnico']) ?>
-                                    <?php endif; ?>
-                                    <br>
-                                    Estado: <span class="<?= $estadoClaseTimeline ?>">
-                                        <?= htmlspecialchars($evento['nombre_estado_reporte']) ?>
-                                    </span>
-                                    <?php if (!empty($evento['prioridad'])): ?>
-                                        <?php
-                                        // Determinar la clase de prioridad para el timeline
-                                        switch ($evento['prioridad']) {
-                                            case 'Baja':
-                                                $prioridadClaseTimeline = 'green-text';
-                                                break;
-                                            case 'Media':
-                                                $prioridadClaseTimeline = 'yellow-text';
-                                                break;
-                                            case 'Alta':
-                                                $prioridadClaseTimeline = 'red-text';
-                                                break;
-                                            default:
-                                                $prioridadClaseTimeline = '';
-                                        }
-                                        ?>
-                                        <br>
-                                        Prioridad: <span class="<?= $prioridadClaseTimeline ?>">
-                                            <?= htmlspecialchars($evento['prioridad']) ?>
-                                        </span>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
+    <tr>
+        <td colspan="2">
+            <div class="timeline-event">
+                <div class="timeline-content" style="margin-left: 20px;">
+                    <div class="timeline-date"><?= fecha_espanol($evento['fecha_seguimiento']) ?></div>
+                    <div class="timeline-desc">
+                        <strong><?= htmlspecialchars(urldecode($evento['accion'])) ?></strong>
+                        <?php if ($evento['nombre_tecnico']): ?>
+                            <br>
+                            Técnico: <?= htmlspecialchars($evento['nombre_tecnico'] . ' ' . $evento['apellido_tecnico']) ?>
+                        <?php endif; ?>
+                        <br>
+                        Estado: <span class="<?= $estadoClaseTimeline ?>">
+                            <?= htmlspecialchars($evento['nombre_estado_reporte']) ?>
+                        </span>
+                        <?php if (!empty($evento['prioridad'])): ?>
+                            <?php
+                            // Determinar la clase de prioridad para el timeline
+                            switch ($evento['prioridad']) {
+                                case 'Baja':
+                                    $prioridadClaseTimeline = 'green-text';
+                                    break;
+                                case 'Media':
+                                    $prioridadClaseTimeline = 'yellow-text';
+                                    break;
+                                case 'Alta':
+                                    $prioridadClaseTimeline = 'red-text';
+                                    break;
+                                default:
+                                    $prioridadClaseTimeline = '';
+                            }
+                            ?>
+                            <br>
+                            Prioridad: <span class="<?= $prioridadClaseTimeline ?>">
+                                <?= htmlspecialchars($evento['prioridad']) ?>
+                            </span>
+                        <?php endif; ?>
+                        <?php if ($mostrarMotivo): ?>
+                            <br>
+                            <span class="timeline-motivo">
+                                <strong><?= $esRechazo ? 'Motivo del Rechazo:' : 'Observaciones:' ?></strong> <?= htmlspecialchars($evento['descripcion']) ?>
+                            </span>
+                        <?php endif; ?>
+                    </div>
                 </div>
-            </td>
-        </tr>
+            </div>
+        </td>
+    </tr>
+                    <?php endforeach; ?>
     </table>

@@ -5,6 +5,7 @@ return [
     "forgotPassword",
     "securityQuestions",
     "dashboard",
+    "inicio", // Agregada la vista de inicio para usuarios estándar
     "employeeTable",
     "activitiesReportTable",
     "pcTable",
@@ -18,6 +19,10 @@ return [
     "bulkDataLoad",
     "inventory",
     "faultReportV",
-    "faultReportTable"
+    "faultReportTable",
+    "activitiesReportV",
+    "employeeV",
+    "pcV",
+    "perfil"
 ];
 ?>

@@ -8,7 +8,6 @@ class PcModel
 {
     private $fabricante;
     private $estado;
-    private $cedula;
     private $fabricante_procesador;
     private $nombre_procesador;
     private $nucleos;
@@ -18,7 +17,7 @@ class PcModel
     private $fabricante_fuente;
     private $wattage_fuente;
     private $fabricante_ram;
-    private $tipo_ram;
+    private $tipo_ram; // ahora string único
     private $frecuencia_ram;
     private $capacidad_ram;
     private $fabricante_almacenamiento;
@@ -31,11 +30,11 @@ class PcModel
         $this->db = DataBase::getInstance();
     }
 
-    public function getData($fabricante, $estado, $cedula, $fabricante_procesador, $nombre_procesador, $nucleos, $frecuencia_procesador, $fabricante_motherboard, $modelo_motherboard, $fabricante_fuente, $wattage_fuente, $fabricante_ram, $tipo_ram, $frecuencia_ram, $capacidad_ram, $fabricante_almacenamiento, $tipo_almacenamiento, $capacidad_almacenamiento)
+    // Refactor: elimina cédula
+    public function getData($fabricante, $estado, $fabricante_procesador, $nombre_procesador, $nucleos, $frecuencia_procesador, $fabricante_motherboard, $modelo_motherboard, $fabricante_fuente, $wattage_fuente, $fabricante_ram, $tipo_ram, $frecuencia_ram, $capacidad_ram, $fabricante_almacenamiento, $tipo_almacenamiento, $capacidad_almacenamiento)
     {
         $this->fabricante = $fabricante;
         $this->estado = $estado;
-        $this->cedula = $cedula;
         $this->fabricante_procesador = $fabricante_procesador;
         $this->nombre_procesador = $nombre_procesador;
         $this->nucleos = $nucleos;
@@ -45,7 +44,7 @@ class PcModel
         $this->fabricante_fuente = $fabricante_fuente;
         $this->wattage_fuente = $wattage_fuente;
         $this->fabricante_ram = $fabricante_ram;
-        $this->tipo_ram = $tipo_ram;
+        $this->tipo_ram = $tipo_ram; // ahora string único
         $this->frecuencia_ram = $frecuencia_ram;
         $this->capacidad_ram = $capacidad_ram;
         $this->fabricante_almacenamiento = $fabricante_almacenamiento;
@@ -53,25 +52,18 @@ class PcModel
         $this->capacidad_almacenamiento = $capacidad_almacenamiento;
     }
 
+    // Refactor: create sin asignación de persona
     public function create()
     {
         try {
             $this->db->beginTransaction();
 
-            // Buscar persona
-            $sql = "SELECT id_persona FROM persona WHERE cedula = :cedula";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':cedula', $this->cedula);
-            $stmt->execute();
-            $persona_id = $stmt->fetchColumn();
-
             // Insertar equipo informático
-            $sql = "INSERT INTO equipo_informatico (fabricante_equipo_informatico, id_estado_equipo, id_persona) 
-                    VALUES (:fabricante, :estado, :persona_id)";
+            $sql = "INSERT INTO equipo_informatico (fabricante_equipo_informatico, id_estado_equipo) 
+                    VALUES (:fabricante, :estado)";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':fabricante', $this->fabricante);
             $stmt->bindParam(':estado', $this->estado);
-            $stmt->bindParam(':persona_id', $persona_id);
             $stmt->execute();
             $id_equipo_informatico = $this->db->lastInsertId();
 
@@ -130,7 +122,7 @@ class PcModel
                     $stmt = $this->db->prepare($sql);
                     $stmt->bindParam(':id_equipo_informatico', $id_equipo_informatico);
                     $stmt->bindParam(':fabricante_ram', $this->fabricante_ram[$i]);
-                    $stmt->bindParam(':tipo_ram', $this->tipo_ram[$i]);
+                    $stmt->bindParam(':tipo_ram', $this->tipo_ram); // usar string único
                     $stmt->bindParam(':capacidad_ram', $this->capacidad_ram[$i]);
                     $stmt->bindParam(':frecuencia_ram', $this->frecuencia_ram[$i]);
                     $stmt->execute();
@@ -141,7 +133,7 @@ class PcModel
                 $stmt = $this->db->prepare($sql);
                 $stmt->bindParam(':id_equipo_informatico', $id_equipo_informatico);
                 $stmt->bindParam(':fabricante_ram', $this->fabricante_ram);
-                $stmt->bindParam(':tipo_ram', $this->tipo_ram);
+                $stmt->bindParam(':tipo_ram', $this->tipo_ram); // usar string único
                 $stmt->bindParam(':capacidad_ram', $this->capacidad_ram);
                 $stmt->bindParam(':frecuencia_ram', $this->frecuencia_ram);
                 $stmt->execute();
@@ -168,7 +160,7 @@ class PcModel
                 JOIN procesador p ON ei.id_equipo_informatico = p.id_equipo_informatico_procesador
                 JOIN motherboard m ON ei.id_equipo_informatico = m.id_equipo_informatico_motherboard
                 JOIN fuente_poder f ON ei.id_equipo_informatico = f.id_equipo_informatico_fuente
-                JOIN persona pe ON ei.id_persona = pe.id_persona
+                LEFT JOIN persona pe ON ei.id_persona = pe.id_persona
                 WHERE ei.id_equipo_informatico = :id";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':id', $id);
@@ -183,6 +175,18 @@ class PcModel
             $stmtRam->execute();
             $ramData = $stmtRam->fetchAll(\PDO::FETCH_ASSOC);
 
+            // --- NUEVO: obtener tipo_ram único (el primero, si hay módulos) ---
+            $tipo_ram_unico = '';
+            $capacidad_ram_total = 0;
+            if (count($ramData) > 0) {
+                $tipo_ram_unico = $ramData[0]['tipo_ram'];
+                foreach ($ramData as $ram) {
+                    $capacidad_ram_total += (int)$ram['capacidad_ram'];
+                }
+            }
+            $data['tipo_ram'] = $tipo_ram_unico;
+            $data['capacidad_ram_total'] = $capacidad_ram_total;
+
             // Traer todos los módulos de almacenamiento
             $sqlStorage = "SELECT fabricante_almacenamiento, tipo_almacenamiento, capacidad_almacenamiento 
                            FROM almacenamiento WHERE id_equipo_informatico_almacenamiento = :id";
@@ -194,6 +198,32 @@ class PcModel
             // Añadir los arrays al resultado principal
             $data['ramData'] = $ramData;
             $data['storageData'] = $storageData;
+
+            // --- NUEVO: obtener estado textual ---
+            $sqlEstado = "SELECT estado_equipo_informatico FROM estado_equipo_informatico WHERE id_estado_equipo_informatico = :id_estado";
+            $stmtEstado = $this->db->prepare($sqlEstado);
+            $stmtEstado->bindParam(':id_estado', $data['id_estado_equipo']);
+            $stmtEstado->execute();
+            $data['estado_equipo_informatico'] = $stmtEstado->fetchColumn();
+
+            // --- NUEVO: obtener nombre y cédula de la persona asignada ---
+            if (!empty($data['id_persona'])) {
+                $sqlPersona = "SELECT nombre, apellido, cedula FROM persona WHERE id_persona = :id_persona";
+                $stmtPersona = $this->db->prepare($sqlPersona);
+                $stmtPersona->bindParam(':id_persona', $data['id_persona']);
+                $stmtPersona->execute();
+                $persona = $stmtPersona->fetch(\PDO::FETCH_ASSOC);
+                if ($persona) {
+                    $data['nombre_completo'] = $persona['nombre'] . ' ' . $persona['apellido'];
+                    $data['cedula_persona'] = $persona['cedula'];
+                } else {
+                    $data['nombre_completo'] = '';
+                    $data['cedula_persona'] = '';
+                }
+            } else {
+                $data['nombre_completo'] = '';
+                $data['cedula_persona'] = '';
+            }
 
             return $data;
         } catch (\PDOException $e) {
@@ -218,7 +248,7 @@ class PcModel
                     JOIN procesador p ON ei.id_equipo_informatico = p.id_equipo_informatico_procesador
                     JOIN motherboard m ON ei.id_equipo_informatico = m.id_equipo_informatico_motherboard
                     JOIN fuente_poder f ON ei.id_equipo_informatico = f.id_equipo_informatico_fuente
-                    JOIN persona per ON ei.id_persona = per.id_persona
+                    LEFT JOIN persona per ON ei.id_persona = per.id_persona
                     JOIN estado_equipo_informatico est ON ei.id_estado_equipo = est.id_estado_equipo_informatico
                     LEFT JOIN (
                         SELECT id_equipo_informatico_ram, SUM(capacidad_ram) AS capacidad_ram_total
@@ -249,25 +279,18 @@ class PcModel
         // Obtener el total de registros
         return $stmt->fetch(\PDO::FETCH_ASSOC)['total'];
     }
+    // Refactor: update sin asignación de persona
     public function update($id)
     {
         try {
             $this->db->beginTransaction();
 
-            // Buscar persona
-            $sql = "SELECT id_persona FROM persona WHERE cedula = :cedula";
-            $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':cedula', $this->cedula);
-            $stmt->execute();
-            $persona_id = $stmt->fetchColumn();
-
             // Actualizar equipo informático
-            $sql = "UPDATE equipo_informatico SET fabricante_equipo_informatico = :fabricante, id_estado_equipo = :estado, id_persona = :persona_id 
+            $sql = "UPDATE equipo_informatico SET fabricante_equipo_informatico = :fabricante, id_estado_equipo = :estado 
                     WHERE id_equipo_informatico = :id";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':fabricante', $this->fabricante);
             $stmt->bindParam(':estado', $this->estado);
-            $stmt->bindParam(':persona_id', $persona_id);
             $stmt->bindParam(':id', $id);
             $stmt->execute();
 
@@ -314,11 +337,21 @@ class PcModel
                     $stmt = $this->db->prepare($sql);
                     $stmt->bindParam(':id', $id);
                     $stmt->bindParam(':fabricante_ram', $this->fabricante_ram[$i]);
-                    $stmt->bindParam(':tipo_ram', $this->tipo_ram[$i]);
+                    $stmt->bindParam(':tipo_ram', $this->tipo_ram); // usar string único
                     $stmt->bindParam(':capacidad_ram', $this->capacidad_ram[$i]);
                     $stmt->bindParam(':frecuencia_ram', $this->frecuencia_ram[$i]);
                     $stmt->execute();
                 }
+            } else {
+                // Soporte para un solo módulo (por compatibilidad)
+                $sql = "INSERT INTO ram (id_equipo_informatico_ram, fabricante_ram, tipo_ram, capacidad_ram, frecuencia_ram, id_estado_pieza_ram) VALUES (:id, :fabricante_ram, :tipo_ram, :capacidad_ram, :frecuencia_ram, 1)";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':id', $id);
+                $stmt->bindParam(':fabricante_ram', $this->fabricante_ram);
+                $stmt->bindParam(':tipo_ram', $this->tipo_ram); // usar string único
+                $stmt->bindParam(':capacidad_ram', $this->capacidad_ram);
+                $stmt->bindParam(':frecuencia_ram', $this->frecuencia_ram);
+                $stmt->execute();
             }
 
             // --- Almacenamiento ---
@@ -339,6 +372,15 @@ class PcModel
                     $stmt->bindParam(':capacidad_almacenamiento', $this->capacidad_almacenamiento[$i]);
                     $stmt->execute();
                 }
+            } else {
+                // Soporte para un solo módulo (por compatibilidad)
+                $sql = "INSERT INTO almacenamiento (id_equipo_informatico_almacenamiento, fabricante_almacenamiento, tipo_almacenamiento, capacidad_almacenamiento, id_estado_pieza_almacenamiento) VALUES (:id, :fabricante_almacenamiento, :tipo_almacenamiento, :capacidad_almacenamiento, 1)";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':id', $id);
+                $stmt->bindParam(':fabricante_almacenamiento', $this->fabricante_almacenamiento);
+                $stmt->bindParam(':tipo_almacenamiento', $this->tipo_almacenamiento);
+                $stmt->bindParam(':capacidad_almacenamiento', $this->capacidad_almacenamiento);
+                $stmt->execute();
             }
 
             $this->db->commit();
@@ -383,5 +425,78 @@ class PcModel
         } else {
             return null; // O manejar el caso en que no se encuentre el ID
         }
+    }
+
+    /**
+     * Asigna o reasigna un equipo a una persona por cédula
+     * @param int $id_equipo_informatico
+     * @param string $cedula
+     * @return bool
+     */
+    public function assignToPerson($id_equipo_informatico, $cedula)
+    {
+        try {
+            // Buscar id_persona por cédula
+            $sql = "SELECT id_persona FROM persona WHERE cedula = :cedula";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':cedula', $cedula);
+            $stmt->execute();
+            $id_persona = $stmt->fetchColumn();
+            if (!$id_persona) {
+                return false; // No existe la persona
+            }
+            // Verificar si la persona ya tiene un equipo asignado (que no sea este mismo)
+            $sql = "SELECT COUNT(*) FROM equipo_informatico WHERE id_persona = :id_persona AND id_equipo_informatico != :id_equipo_informatico";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id_persona', $id_persona);
+            $stmt->bindParam(':id_equipo_informatico', $id_equipo_informatico);
+            $stmt->execute();
+            if ($stmt->fetchColumn() > 0) {
+                return 'already_assigned';
+            }
+            // Actualizar el equipo con el nuevo id_persona
+            $sql = "UPDATE equipo_informatico SET id_persona = :id_persona WHERE id_equipo_informatico = :id_equipo_informatico";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id_persona', $id_persona);
+            $stmt->bindParam(':id_equipo_informatico', $id_equipo_informatico);
+            $stmt->execute();
+            return true;
+        } catch (\PDOException $e) {
+            error_log("Error al asignar/reasignar equipo: " . $e->getMessage());
+            return false;
+        }
+    }
+    /**
+     * Desasigna un equipo de una persona (pone id_persona en NULL)
+     * @param int $id_equipo_informatico
+     * @return bool
+     */
+    public function unassignFromPerson($id_equipo_informatico)
+    {
+        try {
+            $sql = "UPDATE equipo_informatico SET id_persona = NULL WHERE id_equipo_informatico = :id_equipo_informatico";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id_equipo_informatico', $id_equipo_informatico);
+            $stmt->execute();
+            return true;
+        } catch (\PDOException $e) {
+            error_log("Error al desasignar equipo: " . $e->getMessage());
+            return false;
+        }
+    }
+    /**
+     * Verifica si una persona ya tiene un equipo asignado
+     * @param string $cedula
+     * @return bool
+     */
+    public function personHasAssignedPC($cedula)
+    {
+        $sql = "SELECT COUNT(*) FROM equipo_informatico ei
+                JOIN persona p ON ei.id_persona = p.id_persona
+                WHERE p.cedula = :cedula";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':cedula', $cedula);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
     }
 }

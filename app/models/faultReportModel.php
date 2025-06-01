@@ -227,7 +227,7 @@ ORDER BY fr.id_reporte_fallas;
             return false;
         }
     }
-    public function deleteTechnician($reportId, $state)
+    public function deleteTechnician($reportId, $state = 1)
     {
         try {
             $this->db->beginTransaction();
@@ -250,7 +250,7 @@ ORDER BY fr.id_reporte_fallas;
             return false;
         }
     }
-    public function createTracking($id_reporte_fallas, $accion = null, $id_usuario_accion, $nullTecnico = false)
+    public function createTracking($id_reporte_fallas, $accion = null, $id_usuario_accion, $nullTecnico = false, $descripcion = null)
     {
         try {
             // Consultar el reporte para obtener los datos necesarios
@@ -265,7 +265,7 @@ ORDER BY fr.id_reporte_fallas;
             }
 
             $accion = $accion ?? 'Creación de reporte';
-            $usuario_id = $id_usuario_accion ?? $reporte['id_usuario'];
+            $usuario_id = $_SESSION['id_usuario'] ?? $id_usuario_accion; // Usar el ID del usuario de la sesión o el proporcionado
             $id_estado = $reporte['id_estado_reporte_fallas'];
             $id_tecnico = $nullTecnico ? null : (!empty($reporte['tecnico_asignado']) ? $reporte['tecnico_asignado'] : null);
             $prioridad = $reporte['prioridad'];
@@ -278,6 +278,12 @@ ORDER BY fr.id_reporte_fallas;
                 $stmt = $this->db->prepare($sql);
                 $prioridad = 'Baja';
                 $stmt->bindParam(':prioridad', $prioridad, \PDO::PARAM_STR);
+            } else if ($descripcion !== null) {
+                $sql = "INSERT INTO seguimiento 
+                (id_reporte_fallas, accion, id_usuario_accion, id_estado_reporte, id_tecnico, prioridad, descripcion) 
+                VALUES (:id_reporte_fallas, :accion, :usuario_id, :id_estado, :id_tecnico, :prioridad, :descripcion)";
+                $stmt = $this->db->prepare($sql);
+                $stmt->bindParam(':descripcion', $descripcion, \PDO::PARAM_STR);
             } else {
                 $sql = "INSERT INTO seguimiento 
                 (id_reporte_fallas, accion, id_usuario_accion, id_estado_reporte, id_tecnico, prioridad) 
@@ -302,6 +308,53 @@ ORDER BY fr.id_reporte_fallas;
             echo "Error: " . $e->getMessage();
             return false;
         } catch (\Exception $e) {
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }
+
+    // Obtener el estado actual de un reporte
+    public function getReportStatus($reportId)
+    {
+        $sql = "SELECT id_estado_reporte_fallas FROM reporte_fallas WHERE id_reporte_fallas = :reportId";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':reportId', $reportId, \PDO::PARAM_INT);
+        $stmt->execute();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $row ? (int)$row['id_estado_reporte_fallas'] : null;
+    }
+
+    public function attendReport($reportId, $state = 3)
+    {
+        try {
+            $this->db->beginTransaction();
+            $sql = "UPDATE reporte_fallas SET id_estado_reporte_fallas = :state WHERE id_reporte_fallas = :reportId";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':state', $state, \PDO::PARAM_INT);
+            $stmt->bindParam(':reportId', $reportId, \PDO::PARAM_INT);
+            $stmt->execute();
+            $this->db->commit();
+            return true;
+        } catch (\PDOException $e) {
+            $this->db->rollBack();
+            echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }
+    // Actualiza el estado del reporte de fallas (para invalidación por admin)
+    public function updateReportStatus($reportId, $estado)
+    {
+        try {
+            $this->db->beginTransaction();
+            $sql = "UPDATE reporte_fallas SET id_estado_reporte_fallas = :estado WHERE id_reporte_fallas = :reportId";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':estado', $estado, \PDO::PARAM_INT);
+            $stmt->bindParam(':reportId', $reportId, \PDO::PARAM_INT);
+            $stmt->execute();
+            $this->db->commit();
+            return true;
+        } catch (\PDOException $e) {
+            $this->db->rollBack();
             echo "Error: " . $e->getMessage();
             return false;
         }

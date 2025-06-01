@@ -132,7 +132,12 @@ function updateOrCreateChart(chartId, chartData) {
   if (Chart.getChart(canvasId)) {
     const chart = Chart.getChart(canvasId);
     chart.data.labels = chartData.labels;
-    chart.data.datasets[0].data = chartData.data;
+    if (chartData.datasets) {
+      chart.data.datasets = chartData.datasets;
+    } else {
+      chart.data.datasets[0].data = chartData.data;
+      chart.data.datasets[0].backgroundColor = chartData.backgroundColor || chartColors;
+    }
     chart.options.onClick = onClick; // Actualiza el evento onClick
     chart.update();
   } else {
@@ -141,7 +146,7 @@ function updateOrCreateChart(chartId, chartData) {
       type: chartData.type || "doughnut",
       data: {
         labels: chartData.labels,
-        datasets: [
+        datasets: chartData.datasets || [
           {
             data: chartData.data,
             backgroundColor: chartData.backgroundColor || chartColors,
@@ -155,7 +160,7 @@ function updateOrCreateChart(chartId, chartData) {
           ...defaultOptions.plugins,
           title: { ...defaultOptions.plugins.title, text: chartData.title },
           legend: {
-            display: chartData.type !== "bar",
+            display: chartData.type !== "bar" || !!chartData.datasets,
             position: "bottom"
           },
         },
@@ -167,11 +172,13 @@ function updateOrCreateChart(chartId, chartData) {
                   grid: { display: false },
                   ticks: { display: true },
                   beginAtZero: true,
+                  stacked: !!chartData.stacked,
                 },
                 y: {
                   grid: { display: false },
                   ticks: { display: true, stepSize: 1 },
                   beginAtZero: true,
+                  stacked: !!chartData.stacked,
                 },
               },
         onClick: onClick,

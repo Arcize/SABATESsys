@@ -4,6 +4,21 @@ use app\controllers\FaultTypeController;
 
 $faultTypeController = new FaultTypeController();
 $faultTypes = $faultTypeController->listFaultTypes();
+
+// Obtener técnicos si el usuario es admin
+$tecnicos = [];
+if (isset($_SESSION['role']) && $_SESSION['role'] == 1) {
+    $userModel = new \app\models\UserModel();
+    $allUsers = $userModel->readPage();
+    foreach ($allUsers as $u) {
+        if (isset($u['id_rol']) && $u['id_rol'] == 3) {
+            $tecnicos[] = [
+                'id_usuario' => $u['id_usuario'],
+                'nombre' => $u['nombre_completo']
+            ];
+        }
+    }
+}
 ?>
 
 <?php
@@ -85,22 +100,36 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
 
 <div class="overlay-modal close-modal" data-modal-id="faultReportOverlayOne">
     <div class="modal-box" id="faultReportModalOne" data-modal-id="faultReportModalOne">
-        <?php
-        // require_once '../app/views/faultReport-view.php';
-        ?>
+        <div class="modal-header">
+            <h3 class="h3">Detalles del Reporte de Falla</h3>
+        </div>
+        <div class="modal-body" id="faultReportDetailsBody" style="display:flex; flex-direction:column; align-items:center;">
+            <div style="text-align:center; padding:1em; color:#888;">Cargando detalles...</div>
+        </div>
+        <div class="modal-footer">
+            <button class="modal-button close-modal" type="button">Cerrar</button>
+        </div>
     </div>
 </div>
-
 <!-- Modal para Atender Reporte -->
 <div class="overlay-modal close-modal" data-modal-id="attendReportOverlay">
     <div class="modal-box" id="attendReportModal" data-modal-id="attendReportModal">
         <div class="modal-header">
             <h3 class="h3">Atender Reporte</h3>
         </div>
-        <form id="attendReportForm">
+        <form id="attendReportForm" action="index.php?view=faultReport&action=attend_report" method="POST">
             <div class="modal-body">
-                <input type="hidden" id="attend_report_id" name="id_reporte_fallas">
-                <div class="inputGroup">
+                <table class="details-table attend-details-table">
+                    <tr>
+                        <th class="details-label">Código</th>
+                        <td class="details-value"><span id="attend_codigo_reporte"></span></td>
+                    </tr>
+                    <tr>
+                        <th class="details-label">Fecha del Reporte</th>
+                        <td class="details-value"><span id="attend_fecha_reporte"></span></td>
+                    </tr>
+                </table>
+                <div class="inputGroup textArea">
                     <label for="attend_observacion">Observación:</label>
                     <textarea id="attend_observacion" name="observacion" required></textarea>
                 </div>
@@ -115,23 +144,265 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
 <div class="overlay-modal close-modal" data-modal-id="rejectReportOverlay">
     <div class="modal-box" id="rejectReportModal" data-modal-id="rejectReportModal">
         <div class="modal-header">
-            <h3 class="h3">Atender Reporte</h3>
+            <h3 class="h3">Rechazar Reporte de Falla</h3>
         </div>
-        <form id="attendReportForm">
+        <form id="rejectReportForm" action="index.php?view=faultReport&action=unassign_technician" method="POST">
             <div class="modal-body">
-                <input type="hidden" id="attend_report_id" name="id_reporte_fallas">
-                <div class="inputGroup">
-                    <label for="attend_observacion">Observación:</label>
-                    <textarea id="attend_observacion" name="observacion" required></textarea>
+                <input type="hidden" id="reject_report_id" name="id_reporte_fallas">
+
+                <div class="inputGroup textArea">
+                    <label for="reject_observacion">¿Por qué desea rechazar este reporte?</label>
+                    <textarea id="reject_observacion" name="observacion" required></textarea>
+
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="modal-button close-modal" type="button">Cancelar</button>
-                <button class="modal-button sentBtn" type="submit">Guardar</button>
+                <button class="modal-button sentBtn" type="submit">Rechazar</button>
             </div>
         </form>
     </div>
 </div>
+
+<!-- Modal para asignar técnico (solo admin) -->
+<?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
+<div class="overlay-modal close-modal" data-modal-id="assignTechnicianOverlay">
+    <div class="modal-box" id="assignTechnicianModal" data-modal-id="assignTechnicianModal">
+        <div class="modal-header">
+            <h3 class="h3">Asignar Técnico</h3>
+        </div>
+        <form id="assignTechnicianForm" action="index.php?view=faultReport&action=assign_technician" method="POST">
+            <div class="modal-body">
+                <input type="hidden" id="assign_report_id" name="report_id">
+                <div class="inputGroup">
+                    <label for="tecnico_select">Selecciona un técnico:</label>
+                    <select id="tecnico_select" name="tecnico_id" required class="input">
+                        <option value="">Seleccione</option>
+                        <!-- Opciones se llenan por JS -->
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-button close-modal" type="button">Cancelar</button>
+                <button class="modal-button sentBtn" type="submit">Asignar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal para invalidar reporte (solo admin) -->
+<div class="overlay-modal close-modal" data-modal-id="invalidateReportOverlay">
+    <div class="modal-box" id="invalidateReportModal" data-modal-id="invalidateReportModal">
+        <div class="modal-header">
+            <h3 class="h3">Invalidar Reporte de Falla</h3>
+        </div>
+        <form id="invalidateReportForm" action="index.php?view=faultReport&action=invalidate_report" method="POST">
+            <div class="modal-body">
+                <input type="hidden" id="invalidate_report_id" name="id_reporte_fallas">
+                <div class="inputGroup">
+                    <label for="invalid_reason">Motivo de invalidación</label>
+                    <select id="invalid_reason" name="invalid_reason" class="input" required>
+                        <option value="">Seleccione</option>
+                        <option value="Duplicidad">Duplicidad</option>
+                        <option value="Inconsistencia">Inconsistencia</option>
+                    </select>
+                </div>
+                <div class="inputGroup textArea">
+                    <label for="invalid_observacion">Observación (opcional):</label>
+                    <textarea id="invalid_observacion" name="invalid_observacion"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-button close-modal" type="button">Cancelar</button>
+                <button class="modal-button sentBtn" type="submit">Invalidar</button>
+            </div>
+        </form>
+    </div>
+</div>
+<?php endif; ?>
+<script>
+$(document).ready(function() {
+    // --- Llenar select de técnicos dinámicamente ---
+    function cargarTecnicos() {
+        $.get('index.php?view=employee&action=get_technicians', function(data) {
+            var select = $('#tecnico_select');
+            select.empty();
+            select.append('<option value="">Seleccione</option>');
+            if (Array.isArray(data)) {
+                data.forEach(function(tecnico) {
+                    select.append('<option value="' + tecnico.id_usuario + '">' + tecnico.nombre + '</option>');
+                });
+            }
+        }, 'json');
+    }
+
+    // Solo permitir asignar si no hay técnico asignado
+    $(document).on('click', '.assign-technician-btn.open-modal', function(e) {
+        const reportId = $(this).data('report-id');
+        // Obtener datos de la fila
+        const rowData = $('#faultReportTable').DataTable().row($(this).closest('tr')).data();
+        if (rowData && rowData.tecnico_asignado) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Ya hay un técnico asignado',
+                text: 'No se puede reasignar un técnico a este reporte.'
+            });
+            e.stopImmediatePropagation();
+            return false;
+        }
+        $('#assign_report_id').val(reportId);
+        cargarTecnicos();
+    });
+
+    // Botón para abrir modal de invalidar (solo admin)
+    $(document).on('click', '.invalidate-report-btn', function(e) {
+        const reportId = $(this).data('report-id');
+        // Buscar en la fila si ya tiene técnico asignado
+        const rowData = $('#faultReportTable').DataTable().row($(this).closest('tr')).data();
+        if (rowData && rowData.tecnico_asignado) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            Swal.fire({
+                icon: 'info',
+                title: 'No permitido',
+                text: 'No se puede invalidar un reporte que ya tiene un técnico asignado.'
+            });
+            return false;
+        }
+        $('#invalidate_report_id').val(reportId);
+        // Solo aquí abrimos la modal manualmente si pasa la validación
+        const overlay = document.querySelector('[data-modal-id="invalidateReportOverlay"]');
+        const modal = document.getElementById('invalidateReportModal');
+        if (overlay && modal) {
+            overlay.classList.add('overlay-active', 'overlay-opening');
+            modal.classList.add('modal-active', 'modal-opening');
+            overlay.style.display = '';
+        }
+    });
+});
+</script>
+
+<style>
+    #faultReportDetailsBody {
+        width: 100%;
+        max-width: 420px;
+        margin: 0 auto;
+    }
+    .details-modal-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+    .details-code {
+        font-weight: bold;
+        font-size: 1.1em;
+        margin-bottom: 8px;
+        text-align: center;
+        width: 100%;
+    }
+    .details-code-label {
+        font-weight: normal;
+    }
+    .details-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .details-table th.details-label,
+    .details-table td.details-value {
+        text-align: left;
+        padding: 8px 10px;
+        vertical-align: top;
+    }
+    .details-table th.details-label {
+        font-weight: bold;
+        width: 38%;
+        background: #f5f5f5;
+    }
+    .details-table td.details-value {
+        width: 62%;
+        background: #fff;
+    }
+    .details-description-title {
+        font-weight: bold;
+        margin-bottom: 4px;
+        margin-top: 18px;
+        text-align: left;
+        width: 100%;
+    }
+    .details-description-content {
+        width: 100%;
+        min-height: 60px;
+        max-height: 120px;
+        overflow-y: auto;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 10px;
+        background: #fafafa;
+        font-size: 1rem;
+        margin-bottom: 18px;
+        box-sizing: border-box;
+        text-align: left;
+    }
+    .details-error {
+        color: red;
+        text-align: center;
+        padding: 1em;
+    }
+    .attend-info-row {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 12px;
+    }
+    .attend-info-item {
+        display: flex;
+        align-items: flex-start;
+    }
+    .attend-info-label {
+        font-weight: bold;
+        margin-bottom: 2px;
+    }
+    .attend-info-table {
+        width: 100%;
+        margin-bottom: 14px;
+        border-collapse: collapse;
+        border-spacing: 0 6px;
+        table-layout: fixed;
+        border: solid 1px #e0e0e0;
+    }
+    .attend-info-label {
+        font-weight: bold;
+        width: 160px;
+        padding-right: 10px;
+        vertical-align: top;
+    }
+    .attend-info-table td {
+        padding: 2px 4px;
+        vertical-align: top;
+        width: 100%;
+    }
+    .attend-details-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .attend-details-table th.details-label,
+    .attend-details-table td.details-value {
+        text-align: left;
+        padding: 8px 10px;
+        vertical-align: top;
+    }
+    .attend-details-table th.details-label {
+        font-weight: bold;
+        width: 38%;
+        background: #f5f5f5;
+    }
+    .attend-details-table td.details-value {
+        width: 62%;
+        background: #fff;
+    }
+</style>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -226,7 +497,8 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
 </script>
 <script>
     $(document).ready(function() {
-        $('#faultReportTable').DataTable({
+        // Inicialización normal de DataTable
+        var table = $('#faultReportTable').DataTable({
             ...commonDatatableConfig,
             buttons: [{
                 extend: 'pdfHtml5',
@@ -260,7 +532,12 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                             });
                         }
                     });
-
+                    const sabatesIndex = doc.content.findIndex(element => (
+                        typeof element.text === 'string' && element.text.includes('SABATES') // Busca el texto específico
+                    ));
+                    if (sabatesIndex > -1) {
+                        doc.content.splice(sabatesIndex, 1);
+                    }
                     // Título personalizado
                     doc.content.splice(0, 0, {
                         text: 'Reporte de Fallas',
@@ -272,6 +549,19 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                             bold: true,
                             margin: [0, 40, 0, 0]
                         }
+                    };
+                    // --- FOOTER PERSONALIZADO ---
+                    const fechaHora = new Date().toLocaleString('es-ES');
+                    const anioActual = new Date().getFullYear();
+                    doc.footer = function(currentPage, pageCount) {
+                        return {
+                            columns: [
+                                { text: 'SABATES ' + anioActual, alignment: 'left', margin: [40, 0, 0, 0], fontSize: 9, color: '#000000' },
+                                { text: 'Reporte Generado el: ' + fechaHora, alignment: 'center', fontSize: 9, color: '#000000' },
+                                { text: 'Página ' + currentPage.toString() + ' de ' + pageCount, alignment: 'right', margin: [0, 0, 40, 0], fontSize: 9, color: '#000000' }
+                            ],
+                            margin: [0, 0, 0, 10]
+                        };
                     };
                 },
                 orientation: 'portrait',
@@ -368,18 +658,37 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                 {
                     data: 'tecnico_asignado',
                     render: function(data, type, row) {
-                        // 'data' es el valor de la celda para esta columna y fila
+                        // Si el reporte está completado, no mostrar botones de acción
+                        if (row.id_estado_reporte_fallas === 3) {
+                            return row.tecnico_asignado_nombre ? row.tecnico_asignado_nombre : '-';
+                        }
+                        // Si ya hay técnico asignado
+                        if (row.tecnico_asignado) {
+                            // Si el técnico asignado coincide con el usuario actual, mostrar solo el botón rechazar
+                            if (row.tecnico_asignado == currentId) {
+                                return `<button class="table-button red-button reject-repair-button open-modal" 
+            data-report-id="${row.id_reporte_fallas}" data-fetch="false" data-target-modal="rejectReportModal">
+            Rechazar
+        </button>`;
+                            }
+                            // Si no coincide, solo mostrar el nombre
+                            return row.tecnico_asignado_nombre ? row.tecnico_asignado_nombre : '-';
+                        }
+                        // Si es admin y no hay técnico asignado, mostrar botón Asignar Técnico
+                        if (typeof window.isAdmin !== 'undefined' && window.isAdmin) {
+                            return `<button class="table-button blue-button assign-technician-btn open-modal" 
+                        data-report-id="${row.id_reporte_fallas}" 
+                        data-target-modal="assignTechnicianModal" data-fetch="false">
+                        Asignar Técnico
+                    </button>`;
+                        }
+                        // Si es técnico y no hay técnico asignado, mostrar botón aceptar
                         if (data === null || data === undefined) {
                             return `<button class="table-button green-button accept-repair-button" 
-                                        data-report-id="${row.id_reporte_fallas}" 
-                                        onclick="acceptRepair(${row.id_reporte_fallas})">
-                                        Aceptar
-                                    </button>`;
-                        } else if (data == currentId) {
-                            return `<button class="table-button red-button reject-repair-button open-modal" 
-                                        data-report-id="${row.id_reporte_fallas}" data-fetch="false" data-target-modal="rejectReportModal">
-                                        Rechazar
-                                    </button>`;
+                        data-report-id="${row.id_reporte_fallas}" 
+                        onclick="acceptRepair(${row.id_reporte_fallas})">
+                        Aceptar
+                    </button>`;
                         } else {
                             return row.tecnico_asignado_nombre; // Muestra el valor original si no es null
                         }
@@ -389,23 +698,30 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                     data: null,
                     render: function(data, type, row) {
                         let buttons = `<div class="actions-dropdown-container">
-            <button class="crud-button actions-dropdown-btn dark-button">
-                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/></svg>
-            </button>
-            <div class="actions-dropdown-menu" style="display:none; position:absolute; z-index:10;">
-                <button class="crud-button crud-option open-modal" 
-                    data-target-modal="faultReportModalOne" data-fetch="true">Ver Detalles
-                </button>
-                <button onclick='sentData(this)' class="crud-button crud-option generate-report-btn" 
-                    data-row='${encodeURIComponent(row.id_reporte_fallas)}' type-row='${encodeURIComponent(row.id_tipo_falla)}'>
-                    Generar Reporte
-                </button>`;
-                        // Agregar el botón "Atender" solo si el técnico asignado es el actual
-                        if (row.tecnico_asignado == currentId) {
+<button class="crud-button actions-dropdown-btn dark-button">
+    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/></svg>
+</button>
+<div class="actions-dropdown-menu" style="display:none; position:absolute; z-index:10;">
+    <button class="crud-button crud-option open-modal" 
+        data-target-modal="faultReportModalOne" data-fetch="true">Ver Detalles
+    </button>
+    <button onclick='sentData(this)' class="crud-button crud-option generate-report-btn" 
+        data-row='${encodeURIComponent(row.id_reporte_fallas)}' type-row='${encodeURIComponent(row.id_tipo_falla)}'>
+        Generar Reporte
+    </button>`;
+                        // Si NO está completido, mostrar también el botón Atender si corresponde
+                        if (row.id_estado_reporte_fallas !== 3 && row.tecnico_asignado == currentId) {
                             buttons += `
-                <button class="crud-button crud-option attend-btn open-modal" data-target-modal="attendReportModal" data-fetch="false">
-                    Atender
-                </button>`;
+<button class="crud-button crud-option attend-btn open-modal" data-target-modal="attendReportModal" data-fetch="false" data-report-id="${row.id_reporte_fallas}">
+    Atender
+</button>`;
+                        }
+                        // Si es admin, mostrar botón invalidar
+                        if (typeof window.isAdmin !== 'undefined' && window.isAdmin && row.id_estado_reporte_fallas !== 4 && row.id_estado_reporte_fallas !== 5) {
+                            buttons += `
+<button class="crud-button crud-option invalidate-report-btn" data-target-modal="invalidateReportModal" data-fetch="false" data-report-id="${row.id_reporte_fallas}">
+    Invalidar
+</button>`;
                         }
                         buttons += `</div></div>`;
                         return buttons;
@@ -413,6 +729,13 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                 },
             ]
         });
+
+        // Filtrar por código si viene en la URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const codigo = urlParams.get('codigo');
+        if (codigo) {
+            table.search(codigo).draw();
+        }
     });
 </script>
 <script>
@@ -502,10 +825,289 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                 const fechaSeleccionada = new Date(this.value);
 
                 if (fechaSeleccionada < mesAnterior || fechaSeleccionada > fechaActual) {
-                    alert("La fecha debe estar dentro del último mes.");
-                    this.value = ""; // Limpia el campo si la fecha es inválida
+                    if (window.Swal) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Fecha inválida',
+                            text: 'La fecha debe estar dentro del último mes.',
+                            confirmButtonText: 'Aceptar',
+                            customClass: {
+                                popup: 'swal2-popup'
+                            }
+                        }).then(() => {
+                            this.value = '';
+                        });
+                    } else {
+                        alert('La fecha debe estar dentro del último mes.');
+                        this.value = '';
+                    }
                 }
             });
         }
     });
+</script>
+<script>
+    $(document).ready(function() {
+        // --- Modal Rechazar Reporte ---
+        // Al abrir la modal de rechazar, setear el id del reporte
+        $(document).on('click', '.reject-repair-button.open-modal', function() {
+            const reportId = $(this).data('report-id');
+            // Validar si el reporte está completado antes de abrir el modal
+            const rowData = $('#faultReportTable').DataTable().row($(this).closest('tr')).data();
+            if (rowData && rowData.id_estado_reporte_fallas === 3) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Reporte Completado',
+                    text: 'No se puede rechazar un reporte que ya está completado.'
+                });
+                return;
+            }
+            $('#reject_report_id').val(reportId);
+        });
+
+        $('#rejectReportForm').on('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            const formData = $(form).serialize();
+            const sentBtn = form.querySelector('.sentBtn');
+            if (sentBtn) sentBtn.disabled = true;
+            $.post(form.action, formData, function(data) {
+                Swal.fire({
+                    icon: data.success ? 'success' : 'error',
+                    title: data.success ? 'Éxito' : 'Error',
+                    text: data.message
+                });
+                if (data.success) {
+                    // Cerrar modal
+                    const modal = document.getElementById('rejectReportModal');
+                    const overlay = modal.closest('.overlay-modal');
+                    if (overlay && modal) {
+                        overlay.classList.remove('overlay-active', 'overlay-opening');
+                        modal.classList.remove('modal-active', 'modal-opening');
+                        overlay.style.display = 'none';
+                    }
+                    // Recargar tabla
+                    if ($('#faultReportTable').length) {
+                        $('#faultReportTable').DataTable().ajax.reload(null, false);
+                    }
+                }
+            }, 'json').always(function() {
+                if (sentBtn) sentBtn.disabled = false;
+            });
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        // --- Modal Atender Reporte ---
+        $(document).on('click', '.attend-btn.open-modal', function() {
+            // Obtener el id del reporte de forma robusta
+            let reportId = $(this).data('report-id');
+            if (!reportId) {
+                // Buscar en la fila si no viene en el botón
+                const rowData = $('#faultReportTable').DataTable().row($(this).closest('tr')).data();
+                if (rowData) {
+                    reportId = rowData.id_reporte_fallas;
+                }
+            }
+            // Validar estado
+            const rowData = $('#faultReportTable').DataTable().row($(this).closest('tr')).data();
+            if (rowData && rowData.id_estado_reporte_fallas === 3) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Reporte Completado',
+                    text: 'No se puede atender un reporte que ya está completado.'
+                });
+                return;
+            }
+            $('#attend_report_id').val(reportId);
+            // Mostrar código y fecha
+            if(rowData) {
+                $('#attend_codigo_reporte').text(rowData.codigo_reporte_fallas || '');
+                // Formatear la fecha
+                let fecha = rowData.fecha_hora_reporte_fallas;
+                if (fecha) {
+                    const date = new Date(fecha);
+                    fecha = date.toLocaleString('es-ES', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        hour12: true
+                    }).replace(",", "");
+                }
+                $('#attend_fecha_reporte').text(fecha || '');
+            } else {
+                $('#attend_codigo_reporte').text('');
+                $('#attend_fecha_reporte').text('');
+            }
+        });
+
+        $('#attendReportForm').on('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            const formData = $(form).serialize();
+            const sentBtn = form.querySelector('.sentBtn');
+            if (sentBtn) sentBtn.disabled = true;
+            $.post(form.action, formData, function(data) {
+                Swal.fire({
+                    icon: data.success ? 'success' : 'error',
+                    title: data.success ? 'Éxito' : 'Error',
+                    text: data.message
+                });
+                if (data.success) {
+                    // Cerrar modal
+                    const modal = document.getElementById('attendReportModal');
+                    const overlay = modal.closest('.overlay-modal');
+                    if (overlay && modal) {
+                        overlay.classList.remove('overlay-active', 'overlay-opening');
+                        modal.classList.remove('modal-active', 'modal-opening');
+                        overlay.style.display = 'none';
+                    }
+                    // Recargar tabla
+                    if ($('#faultReportTable').length) {
+                        $('#faultReportTable').DataTable().ajax.reload(null, false);
+                    }
+                }
+            }, 'json').always(function() {
+                if (sentBtn) sentBtn.disabled = false;
+            });
+        });
+    });
+</script>
+<script>
+    // --- MODAL VER DETALLES DE REPORTE DE FALLA ---
+    $(document).ready(function() {
+        $('#faultReportTable').on('click', '.open-modal[data-target-modal="faultReportModalOne"]', function(e) {
+            e.preventDefault();
+            const row = $(this).closest('tr').length ? $('#faultReportTable').DataTable().row($(this).closest('tr')).data() : null;
+            if (!row) {
+                $('#faultReportDetailsBody').html('<div style="color:red">No se pudo obtener el reporte.</div>');
+                return;
+            }
+            // Petición AJAX para obtener detalles completos
+            $.ajax({
+                url: 'index.php?view=faultReport&action=generateReport',
+                method: 'POST',
+                data: {
+                    id_fault_report: row.id_reporte_fallas,
+                    id_type_report: row.id_tipo_falla
+                },
+                dataType: 'json',
+                success: function(data) {
+                    if (data && !data.error) {
+                        let fechaFalla = data.fecha_falla || '';
+                        if (fechaFalla) {
+                            // Intentar formatear la fecha a dd/mm/yyyy
+                            const fechaObj = new Date(fechaFalla);
+                            if (!isNaN(fechaObj.getTime())) {
+                                const dia = String(fechaObj.getDate()).padStart(2, '0');
+                                const mes = String(fechaObj.getMonth() + 1).padStart(2, '0');
+                                const anio = fechaObj.getFullYear();
+                                fechaFalla = `${dia}/${mes}/${anio}`;
+                            }
+                        }
+                        let html = `<div class='details-modal-container'>`;
+                        html += `<div class='details-code'><span class='details-code-label'>Código:</span> ${data.codigo_reporte_fallas || ''}</div>`;
+                        html += `<table class='details-table'>
+    <tr><th class='details-label'>Tipo de Falla</th><td class='details-value'>${data.tipo_falla || ''}</td></tr>
+    <tr><th class='details-label'>Fecha de la Falla</th><td class='details-value'>${fechaFalla}</td></tr>
+    <tr><th class='details-label'>Estado</th><td class='details-value'>${data.estado_reporte_fallas || ''}</td></tr>
+    <tr><th class='details-label'>Prioridad</th><td class='details-value'>${data.prioridad || ''}</td></tr>
+    <tr><th class='details-label'>Reportado Por</th><td class='details-value'>${data.nombre || ''} ${data.apellido || ''}</td></tr>
+    <tr><th class='details-label'>Cédula</th><td class='details-value'>${data.cedula || ''}</td></tr>
+    <tr><th class='details-label'>Departamento</th><td class='details-value'>${data.nombre_departamento || ''}</td></tr>
+</table>`;
+                        html += `<div class='details-description-title'>Descripción</div>`;
+                        html += `<div class='details-description-content'>${data.contenido_reporte_fallas || ''}</div>`;
+                        html += `</div>`;
+                        $('#faultReportDetailsBody').html(html);
+                    } else {
+                        $('#faultReportDetailsBody').html('<div class="details-error">No se pudo cargar el detalle.</div>');
+                    }
+                },
+                error: function() {
+                    $('#faultReportDetailsBody').html('<div class="details-error">Error de conexión.</div>');
+                }
+            });
+        });
+    });
+</script>
+<script>
+    // Variable global para saber si es admin
+    window.isAdmin = <?php echo (isset($_SESSION['role']) && $_SESSION['role'] == 1) ? 'true' : 'false'; ?>;
+
+    $(document).ready(function() {
+        // Abrir modal de asignar técnico y setear el id del reporte
+        $(document).on('click', '.assign-technician-btn.open-modal', function() {
+            const reportId = $(this).data('report-id');
+            $('#assign_report_id').val(reportId);
+        });
+
+        // Enviar formulario de asignación de técnico
+        $('#assignTechnicianForm').on('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            const formData = $(form).serialize();
+            const sentBtn = form.querySelector('.sentBtn');
+            if (sentBtn) sentBtn.disabled = true;
+            $.post(form.action, formData, function(data) {
+                Swal.fire({
+                    icon: data.success ? 'success' : 'error',
+                    title: data.success ? 'Éxito' : 'Error',
+                    text: data.message
+                });
+                if (data.success) {
+                    // Cerrar modal
+                    const modal = document.getElementById('assignTechnicianModal');
+                    const overlay = modal.closest('.overlay-modal');
+                    if (overlay && modal) {
+                        overlay.classList.remove('overlay-active', 'overlay-opening');
+                        modal.classList.remove('modal-active', 'modal-opening');
+                        overlay.style.display = 'none';
+                    }
+                    // Recargar tabla
+                    if ($('#faultReportTable').length) {
+                        $('#faultReportTable').DataTable().ajax.reload(null, false);
+                    }
+                }
+            }, 'json').always(function() {
+                if (sentBtn) sentBtn.disabled = false;
+            });
+        });
+    });
+</script>
+<script>
+    // Enviar formulario de invalidación
+    $('#invalidateReportForm').on('submit', function(e) {
+        e.preventDefault();
+        const form = this;
+        const formData = $(form).serialize();
+        const sentBtn = form.querySelector('.sentBtn');
+        if (sentBtn) sentBtn.disabled = true;
+        $.post(form.action, formData, function(data) {
+        Swal.fire({
+            icon: data.success ? 'success' : 'error',
+            title: data.success ? 'Éxito' : 'Error',
+            text: data.message
+        });
+        if (data.success) {
+            // Cerrar modal
+            const modal = document.getElementById('invalidateReportModal');
+            const overlay = modal.closest('.overlay-modal');
+            if (overlay && modal) {
+                overlay.classList.remove('overlay-active', 'overlay-opening');
+                modal.classList.remove('modal-active', 'modal-opening');
+                overlay.style.display = 'none';
+            }
+            // Recargar tabla
+            if ($('#faultReportTable').length) {
+                $('#faultReportTable').DataTable().ajax.reload(null, false);
+            }
+        }
+    }, 'json').always(function() {
+        if (sentBtn) sentBtn.disabled = false;
+    });
+});
 </script>

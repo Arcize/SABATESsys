@@ -24,7 +24,7 @@ $dashboardConfig = $userController->getDashboardConfig();
             <div class="grid-stack-item-content data-panel" data-panel="3"></div>
         </div>
 
-        <div class="grid-stack-item" gs-x="3" gs-y="0" gs-w="4" gs-h="2" gs-min-w="1" gs-min-h="1">
+        <div class="grid-stack-item" gs-x="3" gs-y="0" gs-w="4" gs-h="2" gs-min-w="4" gs-min-h="3">
             <div class="grid-stack-item-content data-panel" data-panel="4"></div>
         </div>
 
@@ -44,9 +44,6 @@ $dashboardConfig = $userController->getDashboardConfig();
         </div>
         <div class="grid-stack-item" gs-x="3" gs-y="4" gs-w="4" gs-h="2" gs-min-w="1" gs-min-h="1">
             <div class="grid-stack-item-content data-panel" data-panel="9"></div>
-        </div>
-        <div class="grid-stack-item" gs-x="7" gs-y="4" gs-w="2" gs-h="2" gs-min-w="1" gs-min-h="1">
-            <div class="grid-stack-item-content data-panel" data-panel="10"></div>
         </div>
     </div>
 </div>

@@ -1,4 +1,7 @@
 <?php
+$imagenPath = '../public/img/banner_SABATES.png';
+$imagenData = base64_encode(file_get_contents($imagenPath));
+$logoBase64 = 'data:image/png;base64,' . $imagenData;
 
 use app\controllers\RoleController;
 
@@ -95,12 +98,98 @@ $roles = $roleController->listRoles();
                     return data; // En caso de que 'data' sea null o undefined
                 }
             }],
-            ...commonDatatableConfig, // Configuración común
+            ...commonDatatableConfig,
+            buttons: [{
+                extend: 'pdfHtml5',
+                text: 'Exportar a PDF',
+                filename: 'Reporte_Usuarios_' + new Date().toISOString().slice(0, 10),
+                customize: function(doc) {
+                    const logoBase64 = '<?php echo $logoBase64; ?>';
+                    doc.header = function(currentPage, pageCount, pageSize) {
+                        return {
+                            image: logoBase64,
+                            width: 150,
+                            alignment: 'center',
+                            margin: [0, 20, 0, 0]
+                        };
+                    };
+
+                    // Si quieres ocultar columnas, ajusta los índices aquí. Por defecto, no ocultamos ninguna.
+                    // const columnasOcultar = [5, 6];
+                    // columnasOcultar.forEach(index => {
+                    //     if (doc.content[1].table.body[0] && doc.content[1].table.body[0][index]) {
+                    //         doc.content[1].table.body[0][index].text = '';
+                    //     }
+                    // });
+                    // doc.content[1].table.body.forEach((row, rowIndex) => {
+                    //     if (rowIndex > 0) {
+                    //         columnasOcultar.forEach(index => {
+                    //             if (row && row[index]) {
+                    //                 row[index].text = '';
+                    //             }
+                    //         });
+                    //     }
+                    // });
+
+                    // Eliminar cualquier otro elemento que parezca un título genérico
+                    const sabatesIndex = doc.content.findIndex(element => (
+                        typeof element.text === 'string' && element.text.includes('SABATES')
+                    ));
+                    if (sabatesIndex > -1) {
+                        doc.content.splice(sabatesIndex, 1);
+                    }
+                    doc.content.splice(0, 0, {
+                        text: 'Reporte de Usuarios',
+                        style: 'header'
+                    });
+                    doc.styles = {
+                        header: {
+                            fontSize: 18,
+                            bold: true,
+                            margin: [0, 40, 0, 0]
+                        }
+                    };
+                    // --- FOOTER PERSONALIZADO ---
+                    const fechaHora = new Date().toLocaleString('es-ES');
+                    const anioActual = new Date().getFullYear();
+                    doc.footer = function(currentPage, pageCount) {
+                        return {
+                            columns: [
+                                { text: 'SABATES ' + anioActual, alignment: 'left', margin: [40, 0, 0, 0], fontSize: 9, color: '#000000' },
+                                { text: 'Reporte Generado el: ' + fechaHora, alignment: 'center', fontSize: 9, color: '#000000' },
+                                { text: 'Página ' + currentPage.toString() + ' de ' + pageCount, alignment: 'right', margin: [0, 0, 40, 0], fontSize: 9, color: '#000000' }
+                            ],
+                            margin: [0, 0, 0, 10]
+                        };
+                    };
+                },
+                orientation: 'portrait',
+                pageSize: 'A4',
+                titleAttr: 'Exportar la tabla actual a PDF',
+                exportOptions: {
+                    format: {
+                        body: function (data, row, column, node) {
+                            // Si es la columna de Rol (índice 4), toma el valor actual del select en la celda
+                            if (column === 4 && node) {
+                                var select = node.querySelector('select');
+                                if (select) {
+                                    return select.options[select.selectedIndex].text;
+                                }
+                                // Si no hay select, devuelve el texto plano
+                                return node.textContent || data;
+                            }
+                            // Para otras columnas, devuelve el texto plano
+                            return node ? node.textContent : data;
+                        }
+                    }
+                }
+            }
+            // ...otros botones si es necesario...
+            ],
             ajax: {
                 url: 'index.php?view=user&action=user_fetch_page',
                 dataSrc: ''
             },
-
             columns: [{
                     title: "N°",
                     data: null,
@@ -135,7 +224,7 @@ $roles = $roleController->listRoles();
                                 .join("");
 
                             return `
-                <select class="edit-on-change" data-user-id="${row.id_usuario}" data-field="rol">
+                <select class="edit-on-change" data-user-id="${row.id_usuario}" data-field="rol" data-prev="${data.id}">
                     ${optionsHtml}
                 </select>`;
                         }
@@ -159,34 +248,120 @@ $roles = $roleController->listRoles();
             const userId = selectElement.dataset.userId;
             const fieldName = selectElement.dataset.field;
             const newValue = selectElement.value;
+            const previousValue = selectElement.getAttribute("data-prev") || "";
 
-            console.log(
-                `Cambiando ${fieldName} para el usuario ${userId} al id_rol: ${newValue}`
-            );
+            // Restaurar el valor anterior si el usuario cancela
+            function revertSelect() {
+                if (previousValue) {
+                    selectElement.value = previousValue;
+                }
+            }
 
-            fetch(
-                    `index.php?view=user&action=user_fetch_update&id_usuario=${userId}`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/x-www-form-urlencoded",
-                        },
-                        body: `id_rol=${encodeURIComponent(newValue)}`,
-                    }
-                )
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        const cell = selectElement.closest("td");
-                        cell.classList.add("updated");
-                        setTimeout(() => cell.classList.remove("updated"), 1000);
-                        console.log(data.message);
+            // Pregunta de confirmación con SweetAlert
+            if (window.Swal) {
+                Swal.fire({
+                    title: '¿Está seguro?',
+                    text: '¿Desea cambiar el rol de este usuario?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, cambiar',
+                    cancelButtonText: 'Cancelar',
+                    customClass: { popup: 'swal2-popup' }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // ...AJAX para actualizar...
+                        fetch(
+                                `index.php?view=user&action=user_fetch_update&id_usuario=${userId}`, {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/x-www-form-urlencoded",
+                                    },
+                                    body: `id_rol=${encodeURIComponent(newValue)}`,
+                                }
+                            )
+                            .then((response) => response.json())
+                            .then((data) => {
+                                if (data.success) {
+                                    selectElement.setAttribute("data-prev", newValue);
+                                    const cell = selectElement.closest("td");
+                                    cell.classList.add("updated");
+                                    setTimeout(() => cell.classList.remove("updated"), 1000);
+                                    console.log(data.message);
+                                    // Alerta de éxito mejorada
+                                    if (window.Swal) {
+                                        Swal.fire({
+                                            title: "¡Éxito!",
+                                            text: "El rol del usuario ha sido actualizado.",
+                                            icon: "success",
+                                            timer: 2000,
+                                            showConfirmButton: false,
+                                            customClass: {
+                                                popup: "custom-swal-font"
+                                            }
+                                        });
+                                    }
+                                } else {
+                                    revertSelect();
+                                    console.error("Error al guardar:", data.message);
+                                }
+                            })
+                            .catch((error) => {
+                                revertSelect();
+                                console.error("Error de red:", error);
+                            });
                     } else {
-                        console.error("Error al guardar:", data.message);
+                        revertSelect();
                     }
-                })
-                .catch((error) => {
-                    console.error("Error de red:", error);
                 });
+            } else {
+                // Si no hay SweetAlert, continuar como antes
+                fetch(
+                        `index.php?view=user&action=user_fetch_update&id_usuario=${userId}`, {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded",
+                            },
+                            body: `id_rol=${encodeURIComponent(newValue)}`,
+                        }
+                    )
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data.success) {
+                            selectElement.setAttribute("data-prev", newValue);
+                            const cell = selectElement.closest("td");
+                            cell.classList.add("updated");
+                            setTimeout(() => cell.classList.remove("updated"), 1000);
+                            console.log(data.message);
+                            // Alerta de éxito mejorada
+                            if (window.Swal) {
+                                Swal.fire({
+                                    title: "¡Éxito!",
+                                    text: "El rol del usuario ha sido actualizado.",
+                                    icon: "success",
+                                    timer: 2000,
+                                    showConfirmButton: false,
+                                    customClass: {
+                                        popup: "custom-swal-font"
+                                    }
+                                });
+                            }
+                        } else {
+                            revertSelect();
+                            console.error("Error al guardar:", data.message);
+                        }
+                    })
+                    .catch((error) => {
+                        revertSelect();
+                        console.error("Error de red:", error);
+                    });
+            }
         }
+    });
+
+    // Guardar el valor inicial del select al cargar la tabla
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll("td select.edit-on-change").forEach(function(select) {
+            select.setAttribute("data-prev", select.value);
+        });
     });
 </script>

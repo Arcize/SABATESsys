@@ -6,15 +6,17 @@ $statePcController = new StatePcController();
 $statePcController = $statePcController->listStates();
 ?>
 <style>
-    #pcModal{
+    #pcModal {
         max-height: 90vh;
     }
 
-    #ram-modules, #storage-modules {
-    max-height: 300px;   /* Ajusta según tu diseño */
-    overflow-y: auto;
-    margin-bottom: 1em;
-}
+    #ram-modules,
+    #storage-modules {
+        max-height: 300px;
+        /* Ajusta según tu diseño */
+        overflow-y: auto;
+        margin-bottom: 1em;
+    }
 </style>
 <div class="view-box">
     <div class="table-heading">
@@ -81,7 +83,9 @@ $statePcController = $statePcController->listStates();
 
                     <fieldset class="page-form slidePage">
                         <legend>
-                            <h4 class="h4">Información General</h4>
+                            <div class="pcHeader">
+                                <h4 class="h4">Información General</h4>
+                            </div>
                         </legend>
                         <div class="pageInputs">
                             <div class="inputGroup">
@@ -99,15 +103,13 @@ $statePcController = $statePcController->listStates();
                                     <?php endforeach; ?>
                                 </select>
                             </div>
-                            <div class="inputGroup">
-                                <label for="cedula">Cédula de la Persona Asignada:</label>
-                                <input type="text" id="cedula" name="cedula" class="input ci" required>
-                            </div>
                         </div>
                     </fieldset>
                     <fieldset class="page-form">
                         <legend>
-                            <h4 class="h4">Procesador</h4>
+                            <div class="pcHeader">
+                                <h4 class="h4">Procesador</h4>
+                            </div>
                         </legend>
                         <div class="pageInputs">
                             <div class="inputGroup">
@@ -130,7 +132,9 @@ $statePcController = $statePcController->listStates();
                     </fieldset>
                     <fieldset class="page-form">
                         <legend>
-                            <h4 class="h4">Motherboard</h4>
+                            <div class="pcHeader">
+                                <h4 class="h4">Motherboard</h4>
+                            </div>
                         </legend>
                         <div class="pageInputs">
                             <div class="inputGroup">
@@ -145,7 +149,9 @@ $statePcController = $statePcController->listStates();
                     </fieldset>
                     <fieldset class="page-form">
                         <legend>
-                            <h4 class="h4">Fuente</h4>
+                            <div class="pcHeader">
+                                <h4 class="h4">Fuente</h4>
+                            </div>
                         </legend>
                         <div class="pageInputs">
                             <div class="inputGroup">
@@ -160,69 +166,221 @@ $statePcController = $statePcController->listStates();
                     </fieldset>
                     <fieldset class="page-form">
                         <legend>
-                            <h4 class="h4">RAM</h4>
+                            <div class="pcHeader">
+                                <h4 class="h4">RAM</h4>
+                            </div>
                         </legend>
+                        <div class="inputGroup">
+                            <label for="tipo_ram">Tipo de RAM:</label>
+                            <input type="text" id="tipo_ram" name="tipo_ram" class="input" required>
+                        </div>
                         <div id="ram-modules">
                             <div class="ram-module">
                                 <h5 class="ram-title">Módulo 1</h5>
-                                <div class="inputGroup">
-                                    <label>Fabricante de la RAM:</label>
-                                    <input type="text" name="fabricante_ram[]" class="input" required>
+                                <div class="form-row">
+                                    <div class="inputGroup">
+                                        <label>Fabricante de la RAM:</label>
+                                        <input type="text" name="fabricante_ram[]" class="input" required>
+                                    </div>
+                                    <div class="inputGroup">
+                                        <label>Frecuencia de la RAM (MHz):</label>
+                                        <input type="text" name="frecuencia_ram[]" class="input" required>
+                                    </div>
                                 </div>
-                                <div class="inputGroup">
-                                    <label>Tipo de RAM:</label>
-                                    <input type="text" name="tipo_ram[]" class="input" required>
+                                <div class="form-row">
+
+                                    <div class="inputGroup">
+                                        <label>Capacidad de la RAM (GB):</label>
+                                        <input type="text" name="capacidad_ram[]" class="input" required>
+                                    </div>
+
+                                    <button type="button" class="remove-ram btn-mini">Eliminar Módulo</button>
                                 </div>
-                                <div class="inputGroup">
-                                    <label>Frecuencia de la RAM (MHz):</label>
-                                    <input type="text" name="frecuencia_ram[]" class="input" required>
-                                </div>
-                                <div class="inputGroup">
-                                    <label>Capacidad de la RAM (GB):</label>
-                                    <input type="text" name="capacidad_ram[]" class="input" required>
-                                </div>
-                                <button type="button" class="remove-ram btn-mini">Quitar</button>
+
                             </div>
                         </div>
-                        <button type="button" id="add-ram" class="btn-mini">Agregar módulo RAM</button>
+                        <div class="addModuleContainer">
+                            <button type="button" id="add-ram" class="btn-mini" title="Agregar Modulo RAM">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#515151">
+                                    <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+                                </svg>
+                            </button>
+                        </div>
                     </fieldset>
                     <fieldset class="page-form">
                         <legend>
-                            <h4 class="h4">Almacenamiento</h4>
+                            <div class="pcHeader">
+                                <h4 class="h4">Almacenamiento</h4>
+                            </div>
                         </legend>
                         <div id="storage-modules">
                             <div class="storage-module">
                                 <h5 class="storage-title">Módulo 1</h5>
-                                <div class="inputGroup">
-                                    <label for="fabricante_almacenamiento">Fabricante del almacenamiento:</label>
-                                    <input type="text" id="fabricante_almacenamiento" name="fabricante_almacenamiento[]" class="input" required>
+                                <div class="form-row">
+
+                                    <div class="inputGroup">
+                                        <label for="fabricante_almacenamiento">Fabricante del almacenamiento:</label>
+                                        <input type="text" id="fabricante_almacenamiento" name="fabricante_almacenamiento[]" class="input" required>
+                                    </div>
+                                    <div class="inputGroup">
+                                        <label for="tipo_almacenamiento">Tipo de almacenamiento:</label>
+                                        <input type="text" id="tipo_almacenamiento" name="tipo_almacenamiento[]" class="input" required>
+                                    </div>
                                 </div>
-                                <div class="inputGroup">
-                                    <label for="tipo_almacenamiento">Tipo de almacenamiento:</label>
-                                    <input type="text" id="tipo_almacenamiento" name="tipo_almacenamiento[]" class="input" required>
+                                <div class="form-row">
+
+                                    <div class="inputGroup">
+                                        <label for="capacidad_almacenamiento">Capacidad del almacenamiento (GB):</label>
+                                        <input type="text" id="capacidad_almacenamiento" name="capacidad_almacenamiento[]" class="input" required>
+                                    </div>
+                                    <button type="button" class="remove-storage btn-mini">Eliminar Módulo</button>
                                 </div>
-                                <div class="inputGroup">
-                                    <label for="capacidad_almacenamiento">Capacidad del almacenamiento (GB):</label>
-                                    <input type="text" id="capacidad_almacenamiento" name="capacidad_almacenamiento[]" class="input" required>
-                                </div>
-                                <button type="button" class="remove-storage btn-mini">Quitar</button>
                             </div>
                         </div>
-                        <button type="button" id="add-storage" class="btn-mini">Agregar almacenamiento</button>
+                        <div class="addModuleContainer">
+                            <button type="button" id="add-storage" class="btn-mini" title="Agregar Módulo de Almacenamiento">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="32px" viewBox="0 -960 960 960" width="32px" fill="#515151">
+                                    <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" />
+                                </svg>
+                            </button>
+                        </div>
                     </fieldset>
+
                 </form>
             </div>
         </div>
         <div class="modal-footer btnArea">
             <button class="modal-button prevBtn" type="button">Cancelar</button>
-            <button class="modal-button sentBtn" type="button" >Siguiente</button>
+            <button class="modal-button sentBtn" type="button">Siguiente</button>
         </div>
+    </div>
+</div>
+<!-- Modal Asignar Equipo -->
+<div class="overlay-modal" id="assignPcModalOverlay" data-modal-id="assignPcModalOverlay" style="display:none;">
+    <div class="modal-box" id="assignPcModal" data-modal-id="assignPcModal">
+        <div class="modal-header">
+            <h3 class="h3">Asignar equipo</h3>
+        </div>
+        <form class="form" formType="pc" method="POST" action="index.php?view=pc&action=assign_pc">
+            <div class="modal-body">
+                <input type="hidden" id="id_equipo_informatico" name="id_equipo_informatico">
+                <div class="inputGroup">
+                    <label for="assign_cedula">Cédula de la persona a asignar:</label>
+                    <input type="text" id="assign_cedula" name="cedula" class="input ci" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-button close-modal" type="button">Cancelar</button>
+                <button class="modal-button sentBtn" type="submit">Asignar</button>
+            </div>
+        </form>
+    </div>
+</div>
+<!-- Modal Reasignar Equipo -->
+<div class="overlay-modal" id="reassignPcModalOverlay" data-modal-id="reassignPcModalOverlay" style="display:none;">
+    <div class="modal-box" id="reassignPcModal" data-modal-id="reassignPcModal">
+        <div class="modal-header">
+            <h3 class="h3">Reasignar equipo</h3>
+        </div>
+        <form class="form" formType="pc" method="POST" action="index.php?view=pc&action=assign_pc">
+            <div class="modal-body">
+                <input type="hidden" id="id_equipo_informatico" name="id_equipo_informatico">
+                <div class="inputGroup">
+                    <label for="reassign_cedula">Nueva cédula de la persona:</label>
+                    <input type="text" id="reassign_cedula" name="cedula" class="input ci" required>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-button close-modal" type="button">Cancelar</button>
+                <button class="modal-button sentBtn" type="submit">Reasignar</button>
+            </div>
+        </form>
     </div>
 </div>
 <script>
     $(document).ready(function() {
         $('#pcTable').DataTable({
             ...commonDatatableConfig, // Configuración común
+            buttons: [{
+                extend: 'pdfHtml5',
+                text: 'Exportar a PDF',
+                filename: 'Reporte_Equipos_' + new Date().toISOString().slice(0, 10),
+                customize: function(doc) {
+                    // Logo igual que en faultReportTable
+                    const logoBase64 = '<?php
+                        $imagenPath = "./img/banner_SABATES.png";
+                        if (file_exists($imagenPath)) {
+                            $imagenData = base64_encode(file_get_contents($imagenPath));
+                            echo 'data:image/png;base64,' . $imagenData;
+                        } else {
+                            echo '';
+                        }
+                    ?>';
+                    doc.header = function() {
+                        return {
+                            image: logoBase64,
+                            width: 150,
+                            alignment: 'center',
+                            margin: [0, 20, 0, 0]
+                        };
+                    };
+
+                    // Ocultar columnas no deseadas
+                    const columnasOcultar = [9];
+                    columnasOcultar.forEach(index => {
+                        if (doc.content[1].table.body[0] && doc.content[1].table.body[0][index]) {
+                            doc.content[1].table.body[0][index].text = '';
+                        }
+                    });
+                    doc.content[1].table.body.forEach((row, rowIndex) => {
+                        if (rowIndex > 0) {
+                            columnasOcultar.forEach(index => {
+                                if (row && row[index]) {
+                                    row[index].text = '';
+                                }
+                            });
+                        }
+                    });
+
+                    // Eliminar cualquier otro elemento que parezca un título genérico
+                    const sabatesIndex = doc.content.findIndex(element => (
+                        typeof element.text === 'string' && element.text.includes('SABATES')
+                    ));
+                    if (sabatesIndex > -1) {
+                        doc.content.splice(sabatesIndex, 1);
+                    }
+
+                    // Título personalizado
+                    doc.content.splice(0, 0, {
+                        text: 'Reporte de Equipos Informáticos',
+                        style: 'header'
+                    });
+                    doc.styles = {
+                        header: {
+                            fontSize: 18,
+                            bold: true,
+                            margin: [0, 40, 0, 0]
+                        }
+                    };
+
+                    // --- FOOTER PERSONALIZADO ---
+                    const fechaHora = new Date().toLocaleString('es-ES');
+                    const anioActual = new Date().getFullYear();
+                    doc.footer = function(currentPage, pageCount) {
+                        return {
+                            columns: [
+                                { text: 'SABATES ' + anioActual, alignment: 'left', margin: [40, 0, 0, 0], fontSize: 9, color: '#000000' },
+                                { text: 'Reporte Generado el: ' + fechaHora, alignment: 'center', fontSize: 9, color: '#000000' },
+                                { text: 'Página ' + currentPage.toString() + ' de ' + pageCount, alignment: 'right', margin: [0, 0, 40, 0], fontSize: 9, color: '#000000' }
+                            ],
+                            margin: [0, 0, 0, 10]
+                        };
+                    };
+                },
+                orientation: 'portrait',
+                pageSize: 'A4',
+                titleAttr: 'Exportar la tabla actual a PDF'
+            }],
             ajax: {
                 url: 'index.php?view=pc&action=pc_fetch_page',
                 dataSrc: ''
@@ -241,7 +399,13 @@ $statePcController = $statePcController->listStates();
                     data: 'estado_equipo_informatico'
                 },
                 {
-                    data: 'nombre_completo'
+                    data: 'nombre_completo',
+                    render: function(data, type, row) {
+                        if (!data || data === '' || data === null) {
+                            return '<span class="states dark-button">Sin asignar</span>';
+                        }
+                        return data;
+                    }
                 },
                 {
                     data: 'nombre_procesador'
@@ -261,18 +425,101 @@ $statePcController = $statePcController->listStates();
                 {
                     data: null,
                     render: function(data, type, row) {
-                        return `
-                        <div class="button-container">
-                            <button class="crud-button green-button open-modal" data-fetch="true" data-target-modal="pcModal" data-id="${data.id_equipo_informatico}">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff"><path d="M200-200h57l391-391-57-57-391 391v57Zm-80 80v-170l528-527q12-11 26.5-17t30.5-6q16 0 31 6t26 18l55 56q12 11 17.5 26t5.5 30q0 16-5.5 30.5T817-647L290-120H120Zm640-584-56-56 56 56Zm-141 85-28-29 57 57-29-28Z"/></svg>
+                        let actions = `<div class="actions-dropdown-container">
+                            <button class="crud-button actions-dropdown-btn dark-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M480-160q-33 0-56.5-23.5T400-240q0-33 23.5-56.5T480-320q33 0 56.5 23.5T560-240q0 33-23.5 56.5T480-160Zm0-240q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm0-240q-33 0-56.5-23.5T400-720q0-33 23.5-56.5T480-800q33 0 56.5 23.5T560-720q0 33-23.5 56.5T480-640Z"/></svg>
                             </button>
-                            <button class="crud-button red-button" onclick="confirmDelete(${data.id_equipo_informatico}, 'pc', 'id_pc')">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffffff"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
-                            </button>
-                        </div>`;
+                            <div class="actions-dropdown-menu" style="display:none; position:absolute; z-index:10;">
+                                <button class="crud-button crud-option open-modal" data-target-modal="pcModal" data-fetch="true" data-id="${data.id_equipo_informatico}">Editar</button>`;
+                        // Botón Asignar/Reasignar
+                        if (!row.nombre_completo || row.nombre_completo === '' || row.nombre_completo === null) {
+                            actions += `<button class="crud-button crud-option assign-pc-btn open-modal" data-fetch="true" data-target-modal="assignPcModal" data-id="${data.id_equipo_informatico}">Asignar equipo</button>`;
+                        } else {
+                            actions += `<button class="crud-button crud-option reassign-pc-btn open-modal" data-target-modal="reassignPcModal" data-id="${data.id_equipo_informatico}">Reasignar equipo</button>`;
+                            actions += `<button class="crud-button crud-option unassign-pc-btn" data-id="${data.id_equipo_informatico}">Desasignar equipo</button>`;
+                        }
+                        // Botón Generar Reporte
+                        actions += `<button class="crud-button crud-option generate-pc-report-btn" data-row='${JSON.stringify(data)}'>Generar Reporte</button>`;
+                        actions += `</div></div>`;
+                        return actions;
                     }
                 }
             ]
         });
     });
+
+    // Dropdown de acciones para pcTable (igual que en otras tablas)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('pcTable').addEventListener('click', function(e) {
+            if (e.target.closest('.actions-dropdown-btn')) {
+                e.stopPropagation();
+                const btn = e.target.closest('.actions-dropdown-btn');
+                const menu = btn.parentElement.querySelector('.actions-dropdown-menu');
+                document.querySelectorAll('.actions-dropdown-menu').forEach(m => {
+                    if (m !== menu) m.style.display = 'none';
+                });
+                menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+            }
+        });
+        document.addEventListener('click', function() {
+            document.querySelectorAll('.actions-dropdown-menu').forEach(menu => menu.style.display = 'none');
+        });
+    });
+
+    // Script para setear el id_equipo_informatico en las modales de asignar y reasignar
+    $(document).on('click', '.assign-pc-btn.open-modal', function() {
+        const id = $(this).data('id');
+        $('#assignPcModal input[name="id_equipo_informatico"]').val(id);
+    });
+    $(document).on('click', '.reassign-pc-btn.open-modal', function() {
+        const id = $(this).data('id');
+        $('#reassignPcModal input[name="id_equipo_informatico"]').val(id);
+    });
+
+    // Solo deja este script para el botón "Generar Reporte" (no lo dupliques):
+    $(document).ready(function() {
+        document.getElementById('pcTable').addEventListener('click', function(e) {
+            const btnReport = e.target.closest('.generate-pc-report-btn');
+            if (btnReport) {
+                e.preventDefault();
+                const rowData = JSON.parse(btnReport.getAttribute('data-row'));
+                // Petición al backend para obtener los datos completos del equipo
+                fetch('index.php?view=pc&action=generateReport', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: 'id_equipo_informatico=' + encodeURIComponent(rowData.id_equipo_informatico)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data && !data.error) {
+                        // Crear formulario oculto y enviarlo a pcV-view.php
+                        const form = document.createElement('form');
+                        form.method = 'POST';
+                        form.action = 'index.php?view=pcV'; // Usa el nombre correcto de la vista aquí
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'row';
+                        input.value = JSON.stringify(data);
+                        form.appendChild(input);
+                        document.body.appendChild(form);
+                        form.submit();
+                    } else {
+                        if (window.Swal) {
+                            Swal.fire({ icon: 'error', title: 'Error', text: data.error || 'No se pudo generar el reporte.' });
+                        } else {
+                            alert(data.error || 'No se pudo generar el reporte.');
+                        }
+                    }
+                })
+                .catch(error => {
+                    if (window.Swal) {
+                        Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo generar el reporte.' });
+                    } else {
+                        alert('No se pudo generar el reporte.');
+                    }
+                });
+            }
+        });
+    });
 </script>
+<script src="./js/pcTableSpecialActions.js"></script>

@@ -54,7 +54,7 @@ body {
   overflow-y: scroll;
   position: relative;
 }
-.downloadPDF{
+.downloadPDF {
   background-color: var(--color-primario);
   color: #fff;
   border-radius: var(--border-radius);
@@ -145,9 +145,10 @@ body {
 }
 
 #dropzone-area {
-  min-height: 175px; /* Altura mínima */
-  max-height: 175px; /* Altura máxima antes de activar el scroll */
+  min-height: 150px; /* Altura mínima */
+  max-height: 150px; /* Altura máxima antes de activar el scroll */
   overflow-y: auto; /* Activa desplazamiento vertical */
+  overflow-x: hidden;
   border: 1px solid #ccc;
   padding: 10px;
   border-radius: var(--border-radius);
@@ -155,5 +156,10 @@ body {
 }
 
 .dz-message {
-  margin: 4rem 0 !important;
+  margin: 3rem 0 !important;
 }
+
+.dropzone .dz-preview {
+  margin: 4px 16px !important;
+}
+

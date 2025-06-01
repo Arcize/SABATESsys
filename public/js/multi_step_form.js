@@ -128,52 +128,66 @@ document.addEventListener("DOMContentLoaded", function () {
 };
 
     // RAM
+    const MAX_RAM_MODULES = 4;
     document.getElementById('add-ram').addEventListener('click', function() {
         const container = document.getElementById('ram-modules');
-        const module = container.querySelector('.ram-module').cloneNode(true);
+        const modules = container.querySelectorAll('.ram-module');
+        if (modules.length >= MAX_RAM_MODULES) {
+            if (window.Swal) {
+                Swal.fire({
+                    icon: 'warning',
+                    text: 'Solo puedes agregar hasta 4 módulos de RAM.',
+                    customClass: { popup: 'custom-swal-font' },
+                });
+            }
+            return;
+        }
+        const module = modules[0].cloneNode(true);
         module.querySelectorAll('input').forEach(input => input.value = '');
         container.appendChild(module);
-        module.querySelector('.remove-ram').addEventListener('click', function() {
-            if (container.querySelectorAll('.ram-module').length > 1) {
-                module.remove();
-                updateRamTitles();
-            }
-        });
         updateRamTitles();
     });
-    document.querySelectorAll('.remove-ram').forEach(btn => {
-        btn.addEventListener('click', function() {
+    document.getElementById('ram-modules').addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-ram')) {
             const container = document.getElementById('ram-modules');
-            if (container.querySelectorAll('.ram-module').length > 1) {
-                btn.closest('.ram-module').remove();
+            const modules = container.querySelectorAll('.ram-module');
+            if (modules.length > 1) {
+                e.target.closest('.ram-module').remove();
                 updateRamTitles();
             }
-        });
+        }
     });
     updateRamTitles();
 
     // Almacenamiento
+    const MAX_STORAGE_MODULES = 4;
     document.getElementById('add-storage').addEventListener('click', function() {
         const container = document.getElementById('storage-modules');
-        const module = container.querySelector('.storage-module').cloneNode(true);
+        const modules = container.querySelectorAll('.storage-module');
+        if (modules.length >= MAX_STORAGE_MODULES) {
+            if (window.Swal) {
+                Swal.fire({
+                    icon: 'warning',
+                    text: 'Solo puedes agregar hasta 4 módulos de almacenamiento.',
+                    customClass: { popup: 'custom-swal-font' },
+                });
+            }
+            return;
+        }
+        const module = modules[0].cloneNode(true);
         module.querySelectorAll('input').forEach(input => input.value = '');
         container.appendChild(module);
-        module.querySelector('.remove-storage').addEventListener('click', function() {
-            if (container.querySelectorAll('.storage-module').length > 1) {
-                module.remove();
-                updateStorageTitles();
-            }
-        });
         updateStorageTitles();
     });
-    document.querySelectorAll('.remove-storage').forEach(btn => {
-        btn.addEventListener('click', function() {
+    document.getElementById('storage-modules').addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-storage')) {
             const container = document.getElementById('storage-modules');
-            if (container.querySelectorAll('.storage-module').length > 1) {
-                btn.closest('.storage-module').remove();
+            const modules = container.querySelectorAll('.storage-module');
+            if (modules.length > 1) {
+                e.target.closest('.storage-module').remove();
                 updateStorageTitles();
             }
-        });
+        }
     });
     updateStorageTitles();
 

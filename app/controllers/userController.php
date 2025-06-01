@@ -3,13 +3,19 @@
 namespace app\controllers;
 
 use app\models\UserModel;
+use app\models\RoleModel;
+use app\models\NotificacionModel;
 
 class UserController
 {
     private $userModel;
+    private $roleModel;
+    private $notificacionModel;
     public function __construct()
     {
         $this->userModel = new UserModel;
+        $this->roleModel = new RoleModel();
+        $this->notificacionModel = new NotificacionModel();
     }
     public function handleRequestUser()
     {
@@ -33,6 +39,12 @@ class UserController
                 break;
             case 'dashboard_config':
                 $this->dashboardSetup();
+                break;
+            case 'get_profile':
+                $this->get_profile();
+                break;
+            case 'update_email':
+                $this->update_email();
                 break;
             default:
                 break;
@@ -73,7 +85,8 @@ class UserController
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $cedula = $_POST['cedula'];
             if (!isset($cedula) || empty($cedula)) {
-                $id_usuario = $_SESSION['id_usuario'];
+                echo json_encode(['error' => 'Cédula requerida']);
+                return;
             }
             $newPassword = $_POST['newPassword'];
             $confirmPassword = $_POST['confirmPassword'];
@@ -86,7 +99,20 @@ class UserController
             $hashedPassword = $this->userModel->passwordHash($newPassword);
             $result = $this->userModel->updatePassword($cedula, $hashedPassword);
 
+            // --- Notificación al admin si la cédula existe y la contraseña fue actualizada ---
             if ($result) {
+                // Buscar el rol de administrador
+                $roles = $this->roleModel->getRoles();
+                $id_rol_admin = null;
+                foreach ($roles as $rol) {
+                    if (stripos($rol['rol'], 'admin') !== false) {
+                        $id_rol_admin = $rol['id_rol'];
+                    }
+                }
+                if ($id_rol_admin) {
+                    $mensaje = 'Solicitud de reinicio de contraseña para el usuario con cédula: ' . $cedula;
+                    $this->notificacionModel->crear($mensaje, 'rol', $id_rol_admin, null);
+                }
                 echo json_encode(['success' => true, 'message' => 'Contraseña actualizada correctamente']);
             } else {
                 echo json_encode(['error' => 'Error al actualizar la contraseña']);
@@ -119,6 +145,7 @@ class UserController
 
                 // Modifica la columna 'rol' para incluir la información del acordeón
                 $rowData['rol'] = [
+                    'id' => $user['id_rol'], // Asume que la columna en tu tabla se llama 'rol'
                     'value' => $user['rol'], // Asume que la columna en tu tabla se llama 'rol'
                     "rol_renderAs" => "accordion",
                     'options' => $rolesOptions
@@ -187,5 +214,43 @@ class UserController
 
         $userId = $_SESSION["id_usuario"];
         return $this->userModel->hasPermission($userId, $permissionName);
+    }
+    public function get_profile()
+    {
+        // Obtener el id_usuario de la sesión
+        $id_usuario = $_SESSION['id_usuario'] ?? null;
+        if (!$id_usuario) {
+            echo json_encode(['success' => false, 'message' => 'No autenticado']);
+            return;
+        }
+        // Usar EmployeeModel para obtener los datos básicos
+        $employeeModel = new \app\models\EmployeeModel();
+        $user = $employeeModel->getProfile($id_usuario);
+        if ($user) {
+            echo json_encode(['success' => true, 'user' => $user]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No se encontró el usuario']);
+        }
+    }
+
+    public function update_email()
+    {
+        $id_usuario = $_SESSION['id_usuario'] ?? null;
+        if (!$id_usuario) {
+            echo json_encode(['success' => false, 'message' => 'No autenticado']);
+            return;
+        }
+        $correo = $_POST['correo'] ?? null;
+        if (!$correo) {
+            echo json_encode(['success' => false, 'message' => 'Correo no proporcionado']);
+            return;
+        }
+        $employeeModel = new \app\models\EmployeeModel();
+        $result = $employeeModel->updateEmail($id_usuario, $correo);
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Correo actualizado correctamente']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No se pudo actualizar el correo']);
+        }
     }
 }

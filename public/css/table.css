@@ -92,6 +92,9 @@ td select {
 #userTable td:nth-child(4) {
   padding: 0;
 }
+#employeeTable td:nth-child(7) {
+  padding: 0;
+}
 div.dt-buttons > .dt-button,
 div.dt-buttons > div.dt-button-split .dt-button {
   background-color: var(--color-primario);
@@ -168,7 +171,7 @@ div.dt-buttons
   align-items: center;
 }
 .dark-button {
-  background-color: rgb(81, 81, 81);
+  background-color: #515151;
 }
 .actions-dropdown-container {
   display: flex;
@@ -236,4 +239,18 @@ div.dt-container .dt-paging .dt-paging-button:hover {
   background: none;
   background-color: var(--color-primario);
   border-radius: var(--border-radius);
+}
+
+.circle {
+    width: 1rem; /* Ancho del círculo */
+    height: 1rem; /* Alto del círculo */
+    border-radius: 50%; /* Hace que el borde sea completamente redondo */
+}
+
+.circle-red {
+    background-color: #f44336; /* Color rojo */
+}
+
+.circle-green {
+    background-color: #4caf50; /* Color verde */
 }

@@ -131,7 +131,7 @@ class UserModel
     }
     public function readPage()
     {
-        $sql = "SELECT u.id_usuario, p.cedula, r.rol, concat(p.nombre, ' ', p.apellido) as nombre_completo, d.nombre_departamento
+        $sql = "SELECT u.id_usuario, p.cedula, r.rol, r.id_rol, concat(p.nombre, ' ', p.apellido) as nombre_completo, d.nombre_departamento
                     FROM usuario u
                     JOIN persona p ON u.id_usuario = p.id_usuario
                     JOIN rol r ON u.id_rol = r.id_rol
@@ -225,7 +225,7 @@ class UserModel
     public function getUserByCedula($cedula)
     {
         try {
-            $sql = "SELECT u.* FROM usuario u
+            $sql = "SELECT u.*, p.estado_empleado FROM usuario u
 				JOIN persona p on p.id_usuario = u.id_usuario
 				WHERE p.cedula = :cedula";
             $stmt = $this->db->prepare($sql);
@@ -282,6 +282,34 @@ class UserModel
             return $result ? $result['dashboard_config'] : false;
         } catch (\PDOException $e) {
             echo "Error: " . $e->getMessage();
+            return false;
+        }
+    }
+
+    // Obtener usuario por id_usuario (para verificar contraseña actual)
+    public function getUserByIdUsuario($id_usuario)
+    {
+        try {
+            $sql = "SELECT * FROM usuario WHERE id_usuario = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id', $id_usuario, \PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            return false;
+        }
+    }
+
+    // Actualizar contraseña por id_usuario
+    public function updatePasswordByIdUsuario($id_usuario, $hashedPassword)
+    {
+        try {
+            $sql = "UPDATE usuario SET password = :password WHERE id_usuario = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':password', $hashedPassword, \PDO::PARAM_STR);
+            $stmt->bindParam(':id', $id_usuario, \PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (\PDOException $e) {
             return false;
         }
     }

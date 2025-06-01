@@ -27,6 +27,16 @@ class SecurityQuestionsController
                 case 'validateAnswers':
                     $this->verifySecurityQuestions();
                     break;
+                case 'get_user_questions':
+                    $this->get_user_questions();
+                    break;
+                case 'update_user_questions':
+                    $this->update_user_questions();
+                    break;
+                case 'listSecurityQuestions':
+                    header('Content-Type: application/json');
+                    echo json_encode($this->listSecurityQuestions());
+                    break;
                 default:
                     echo "Acción no válida.";
                     break;
@@ -117,6 +127,48 @@ class SecurityQuestionsController
         } catch (\Exception $e) {
             echo "Error: " . $e->getMessage();
             return [];
+        }
+    }
+
+    public function get_user_questions()
+    {
+        $id_usuario = $_SESSION['id_usuario'] ?? null;
+        if (!$id_usuario) {
+            echo json_encode(['success' => false, 'message' => 'No autenticado']);
+            return;
+        }
+        $questions = $this->model->getUserQuestionsBySession($id_usuario);
+        echo json_encode(['success' => true, 'questions' => $questions]);
+    }
+
+    public function update_user_questions()
+    {
+        $id_usuario = $_SESSION['id_usuario'] ?? null;
+        if (!$id_usuario) {
+            echo json_encode(['success' => false, 'message' => 'No autenticado']);
+            return;
+        }
+        // Recoger preguntas y respuestas del POST
+        $preguntas = [];
+        for ($i = 0; $i < 3; $i++) {
+            $id_pregunta = $_POST['pregunta_' . $i] ?? null;
+            $respuesta = $_POST['respuesta_' . $i] ?? null;
+            if ($id_pregunta && $respuesta) {
+                $preguntas[] = [
+                    'id_pregunta' => $id_pregunta,
+                    'respuesta' => $respuesta
+                ];
+            }
+        }
+        if (count($preguntas) !== 3) {
+            echo json_encode(['success' => false, 'message' => 'Debes seleccionar y responder 3 preguntas.']);
+            return;
+        }
+        $result = $this->model->updateUserQuestions($id_usuario, $preguntas);
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Preguntas de seguridad actualizadas correctamente']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No se pudieron actualizar las preguntas de seguridad']);
         }
     }
 }

@@ -176,4 +176,94 @@ class EmployeeModel
             return null; // O manejar el caso en que no se encuentre el ID
         }
     }
+
+    public function deactivate($id)
+    {
+        $sql = "UPDATE persona SET estado_empleado = 'Inactivo' WHERE id_persona = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+    public function activate($id)
+    {
+        $sql = "UPDATE persona SET estado_empleado = 'Activo' WHERE id_persona = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+    public function getEstadoEmpleado($id)
+    {
+        $sql = "SELECT estado_empleado FROM persona WHERE id_usuario = :id LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
+        $stmt->execute();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $row ? $row['estado_empleado'] : 'Inactivo';
+    }
+    public function getRolByPersonaId($id_persona)
+    {
+        // Busca el rol del usuario asociado a la persona
+        $sql = "SELECT r.rol FROM usuario u
+                JOIN rol r ON u.id_rol = r.id_rol
+                WHERE u.id_usuario = :id_persona LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id_persona', $id_persona, \PDO::PARAM_INT);
+        $stmt->execute();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+        return $row ? $row['rol'] : null;
+    }
+    public function getProfile($id_usuario)
+    {
+        // Obtiene los datos básicos del usuario y persona, incluyendo departamento, sexo y fecha de nacimiento
+        $sql = "SELECT p.nombre, p.apellido, p.cedula, p.correo, d.nombre_departamento as departamento, s.sexo, p.fecha_nac
+                FROM persona p
+                JOIN departamento d ON p.id_departamento = d.id_departamento
+                JOIN sexo s ON p.id_sexo = s.id_sexo
+                WHERE p.id_usuario = :id_usuario LIMIT 1";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':id_usuario', $id_usuario, \PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
+    public function updateEmail($id_usuario, $correo)
+    {
+        $sql = "UPDATE persona SET correo = :correo WHERE id_usuario = :id_usuario";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':correo', $correo);
+        $stmt->bindParam(':id_usuario', $id_usuario, \PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    public function getEmployeeReportData($id_persona)
+    {
+        $sql = "SELECT p.*, d.nombre_departamento, s.sexo
+                FROM persona p
+                JOIN departamento d ON p.id_departamento = d.id_departamento
+                JOIN sexo s ON p.id_sexo = s.id_sexo
+                WHERE p.id_persona = :id_persona";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':id_persona', $id_persona, \PDO::PARAM_INT);
+        $stmt->execute();
+        $employee = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if ($employee) {
+            // Puedes agregar aquí lógica para formatear o agregar campos extra si lo necesitas
+            return $employee;
+        }
+        return null;
+    }
+
+    /**
+     * Devuelve un array de técnicos (usuarios con rol 3)
+     */
+    public function getTechnicians()
+    {
+        $sql = "SELECT u.id_usuario, CONCAT(p.nombre, ' ', p.apellido) as nombre
+                FROM usuario u
+                JOIN persona p ON u.id_usuario = p.id_usuario
+                WHERE u.id_rol = 3";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
 }
