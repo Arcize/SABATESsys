@@ -15,6 +15,9 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
     <div class="table-heading">
         <h3 class="h3">Datos de Empleados</h3>
         <div class="table-actions">
+            <a href="index.php?view=employeeInactiveTable">
+                <button type="button" class="table-button dark-button">Ver Empleados Inactivos</button>
+            </a>
             <button class="table-button open-modal" data-target-modal="employeeModal" data-fetch="false">Añadir Empleado</button>
         </div>
     </div>
@@ -29,6 +32,7 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                 <!-- <th scope="col">Fecha de Nacimiento</th> -->
                 <th scope="col">Sexo</th>
                 <th scope="col">Estado</th>
+                <th scope="col">Estatus de Registro</th>
                 <th scope="col">Acciones</th>
             </tr>
         </thead>
@@ -104,8 +108,9 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
 </div>
 <script>
     $(document).ready(function() {
-        // Inicializa DataTables
-        $('#employeeTable').DataTable({
+        var urlParams = new URLSearchParams(window.location.search);
+        var estatus = urlParams.get('estatus');
+        var table = $('#employeeTable').DataTable({
             ...commonDatatableConfig,
             buttons: [{
                 extend: 'pdfHtml5',
@@ -141,11 +146,11 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                     });
 
                     const sabatesIndex = doc.content.findIndex(element => (
-                            typeof element.text === 'string' && element.text.includes('SABATES') // Busca el texto específico
-                        ));
-                        if (sabatesIndex > -1) {
-                            doc.content.splice(sabatesIndex, 1);
-                        }
+                        typeof element.text === 'string' && element.text.includes('SABATES') // Busca el texto específico
+                    ));
+                    if (sabatesIndex > -1) {
+                        doc.content.splice(sabatesIndex, 1);
+                    }
                     // Título personalizado
                     doc.content.splice(0, 0, {
                         text: 'Reporte de Empleados',
@@ -163,10 +168,26 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                     const anioActual = new Date().getFullYear();
                     doc.footer = function(currentPage, pageCount) {
                         return {
-                            columns: [
-                                { text: 'SABATES ' + anioActual, alignment: 'left', margin: [40, 0, 0, 0], fontSize: 9, color: '#000000' },
-                                { text: 'Reporte Generado el: ' + fechaHora, alignment: 'center', fontSize: 9, color: '#000000' },
-                                { text: 'Página ' + currentPage.toString() + ' de ' + pageCount, alignment: 'right', margin: [0, 0, 40, 0], fontSize: 9, color: '#000000' }
+                            columns: [{
+                                    text: 'SABATES ' + anioActual,
+                                    alignment: 'left',
+                                    margin: [40, 0, 0, 0],
+                                    fontSize: 9,
+                                    color: '#000000'
+                                },
+                                {
+                                    text: 'Reporte Generado el: ' + fechaHora,
+                                    alignment: 'center',
+                                    fontSize: 9,
+                                    color: '#000000'
+                                },
+                                {
+                                    text: 'Página ' + currentPage.toString() + ' de ' + pageCount,
+                                    alignment: 'right',
+                                    margin: [0, 0, 40, 0],
+                                    fontSize: 9,
+                                    color: '#000000'
+                                }
                             ],
                             margin: [0, 0, 0, 10]
                         };
@@ -199,19 +220,7 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                 {
                     data: 'nombre_departamento'
                 },
-                // {
-                //     data: 'fecha_nac',
-                //     render: function(data, type, row) {
-                //         if (type === 'display' && data) {
-                //             // Formato local DD/MM/YYYY
-                //             const dateParts = data.split('-');
-                //             if (dateParts.length === 3) {
-                //                 return `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-                //             }
-                //         }
-                //         return data || '';
-                //     }
-                // },
+
                 {
                     data: 'sexo'
                 },
@@ -223,6 +232,19 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                             colorClass = 'circle-green';
                         } else if (data === 'Inactivo') {
                             colorClass = 'circle-red';
+                        }
+                        return `
+                            <span class="states ${colorClass}">${data}</span>
+                        `;
+                    }
+                },
+                {
+                    data: 'id_usuario',
+                    render: function(data, type, row) {
+                        if (data === undefined || data === null) {
+                            return '<span class="states dark-button">Sin Registrar</span>';
+                        } else if (data !== null) {
+                            return '<span class="states green-button">Registrado</span>';
                         }
                         return `
                             <span class="states ${colorClass}">${data}</span>
@@ -270,7 +292,13 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                         return actionBtns;
                     }
                 }
-            ]
+            ],
+            initComplete: function() {
+                // Aplicar el filtro si el parámetro 'estatus' existe
+                if (estatus) {
+                    this.api().search(estatus).draw();
+                }
+            }
         });
     });
     setInterval(function() {}, 5000); // Consulta cada 5 segundos
@@ -298,7 +326,9 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                     title: 'Fecha inválida',
                     text: 'Debes ingresar una fecha de nacimiento de hace al menos 18 años.',
                     confirmButtonText: 'Aceptar',
-                    customClass: { popup: 'custom-swal-font' }
+                    customClass: {
+                        popup: 'custom-swal-font'
+                    }
                 });
             } else {
                 alert("Debes ingresar una fecha de nacimiento de hace al menos 18 años.");
@@ -334,26 +364,30 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                         showCancelButton: true,
                         confirmButtonText: 'Sí, desactivar',
                         cancelButtonText: 'Cancelar',
-                        customClass: { popup: 'swal2-popup' }
+                        customClass: {
+                            popup: 'swal2-popup'
+                        }
                     }).then((result) => {
                         if (result.isConfirmed) {
                             fetch(`index.php?view=employee&action=employee_deactivate`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                                body: `id_persona=${encodeURIComponent(id)}`
-                            })
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.success) {
-                                    Swal.fire('Desactivado', data.message, 'success');
-                                    $('#employeeTable').DataTable().ajax.reload(null, false);
-                                } else {
-                                    Swal.fire('Error', data.message || 'No se pudo desactivar.', 'error');
-                                }
-                            })
-                            .catch(() => {
-                                Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
-                            });
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/x-www-form-urlencoded"
+                                    },
+                                    body: `id_persona=${encodeURIComponent(id)}`
+                                })
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire('Desactivado', data.message, 'success');
+                                        $('#employeeTable').DataTable().ajax.reload(null, false);
+                                    } else {
+                                        Swal.fire('Error', data.message || 'No se pudo desactivar.', 'error');
+                                    }
+                                })
+                                .catch(() => {
+                                    Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
+                                });
                         }
                     });
                 }
@@ -371,26 +405,30 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                         showCancelButton: true,
                         confirmButtonText: 'Sí, activar',
                         cancelButtonText: 'Cancelar',
-                        customClass: { popup: 'swal2-popup' }
+                        customClass: {
+                            popup: 'swal2-popup'
+                        }
                     }).then((result) => {
                         if (result.isConfirmed) {
                             fetch(`index.php?view=employee&action=employee_activate`, {
-                                method: "POST",
-                                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                                body: `id_persona=${encodeURIComponent(id)}`
-                            })
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.success) {
-                                    Swal.fire('Activado', data.message, 'success');
-                                    $('#employeeTable').DataTable().ajax.reload(null, false);
-                                } else {
-                                    Swal.fire('Error', data.message || 'No se pudo activar.', 'error');
-                                }
-                            })
-                            .catch(() => {
-                                Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
-                            });
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/x-www-form-urlencoded"
+                                    },
+                                    body: `id_persona=${encodeURIComponent(id)}`
+                                })
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire('Activado', data.message, 'success');
+                                        $('#employeeTable').DataTable().ajax.reload(null, false);
+                                    } else {
+                                        Swal.fire('Error', data.message || 'No se pudo activar.', 'error');
+                                    }
+                                })
+                                .catch(() => {
+                                    Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
+                                });
                         }
                     });
                 }
@@ -411,39 +449,49 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                 const rowData = JSON.parse(btnReport.getAttribute('data-row'));
                 // Petición al backend para obtener los datos completos del empleado
                 fetch('index.php?view=employee&action=generateReport', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: 'id_persona=' + encodeURIComponent(rowData.id_persona)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data && !data.error) {
-                        // Crear formulario oculto y enviarlo a employeeV-view.php
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = 'index.php?view=employeeV';
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'row';
-                        input.value = JSON.stringify(data);
-                        form.appendChild(input);
-                        document.body.appendChild(form);
-                        form.submit();
-                    } else {
-                        if (window.Swal) {
-                            Swal.fire({ icon: 'error', title: 'Error', text: data.error || 'No se pudo generar el reporte.' });
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: 'id_persona=' + encodeURIComponent(rowData.id_persona)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && !data.error) {
+                            // Crear formulario oculto y enviarlo a employeeV-view.php
+                            const form = document.createElement('form');
+                            form.method = 'POST';
+                            form.action = 'index.php?view=employeeV';
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = 'row';
+                            input.value = JSON.stringify(data);
+                            form.appendChild(input);
+                            document.body.appendChild(form);
+                            form.submit();
                         } else {
-                            alert(data.error || 'No se pudo generar el reporte.');
+                            if (window.Swal) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: data.error || 'No se pudo generar el reporte.'
+                                });
+                            } else {
+                                alert(data.error || 'No se pudo generar el reporte.');
+                            }
                         }
-                    }
-                })
-                .catch(error => {
-                    if (window.Swal) {
-                        Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo generar el reporte.' });
-                    } else {
-                        alert('No se pudo generar el reporte.');
-                    }
-                });
+                    })
+                    .catch(error => {
+                        if (window.Swal) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'No se pudo generar el reporte.'
+                            });
+                        } else {
+                            alert('No se pudo generar el reporte.');
+                        }
+                    });
             }
         });
     });

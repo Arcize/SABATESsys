@@ -54,6 +54,9 @@ class FaultReportController
             case 'invalidate_report':
                 $this->invalidateReport();
                 break;
+            case 'faultReport_fetch_my_reports':
+                $this->fetchMyReports();
+                break;
 
             default:
                 break;
@@ -70,6 +73,12 @@ class FaultReportController
 
         $this->faultReportsModel->setData($id_usuario, $id_equipo_informatico, $contenido_reporte_fallas, $fecha_falla, $id_tipo_falla);
         $result = $this->faultReportsModel->create();
+
+        // Cambiar estado del equipo a "en reparación" si es tipo equipo
+        if ($id_tipo_falla == 1 && $id_equipo_informatico) {
+            $pcModel = new \app\models\PcModel();
+            $pcModel->updateState($id_equipo_informatico, 3); // 3 = en reparación
+        }
 
         header('Content-Type: application/json');
         if ($result['success'] && $result['id']) {
@@ -309,6 +318,19 @@ class FaultReportController
             echo json_encode(['success' => true, 'message' => 'Reporte invalidado correctamente']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Error al invalidar el reporte']);
+        }
+    }
+
+    // --- NUEVO: Endpoint para reportes propios del usuario ---
+    private function fetchMyReports()
+    {
+        $id_usuario = $_SESSION['id_usuario'];
+        $reports = $this->faultReportsModel->readPageByUser($id_usuario);
+        header('Content-Type: application/json');
+        if ($reports) {
+            echo json_encode($reports);
+        } else {
+            echo json_encode(['error' => 'No se encontraron reportes de fallas']);
         }
     }
 }

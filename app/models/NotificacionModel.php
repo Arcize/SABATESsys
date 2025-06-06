@@ -76,4 +76,37 @@ class NotificacionModel {
         });
         return array_slice($notificaciones, 0, 10);
     }
+
+    // Obtener todas las notificaciones por usuario o rol (sin límite)
+    public function obtenerTodasPorDestino($tipo, $id_destino) {
+        $sql = "SELECT n.*, fr.id_estado_reporte_fallas, fr.codigo_reporte_fallas
+            FROM notificaciones n
+            LEFT JOIN reporte_fallas fr ON n.id_reporte_asociado = fr.id_reporte_fallas
+            WHERE n.tipo = :tipo AND n.id_destino = :id_destino
+            ORDER BY n.fecha_creacion DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':tipo', $tipo, PDO::PARAM_STR);
+        $stmt->bindParam(':id_destino', $id_destino, PDO::PARAM_INT);
+        $stmt->execute();
+        $notificaciones = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($notificaciones as &$n) {
+            if (
+                isset($n['id_reporte_asociado']) && $n['id_reporte_asociado'] &&
+                isset($n['id_estado_reporte_fallas'])
+            ) {
+                if ((int)$n['id_estado_reporte_fallas'] === 1) {
+                    $n['leida'] = 0;
+                } else if ((int)$n['id_estado_reporte_fallas'] === 2 || (int)$n['id_estado_reporte_fallas'] === 3) {
+                    $n['leida'] = 1;
+                }
+            }
+        }
+        usort($notificaciones, function($a, $b) {
+            if ($a['leida'] == $b['leida']) {
+                return strtotime($b['fecha_creacion']) <=> strtotime($a['fecha_creacion']);
+            }
+            return $a['leida'] <=> $b['leida'];
+        });
+        return $notificaciones;
+    }
 }

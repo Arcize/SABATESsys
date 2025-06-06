@@ -146,9 +146,37 @@ LEFT JOIN usuario u2 ON fr.tecnico_asignado = u2.id_usuario  -- Relación técni
 LEFT JOIN persona p2 ON u2.id_usuario = p2.id_usuario  -- Obtener nombre completo del técnico
 JOIN tipo_falla frt ON fr.id_tipo_falla = frt.id_tipo_falla
 JOIN estado_reporte_fallas erf ON fr.id_estado_reporte_fallas = erf.id_estado_reporte_fallas
-ORDER BY fr.id_reporte_fallas;
+ORDER BY fr.id_reporte_fallas DESC
 ";
             $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            echo "Error: " . $e->getMessage();
+            return [];
+        }
+    }
+
+    // --- NUEVO: Obtener solo los reportes del usuario actual ---
+    public function readPageByUser($id_usuario)
+    {
+        try {
+            $sql = "SELECT fr.*, 
+       CONCAT(p1.nombre, ' ', p1.apellido) AS usuario_reportante, 
+       CONCAT(p2.nombre, ' ', p2.apellido) AS tecnico_asignado_nombre, 
+       erf.estado_reporte_fallas, 
+       frt.tipo_falla
+FROM reporte_fallas fr
+JOIN usuario u1 ON fr.id_usuario = u1.id_usuario
+JOIN persona p1 ON u1.id_usuario = p1.id_usuario
+LEFT JOIN usuario u2 ON fr.tecnico_asignado = u2.id_usuario
+LEFT JOIN persona p2 ON u2.id_usuario = p2.id_usuario
+JOIN tipo_falla frt ON fr.id_tipo_falla = frt.id_tipo_falla
+JOIN estado_reporte_fallas erf ON fr.id_estado_reporte_fallas = erf.id_estado_reporte_fallas
+WHERE fr.id_usuario = :id_usuario
+ORDER BY fr.id_reporte_fallas DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindParam(':id_usuario', $id_usuario, \PDO::PARAM_INT);
             $stmt->execute();
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {

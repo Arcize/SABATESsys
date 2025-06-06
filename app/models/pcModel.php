@@ -17,7 +17,7 @@ class PcModel
     private $fabricante_fuente;
     private $wattage_fuente;
     private $fabricante_ram;
-    private $tipo_ram; // ahora string único
+    private $tipo_ram;
     private $frecuencia_ram;
     private $capacidad_ram;
     private $fabricante_almacenamiento;
@@ -52,18 +52,41 @@ class PcModel
         $this->capacidad_almacenamiento = $capacidad_almacenamiento;
     }
 
+    // Genera un código único hexadecimal de 8 dígitos para el equipo
+    public function generateUniquePcCode($length = 8)
+    {
+        do {
+            $code = strtoupper(bin2hex(random_bytes($length / 2)));
+            $exists = $this->checkPcCodeExistsInDatabase($code);
+        } while ($exists);
+        return $code;
+    }
+
+    // Verifica si el código de equipo ya existe en la base de datos
+    public function checkPcCodeExistsInDatabase($code)
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM equipo_informatico WHERE codigo_equipo = :code");
+        $stmt->bindParam(":code", $code);
+        $stmt->execute();
+        return $stmt->fetchColumn() > 0;
+    }
+
     // Refactor: create sin asignación de persona
     public function create()
     {
         try {
             $this->db->beginTransaction();
 
+            // Generar código único para el equipo
+            $codigo_equipo = $this->generateUniquePcCode();
+
             // Insertar equipo informático
-            $sql = "INSERT INTO equipo_informatico (fabricante_equipo_informatico, id_estado_equipo) 
-                    VALUES (:fabricante, :estado)";
+            $sql = "INSERT INTO equipo_informatico (fabricante_equipo_informatico, id_estado_equipo, codigo_equipo) 
+                    VALUES (:fabricante, :estado, :codigo_equipo)";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':fabricante', $this->fabricante);
             $stmt->bindParam(':estado', $this->estado);
+            $stmt->bindParam(':codigo_equipo', $codigo_equipo);
             $stmt->execute();
             $id_equipo_informatico = $this->db->lastInsertId();
 
@@ -498,5 +521,86 @@ class PcModel
         $stmt->bindParam(':cedula', $cedula);
         $stmt->execute();
         return $stmt->fetchColumn() > 0;
+    }
+
+    public function updateState($id, $estado)
+    {
+        try {
+            $sql = "UPDATE equipo_informatico SET id_estado_equipo = :estado WHERE id_equipo_informatico = :id";
+            $stmt = $this->db->prepare($sql);
+            $stmt->bindValue(':estado', $estado, \PDO::PARAM_INT);
+            $stmt->bindValue(':id', $id, \PDO::PARAM_INT);
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            error_log("Error al actualizar estado de equipo: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function readAllExceptDeincorporated()
+    {
+        try {
+            $sql = "SELECT 
+                        ei.*, 
+                        ep.estado_equipo_informatico, 
+                        CONCAT(p.nombre, ' ', p.apellido) AS nombre_completo, 
+                        pr.nombre_procesador, 
+                        CONCAT(m.fabricante_motherboard, ' ', m.modelo_motherboard) AS motherboard,
+                        CONCAT(f.fabricante_fuente_poder, ' ', f.wattage, 'W') AS fuente, 
+                        CONCAT((SELECT SUM(ram.capacidad_ram) FROM ram WHERE ram.id_equipo_informatico_ram = ei.id_equipo_informatico), 'Gb') AS capacidad_ram_total,
+                        CONCAT((SELECT SUM(almacenamiento.capacidad_almacenamiento) FROM almacenamiento WHERE almacenamiento.id_equipo_informatico_almacenamiento = ei.id_equipo_informatico), 'Gb') AS almacenamiento_total
+                    FROM equipo_informatico ei
+                    LEFT JOIN estado_equipo_informatico ep ON ei.id_estado_equipo = ep.id_estado_equipo_informatico
+                    LEFT JOIN persona p ON ei.id_persona = p.id_persona
+                    LEFT JOIN procesador pr ON ei.id_equipo_informatico = pr.id_equipo_informatico_procesador
+                    LEFT JOIN motherboard m ON ei.id_equipo_informatico = m.id_equipo_informatico_motherboard
+                    LEFT JOIN fuente_poder f ON ei.id_equipo_informatico = f.id_equipo_informatico_fuente
+                    WHERE ei.id_estado_equipo != 4
+                    ORDER BY ei.id_equipo_informatico DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            error_log("Error al leer PCs (excepto desincorporados): " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function readAllDeincorporated()
+    {
+        try {
+            $sql = "SELECT 
+                        ei.*, 
+                        ep.estado_equipo_informatico, 
+                        CONCAT(p.nombre, ' ', p.apellido) AS nombre_completo, 
+                        pr.nombre_procesador, 
+                        CONCAT(m.fabricante_motherboard, ' ', m.modelo_motherboard) AS motherboard,
+                        CONCAT(f.fabricante_fuente_poder, ' ', f.wattage, 'W') AS fuente, 
+                        CONCAT((SELECT SUM(ram.capacidad_ram) FROM ram WHERE ram.id_equipo_informatico_ram = ei.id_equipo_informatico), 'Gb') AS capacidad_ram_total,
+                        CONCAT((SELECT SUM(almacenamiento.capacidad_almacenamiento) FROM almacenamiento WHERE almacenamiento.id_equipo_informatico_almacenamiento = ei.id_equipo_informatico), 'Gb') AS almacenamiento_total
+                    FROM equipo_informatico ei
+                    LEFT JOIN estado_equipo_informatico ep ON ei.id_estado_equipo = ep.id_estado_equipo_informatico
+                    LEFT JOIN persona p ON ei.id_persona = p.id_persona
+                    LEFT JOIN procesador pr ON ei.id_equipo_informatico = pr.id_equipo_informatico_procesador
+                    LEFT JOIN motherboard m ON ei.id_equipo_informatico = m.id_equipo_informatico_motherboard
+                    LEFT JOIN fuente_poder f ON ei.id_equipo_informatico = f.id_equipo_informatico_fuente
+                    WHERE ei.id_estado_equipo = 4
+                    ORDER BY ei.id_equipo_informatico DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
+            error_log("Error al leer PCs desincorporados: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public function updateEstado($id_equipo, $id_estado)
+    {
+        $sql = "UPDATE equipos_informaticos SET id_estado = :id_estado WHERE id_equipo_informatico = :id_equipo";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindParam(':id_estado', $id_estado, \PDO::PARAM_INT);
+        $stmt->bindParam(':id_equipo', $id_equipo, \PDO::PARAM_INT);
+        return $stmt->execute();
     }
 }

@@ -12,22 +12,20 @@ class Security
         'config',
         'employeeTable',
         'pcTable',
-        'pcForm',
-        'pcFormEdit',
         'userTable',
-        'roleTable',
-        'roleForm',
         'faultReportTable',
+        'myFaultReports'
         // ... otras vistas protegidas ...
     ];
 
     private static $permissionBasedViews = [
+        'dashboard' => 'ver_dashboard',
         'employeeTable' => 'ver_empleados',
         'pcTable' => 'ver_equipos',
-        'faultReportTable' => 'ver_falla',
+        'faultReportTable' => 'ver_todos_repor_falla',
         'userTable' => 'ver_usuarios',
-        'inventoryTable' => 'ver_inventario',
         'config' => 'ver_configuracion',
+        'myFaultReports' => 'ver_falla',
         // ... otras vistas que requieren permisos específicos ...
     ];
 

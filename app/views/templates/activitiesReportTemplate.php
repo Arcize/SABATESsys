@@ -277,10 +277,34 @@ function fecha_espanol($fecha)
         </tr>
         <tr>
 
-            <td>
+            <td colspan="2 " class="table_report_text">
                 <?= nl2br(htmlspecialchars($row['contenido_reporte'] ?? '')) ?>
             </td>
         </tr>
+        <?php if (!empty($row['imagenes']) && is_array($row['imagenes'])): ?>
+            <tr class="table_report_header">
+                <th colspan="2">Evidencia</th>
+            </tr>
+            <?php foreach ($row['imagenes'] as $img):
+                $imgPath = '../public/' . $img;
+                if (file_exists($imgPath)) {
+                    $imgData = base64_encode(file_get_contents($imgPath));
+                    $imgSrc = 'data:image/' . pathinfo($imgPath, PATHINFO_EXTENSION) . ';base64,' . $imgData;
+                } else {
+                    $imgSrc = '';
+                }
+            ?>
+                <?php if ($imgSrc): ?>
+                    <tr>
+                        <td colspan="2" style="text-align:center;">
+                            <div style="border:1px solid #ccc; padding:12px; background:#fafafa; max-width:320px; max-height:380px; display:inline-flex; align-items:center; justify-content:center; margin: 16px auto;">
+                                <img src="<?= $imgSrc ?>" alt="Evidencia" style="max-width:300px; max-height:350px; object-fit:contain; display:block; margin:auto;" />
+                            </div>
+                        </td>
+                    </tr>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </table>
     <!-- Si necesitas mostrar imágenes, agrega aquí el bloque correspondiente -->
 </div>

@@ -33,6 +33,9 @@ class PcController
             case 'pc_fetch_page':
                 $this->fetchPcPage();
                 break;
+            case 'pc_fetch_deincorporated':
+                $this->fetchPcDeincorporated();
+                break;
             case 'pc_fetch_total_records':
                 $this->fetchTotalRecords();
                 break;
@@ -47,6 +50,21 @@ class PcController
                 break;
             case 'generateReport':
                 $this->generateReport();
+                break;
+            case 'deincorporate_pc':
+                $this->deincorporatePC();
+                break;
+            case 'reincorporate_pc':
+                $this->reincorporatePC();
+                break;
+            case 'set_in_repair':
+                $this->setInRepair();
+                break;
+            case 'set_operational':
+                $this->setOperational();
+                break;
+            case 'set_broken':
+                $this->setBroken();
                 break;
             default:
                 echo json_encode(['error' => 'Acción no válida']);
@@ -147,34 +165,10 @@ class PcController
 
     private function fetchPcPage()
     {
-        $PCs = $this->pcModel->readPage();
-        
-        $customSort = [
-            "id_equipo_informatico",
-            "fabricante_equipo_informatico",
-            "estado_equipo_informatico",
-            "nombre_completo",
-            "fabricante_procesador_nombre",
-            "nombre_procesador",
-            "motherboard",
-            "fuente",
-            "capacidad_ram_total",
-            "almacenamiento_total",
-        ];
-        if ($PCs) {
-            foreach ($PCs as &$PC) {
-                $newSort = [];
-                foreach ($customSort as $key) {
-                    if (isset($PC[$key])) {
-                        $newSort[$key] = $PC[$key];
-                    }
-                }
-                $PC = $newSort;
-            }
-            echo json_encode($PCs);
-        } else {
-            echo json_encode(['error' => 'No se encontraron reportes de fallas']);
-        }
+        // Traer todos los equipos MENOS los desincorporados (estado 4)
+        $pcs = $this->pcModel->readAllExceptDeincorporated();
+        header('Content-Type: application/json');
+        echo json_encode($pcs);
     }
     private function fetchTotalRecords()
     {
@@ -227,11 +221,7 @@ class PcController
         }
     }
 
-    /**
-     * Devuelve todos los datos necesarios para el reporte de un equipo informático.
-     * Entrada: POST id_equipo_informatico
-     * Salida: JSON con todos los datos del equipo (incluyendo módulos de RAM y almacenamiento)
-     */
+    
     private function generateReport()
     {
         $id = $_POST['id_equipo_informatico'] ?? null;
@@ -247,5 +237,115 @@ class PcController
         } else {
             echo json_encode(['error' => 'Equipo no encontrado']);
         }
+    }
+
+    public function deincorporatePC()
+    {
+        $id = $_POST['id_equipo_informatico'] ?? null;
+        if (!$id) {
+            echo json_encode(['success' => false, 'message' => 'ID de equipo no proporcionado']);
+            return;
+        }
+        // Estado 4 = Desincorporado
+        $result = $this->pcModel->updateState($id, 4);
+        // Desasignar persona (id_persona = NULL)
+        $this->pcModel->unassignFromPerson($id);
+
+        header('Content-Type: application/json');
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Equipo desincorporado correctamente']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No se pudo desincorporar el equipo']);
+        }
+    }
+
+    public function reincorporatePC()
+    {
+        $id = $_POST['id_equipo_informatico'] ?? null;
+        if (!$id) {
+            echo json_encode(['success' => false, 'message' => 'ID de equipo no proporcionado']);
+            return;
+        }
+        // Estado 1 = Operativo (ajusta si tu tabla de estados usa otro valor para "Operativo")
+        $result = $this->pcModel->updateState($id, 1);
+        header('Content-Type: application/json');
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Equipo reincorporado correctamente']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No se pudo reincorporar el equipo']);
+        }
+    }
+
+    public function fetchPcDeincorporated()
+    {
+        $pcs = $this->pcModel->readAllDeincorporated();
+        header('Content-Type: application/json');
+        echo json_encode($pcs);
+    }
+
+    public function setInRepair()
+    {
+        // Solo acepta peticiones POST
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            exit;
+        }
+
+        $id_equipo = isset($_POST['id_equipo']) ? intval($_POST['id_equipo']) : 0;
+        if (!$id_equipo) {
+            echo json_encode(['success' => false, 'message' => 'ID de equipo inválido']);
+            exit;
+        }
+
+        $pcModel = new \app\models\PcModel();
+        // id_estado 3 = "En reparación"
+        $result = $pcModel->updateEstado($id_equipo, 3);
+
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Equipo puesto en reparación']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No se pudo actualizar el estado']);
+        }
+        exit;
+    }
+
+    public function setOperational()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            exit;
+        }
+        $id_equipo = isset($_POST['id_equipo']) ? intval($_POST['id_equipo']) : 0;
+        if (!$id_equipo) {
+            echo json_encode(['success' => false, 'message' => 'ID de equipo inválido']);
+            exit;
+        }
+        $result = $this->pcModel->updateState($id_equipo, 1); // 1 = operativo
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Equipo puesto en estado operativo']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No se pudo actualizar el estado']);
+        }
+        exit;
+    }
+
+    public function setBroken()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            echo json_encode(['success' => false, 'message' => 'Método no permitido']);
+            exit;
+        }
+        $id_equipo = isset($_POST['id_equipo']) ? intval($_POST['id_equipo']) : 0;
+        if (!$id_equipo) {
+            echo json_encode(['success' => false, 'message' => 'ID de equipo inválido']);
+            exit;
+        }
+        $result = $this->pcModel->updateState($id_equipo, 2); // 2 = averiado
+        if ($result) {
+            echo json_encode(['success' => true, 'message' => 'Equipo puesto en estado averiado']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'No se pudo actualizar el estado']);
+        }
+        exit;
     }
 }

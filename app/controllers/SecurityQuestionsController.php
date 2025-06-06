@@ -64,7 +64,13 @@ class SecurityQuestionsController
             if ($result) {
                 error_log("Preguntas de seguridad registradas para el usuario: " . $id_usuario);
                 unset($_SESSION['securityQuestions']);
-                header("Location: index.php?view=dashboard");
+                // Redirección según el rol
+                $rol = $_SESSION['role'] ?? null;
+                if ($rol == 1) { // Admin
+                    header("Location: index.php?view=dashboard");
+                } else {
+                    header("Location: index.php?view=inicio");
+                }
                 exit();
             } else {
                 error_log("Error al registrar preguntas de seguridad para el usuario: " . $id_usuario);

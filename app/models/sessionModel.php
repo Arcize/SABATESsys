@@ -25,12 +25,14 @@ class SessionModel
     {
         $_SESSION['id_usuario'] = $user['id_usuario'];
         $_SESSION['role'] = $user['id_rol'];
+        $_SESSION['cedula'] = $user['cedula'];
     }
 
     public function destroySession()
     {
-        session_start();
-        session_destroy();
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
+        }
     }
 
     public function isSessionActive()

@@ -69,6 +69,9 @@ class EmployeeController
             case 'update_password':
                 $this->updatePasswordBySession();
                 break;
+            case 'employee_fetch_inactive':
+                $this->fetchEmployeeInactive();
+                break;
             default:
                 break;
         }
@@ -143,9 +146,7 @@ class EmployeeController
     }
     private function fetchEmployeePage()
     {
-        $page = isset($_GET['page']) ? $_GET['page'] : 1; // Página actual
-        $recordsPerPage = isset($_GET['recordsPerPage']) ? $_GET['recordsPerPage'] : 10; // Número de registros por página
-        $employee = $this->employeeModel->readPage($page, $recordsPerPage);
+        $employee = $this->employeeModel->readPage();
         if ($employee) {
             // Retornar datos como JSON
             header('Content-Type: application/json');
@@ -380,6 +381,17 @@ class EmployeeController
             echo json_encode(['success' => true, 'message' => 'Contraseña actualizada correctamente.']);
         } else {
             echo json_encode(['success' => false, 'message' => 'No se pudo actualizar la contraseña.']);
+        }
+    }
+
+    private function fetchEmployeeInactive()
+    {
+        $employees = $this->employeeModel->readInactive();
+        if ($employees) {
+            header('Content-Type: application/json');
+            echo json_encode($employees);
+        } else {
+            echo json_encode(['error' => 'No se encontraron empleados inactivos']);
         }
     }
 }

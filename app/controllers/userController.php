@@ -53,26 +53,29 @@ class UserController
 
     private function dashboardSetup()
     {
-        if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            $userId = $_SESSION['id_usuario'];
-            // Leer el cuerpo de la petición (JSON)
-            $input = file_get_contents('php://input');
-            $data = json_decode($input, true);
+        $json = file_get_contents('php://input');
+        $data = json_decode($json, true);
 
-            // Si solo envías la configuración:
-            $config = json_encode($data);
-
-            // Guardar la configuración en la base de datos
-            $result = $this->userModel->saveDashboardConfig($userId, $config);
-
+        if ($data && isset($data['dashboard'], $data['toolbar'])) {
+            // Guarda TODO el objeto (dashboard + toolbar)
+            $userId = $_SESSION['id_usuario'] ?? null;
+            if (!$userId) {
+                echo json_encode(["error" => "No autenticado"]);
+                exit;
+            }
+            $result = $this->userModel->saveDashboardConfig(
+                $userId,
+                json_encode($data)
+            );
             if ($result) {
-                echo json_encode(['success' => true, 'message' => 'Configuración guardada correctamente']);
+                echo json_encode(["success" => true]);
             } else {
-                echo json_encode(['error' => 'Error al guardar la configuración']);
+                echo json_encode(["error" => "No se pudo guardar la configuración"]);
             }
         } else {
-            echo json_encode(['error' => 'Método no permitido']);
+            echo json_encode(["error" => "Datos inválidos"]);
         }
+        exit;
     }
     public function getDashboardConfig()
     {

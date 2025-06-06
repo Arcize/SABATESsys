@@ -42,6 +42,9 @@ class ActivitiesReportController
             case 'searchParticipants':
                 $this->searchParticipantsAjax();
                 break;
+            case 'getImagesByReport':
+                $this->getImagesByReportAjax();
+                break;
             default:
                 break;
         }
@@ -662,6 +665,30 @@ class ActivitiesReportController
         $results = $this->activitiesReportModel->searchParticipants($q);
         header('Content-Type: application/json');
         echo json_encode($results);
+        exit;
+    }
+
+    /**
+     * Devuelve solo los nombres de las imágenes asociadas a un reporte (para el PDF)
+     */
+    private function getImagesByReportAjax()
+    {
+        $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+        if (!$id) {
+            echo json_encode([]);
+            exit;
+        }
+        $images = $this->activitiesReportModel->getImagesForReport($id); // Devuelve array con 'ruta_evidencia'
+        // Solo devolver el nombre del archivo (última parte de la ruta)
+        $result = array_map(function($img) {
+            if (isset($img['ruta_evidencia'])) {
+                return $img['ruta_evidencia'];
+            }
+            return null;
+        }, $images);
+        // Filtrar nulos
+        $result = array_filter($result);
+        echo json_encode(array_values($result));
         exit;
     }
 }

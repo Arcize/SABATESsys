@@ -225,7 +225,7 @@ class UserModel
     public function getUserByCedula($cedula)
     {
         try {
-            $sql = "SELECT u.*, p.estado_empleado FROM usuario u
+            $sql = "SELECT u.*, p.estado_empleado, p.cedula FROM usuario u
 				JOIN persona p on p.id_usuario = u.id_usuario
 				WHERE p.cedula = :cedula";
             $stmt = $this->db->prepare($sql);

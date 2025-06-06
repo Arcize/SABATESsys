@@ -23,16 +23,22 @@
                     <div class="notification-list" id="notification-list">
                         <div style="text-align:center; color:#888; padding:1em;">Cargando notificaciones...</div>
                     </div>
-                    <button id="see-all-notifications">Ver todas</button>
+                    <a href="index.php?view=notifications">
+                        <button id="see-all-notifications">Ver todas</button>
+
+                    </a>
                 </div>
             </div>
         <?php endif ?>
 
         <div class="user-dropdown">
-            <button class="dropdown-button" onclick="toggleUserDropdown()">
+            <button id="dropdown-button-user" class="dropdown-button" onclick="toggleUserDropdown()">
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#212121">
                     <path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
                 </svg>
+                <?php if (isset($_SESSION['cedula'])): ?>
+                    <span class="user-cedula-value"><?php echo htmlspecialchars($_SESSION['cedula']); ?></span>
+                <?php endif; ?>
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#212121" class="dropdown-arrow">
                     <path d="M459-381 314-526q-3-3-4.5-6.5T308-540q0-8 5.5-14t14.5-6h304q9 0 14.5 6t5.5 14q0 2-6 14L501-381q-5 5-10 7t-11 2q-6 0-11-2t-10-7Z" />
                 </svg>
@@ -44,9 +50,9 @@
                     </a>
                     <?php if ($viewData['puede_ver_configuracion']): ?>
 
-                        <a href="index.php?view=config">
+                        <!-- <a href="index.php?view=config">
                             <span>Configuración</span>
-                        </a>
+                        </a> -->
                     <?php endif ?>
                 <?php endif ?>
 
@@ -57,6 +63,10 @@
         </div>
     </div>
 </header>
+
+<div class="user-cedula">
+
+</div>
 
 <?php
 // Obtener el id_usuario y el id_rol de la sesión
@@ -79,7 +89,18 @@ if ($id_usuario && $id_rol) {
 }
 ?>
 
+<audio id="notification-sound" src="public/sounds/notification-2.mp3" preload="auto" style="display:none"></audio>
+
+<!-- <button id="test-notification-sound" style="position:fixed;bottom:10px;right:10px;z-index:9999;">Probar sonido notificación</button>
 <script>
+    document.getElementById('test-notification-sound').addEventListener('click', function() {
+        const audio = document.getElementById('notification-sound');
+        if (audio) audio.play();
+    });
+</script> -->
+
+<script>
+    let prevUnreadCount = null; // null para detectar la primera carga
     function fetchNotifications() {
         let tipo = 'individual';
         let id_destino = <?php echo isset($_SESSION['id_usuario']) ? (int)$_SESSION['id_usuario'] : 'null'; ?>;
@@ -103,6 +124,12 @@ if ($id_usuario && $id_rol) {
                 if (Array.isArray(data)) {
                     unreadCount = data.filter(n => !n.leida).length;
                 }
+                // Solo reproducir sonido si NO es la primera carga y hay más no leídas
+                if (prevUnreadCount !== null && unreadCount > prevUnreadCount) {
+                    const audio = document.getElementById('notification-sound');
+                    if (audio) audio.play();
+                }
+                prevUnreadCount = unreadCount;
                 // Actualizar badge dinámico
                 if (notifButton) {
                     if (unreadCount > 0) {

@@ -97,6 +97,7 @@ $userController = new UserController;
                     </a>
                 </div>
             <?php endif; ?>
+            <?php if ($viewData['puede_ver_todos_repor_falla']): ?>
             <div class="navbar__item">
                 <a href="index.php?view=faultReportTable" class="navbar__link">
                     <div class="navbar__item-content">
@@ -109,8 +110,8 @@ $userController = new UserController;
                     </div>
                 </a>
             </div>
+            <?php endif; ?>
             <?php if ($viewData['puede_ver_actividad']): ?>
-
                 <div class="navbar__item">
                     <a href="index.php?view=activitiesReportTable" class="navbar__link">
                         <div class="navbar__item-content">
@@ -123,6 +124,21 @@ $userController = new UserController;
                         </div>
                     </a>
                 </div>
+            <?php endif ?>
+            <?php if ($viewData['puede_ver_falla']): ?>
+
+            <div class="navbar__item">
+                <a href="index.php?view=myFaultReports" class="navbar__link">
+                    <div class="navbar__item-content">
+                        <div class="navbar__icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#f6f6f6">
+                                <path d="M480-280q17 0 28.5-11.5T520-320q0-17-11.5-28.5T480-360q-17 0-28.5 11.5T440-320q0 17 11.5 28.5T480-280Zm0-160q17 0 28.5-11.5T520-480v-160q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640v160q0 17 11.5 28.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z" />
+                            </svg>
+                        </div>
+                        <div class="navbar__text">Mis Reportes de Fallas</div>
+                    </div>
+                </a>
+            </div>
             <?php endif ?>
         </div>
     </nav>

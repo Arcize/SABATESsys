@@ -259,7 +259,15 @@ $activityTypes = $activityTypeController->listTypes();
                     data: 'nombre_completo'
                 },
                 {
-                    data: 'titulo_reporte'
+                    data: 'titulo_reporte',
+                    render: function(data, type, row) {
+                        if (type === 'display' && data && data.length > 40) {
+                            // Escapa comillas dobles para HTML
+                            var safeTitle = data.replace(/"/g, '&quot;');
+                            return `<span class="titulo-tooltip" data-tippy-content="${safeTitle}">${data.substring(0, 40)}...</span>`;
+                        }
+                        return data;
+                    }
                 },
                 {
                     data: 'fecha_actividad',
@@ -303,8 +311,8 @@ $activityTypes = $activityTypeController->listTypes();
                 {
                     data: 'contenido_reporte',
                     render: function(data, type, row) {
-                        if (type === 'display' && data != null && data.length > 50) {
-                            return data.substring(0, 50) + '...';
+                        if (type === 'display' && data != null && data.length > 30) {
+                            return data.substring(0, 30) + '...';
                         }
                         return data;
                     }
@@ -338,6 +346,12 @@ $activityTypes = $activityTypeController->listTypes();
                 },
             ],
             initComplete: function() {
+                // Filtro por tipo_actividad si viene en la URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const tipoActividad = urlParams.get('tipo_actividad');
+                if (tipoActividad) {
+                    this.api().search(tipoActividad).draw();
+                }
                 // Inicializar los selectores DateTime después de que se han creado en el DOM
                 minDate = new DateTime('#min-date', {
                     format: 'DD/MM/YYYY',
@@ -478,12 +492,20 @@ $activityTypes = $activityTypeController->listTypes();
                     window.tippyInstances.forEach(instance => instance.destroy());
                 }
                 // Inicializa Tippy en los elementos actuales
-                window.tippyInstances = tippy('.participantes-tooltip', {
-                    allowHTML: true,
-                    placement: 'top',
-                    theme: 'light-border',
-                    interactive: false,
-                });
+                window.tippyInstances = [
+                    ...tippy('.participantes-tooltip', {
+                        allowHTML: true,
+                        placement: 'top',
+                        theme: 'light-border',
+                        interactive: false,
+                    }),
+                    ...tippy('.titulo-tooltip', {
+                        allowHTML: true,
+                        placement: 'top',
+                        theme: 'light-border',
+                        interactive: false,
+                    })
+                ];
             }
         });
 
@@ -729,7 +751,25 @@ $activityTypes = $activityTypeController->listTypes();
     // Envío de datos para generar el reporte PDF
     function sentDataActivities(btn) {
         const row = JSON.parse(decodeURIComponent(btn.getAttribute('data-row')));
-        // Puedes hacer un fetch si necesitas datos extra, o enviar el row directamente
+        // Si ya tiene imágenes, las enviamos directamente
+        if (row.imagenes && Array.isArray(row.imagenes)) {
+            enviarReporteConImagenes(row);
+        } else {
+            // Obtener imágenes por AJAX antes de enviar
+            fetch('index.php?view=activitiesReport&action=getImagesByReport&id=' + encodeURIComponent(row.id_reporte_actividades))
+                .then(res => res.json())
+                .then(data => {
+                    row.imagenes = Array.isArray(data) ? data : [];
+                    enviarReporteConImagenes(row);
+                })
+                .catch(() => {
+                    row.imagenes = [];
+                    enviarReporteConImagenes(row);
+                });
+        }
+    }
+
+    function enviarReporteConImagenes(row) {
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = 'index.php?view=activitiesReportV';

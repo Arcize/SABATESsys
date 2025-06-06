@@ -39,6 +39,8 @@
   cursor: pointer;
   border-radius: var(--border-radius);
   transition: var(--transition-standart);
+  display: flex;
+  align-items: center;
 }
 
 .user-bar button:hover {
@@ -99,6 +101,18 @@
   transition: var(--transition-standart);
 }
 
+#dropdown-button-user{
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.user-cedula-value{
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-texto);
+  transform: translateY(2px);
+}
 .notifications {
   position: relative;
 }
@@ -245,6 +259,8 @@
   transition: background 0.2s;
   margin: 0;
   height: fit-content;
+  display: flex;
+  justify-content: center;
 }
 #see-all-notifications:hover {
   background: #e0e0e0;
@@ -262,4 +278,8 @@
   color: #999;
   margin-left: 10px;
   font-weight: 400;
+}
+
+.user-cedula-value{
+  pointer-events: none;
 }

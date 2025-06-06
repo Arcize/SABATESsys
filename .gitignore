@@ -1,3 +1,4 @@
 /vendor/
 /DataBase/sabatessys.sql
-/uploads
+/public/uploads/
+/tmp/

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 30-05-2025 a las 22:21:15
+-- Tiempo de generación: 02-06-2025 a las 07:57:50
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -63,10 +63,18 @@ CREATE TABLE `almacenamiento` (
 --
 
 INSERT INTO `almacenamiento` (`id_almacenamiento`, `id_equipo_informatico_almacenamiento`, `fabricante_almacenamiento`, `tipo_almacenamiento`, `capacidad_almacenamiento`, `id_estado_pieza_almacenamiento`) VALUES
-(18, 17, 'Western Digital', 'SSD', 2000, 1),
 (19, 18, 'Samsung', 'SSD', 500, 1),
-(20, 19, 'Western Digital', 'SSD', 500, 1),
-(21, 10, 'Samsung', 'SSD', 1000, 1);
+(21, 10, 'Samsung', 'SSD', 1000, 1),
+(22, 17, 'Western Digital', 'SSD', 2000, 1),
+(23, 20, 'Samsung', 'SSD', 500, 1),
+(24, 21, 'Western Digital', 'HDD', 1000, 1),
+(25, 22, 'Crucial', 'SSD', 1000, 1),
+(26, 23, 'Seagate', 'HDD', 2000, 1),
+(27, 24, 'Kingston', 'SSD', 500, 1),
+(29, 26, 'Samsung', 'NVMe', 1000, 1),
+(30, 27, 'Western Digital', 'HDD', 2000, 1),
+(31, 28, 'Crucial', 'SSD', 2000, 1),
+(32, 29, 'Seagate', 'HDD', 1000, 1);
 
 -- --------------------------------------------------------
 
@@ -84,7 +92,7 @@ CREATE TABLE `dashboard_config` (
 --
 
 INSERT INTO `dashboard_config` (`id_usuario_dashboard`, `dashboard_config`) VALUES
-(1, '[{\"x\":9,\"y\":2,\"w\":3,\"h\":4,\"panelId\":\"1\",\"minW\":2,\"minH\":3},{\"x\":0,\"y\":0,\"w\":4,\"h\":3,\"panelId\":\"2\",\"minW\":2,\"minH\":3},{\"x\":6,\"y\":0,\"w\":6,\"h\":2,\"panelId\":\"3\",\"minW\":4,\"minH\":2},{\"x\":4,\"y\":3,\"w\":5,\"h\":3,\"panelId\":\"4\",\"minW\":4,\"minH\":3},{\"x\":4,\"y\":0,\"w\":2,\"h\":1,\"panelId\":\"5\"},{\"x\":0,\"y\":3,\"w\":4,\"h\":1,\"panelId\":\"6\"},{\"x\":6,\"y\":2,\"w\":3,\"h\":1,\"panelId\":\"7\"},{\"x\":0,\"y\":4,\"w\":4,\"h\":2,\"panelId\":\"8\"},{\"x\":4,\"y\":1,\"w\":2,\"h\":2,\"panelId\":\"9\"}]'),
+(1, '{\"dashboard\":[{\"x\":0,\"y\":3,\"w\":3,\"h\":3,\"panelId\":\"1\",\"minW\":2,\"minH\":3},{\"x\":7,\"y\":0,\"w\":3,\"h\":4,\"panelId\":\"2\",\"minW\":2,\"minH\":3},{\"x\":0,\"y\":0,\"w\":6,\"h\":3,\"panelId\":\"4\",\"minW\":4,\"minH\":3},{\"x\":10,\"y\":0,\"w\":2,\"h\":2,\"panelId\":\"7\",\"minW\":1,\"minH\":1},{\"x\":3,\"y\":3,\"w\":4,\"h\":2,\"panelId\":\"3\",\"minW\":4,\"minH\":2}],\"toolbar\":[{\"panelId\":\"5\",\"minW\":1,\"minH\":1},{\"panelId\":\"6\",\"minW\":1,\"minH\":1},{\"panelId\":\"8\",\"minW\":1,\"minH\":1},{\"panelId\":\"9\",\"minW\":1,\"minH\":1},{\"panelId\":\"10\",\"minW\":1,\"minH\":1},{\"panelId\":\"11\",\"minW\":1,\"minH\":1}]}'),
 (12, '[{\"x\":0,\"y\":0,\"w\":3,\"h\":3,\"panelId\":\"1\",\"minW\":2,\"minH\":3},{\"x\":9,\"y\":2,\"w\":3,\"h\":4,\"panelId\":\"2\",\"minW\":2,\"minH\":3},{\"x\":7,\"y\":0,\"w\":5,\"h\":2,\"panelId\":\"3\",\"minW\":4,\"minH\":2},{\"x\":3,\"y\":0,\"w\":4,\"h\":3,\"panelId\":\"4\",\"minW\":4,\"minH\":3},{\"x\":1,\"y\":3,\"w\":1,\"h\":1,\"panelId\":\"5\"},{\"x\":0,\"y\":3,\"w\":1,\"h\":1,\"panelId\":\"6\"},{\"x\":0,\"y\":4,\"w\":3,\"h\":2,\"panelId\":\"7\"},{\"x\":2,\"y\":3,\"w\":1,\"h\":1,\"panelId\":\"8\"},{\"x\":3,\"y\":4,\"w\":4,\"h\":2,\"panelId\":\"9\"}]');
 
 -- --------------------------------------------------------
@@ -105,7 +113,12 @@ CREATE TABLE `departamento` (
 INSERT INTO `departamento` (`id_departamento`, `nombre_departamento`) VALUES
 (1, 'Informática'),
 (2, 'Recursos Humanos'),
-(3, 'Contabilidad');
+(3, 'Contabilidad'),
+(4, 'Ventas'),
+(5, 'Marketing'),
+(6, 'Soporte Técnico'),
+(7, 'Producción'),
+(8, 'Logística');
 
 -- --------------------------------------------------------
 
@@ -115,6 +128,7 @@ INSERT INTO `departamento` (`id_departamento`, `nombre_departamento`) VALUES
 
 CREATE TABLE `equipo_informatico` (
   `id_equipo_informatico` int(11) NOT NULL,
+  `codigo_equipo` varchar(8) DEFAULT NULL,
   `fabricante_equipo_informatico` varchar(25) NOT NULL,
   `id_estado_equipo` int(11) NOT NULL,
   `id_persona` int(11) DEFAULT NULL
@@ -124,11 +138,19 @@ CREATE TABLE `equipo_informatico` (
 -- Volcado de datos para la tabla `equipo_informatico`
 --
 
-INSERT INTO `equipo_informatico` (`id_equipo_informatico`, `fabricante_equipo_informatico`, `id_estado_equipo`, `id_persona`) VALUES
-(10, 'Asus', 1, 1),
-(17, 'Wasus', 1, 17),
-(18, 'Dell', 1, 12),
-(19, 'Wasus', 1, NULL);
+INSERT INTO `equipo_informatico` (`id_equipo_informatico`, `codigo_equipo`, `fabricante_equipo_informatico`, `id_estado_equipo`, `id_persona`) VALUES
+(10, '77BBCCDD', 'Asus', 2, 1),
+(17, 'AABBCCDD', 'Wasus', 1, NULL),
+(18, 'EEFFGGHH', 'Dell', 1, 12),
+(20, 'A1B2C3D4', 'HP', 1, 276),
+(21, '1234ABCD', 'Lenovo', 1, 277),
+(22, '55667788', 'Dell', 1, 278),
+(23, 'CAFE9876', 'Asus', 1, 279),
+(24, 'FADE1234', 'Acer', 1, 280),
+(26, '98C7B6A5', 'MSI', 2, 282),
+(27, '89AB45CD', 'Toshiba', 3, 283),
+(28, '00ABCDFF', 'Samsung', 1, 284),
+(29, 'ABCDEF12', 'LG', 4, NULL);
 
 -- --------------------------------------------------------
 
@@ -149,7 +171,7 @@ INSERT INTO `estado_equipo_informatico` (`id_estado_equipo_informatico`, `estado
 (1, 'Operativo'),
 (2, 'Averiado'),
 (3, 'En reparación'),
-(4, 'Retirado');
+(4, 'Desincorporado');
 
 -- --------------------------------------------------------
 
@@ -212,7 +234,9 @@ CREATE TABLE `evidencia_reporte_actividades` (
 --
 
 INSERT INTO `evidencia_reporte_actividades` (`id_evidencia`, `id_actividad`, `ruta_evidencia`, `fecha_subida`, `tipo_mime`, `tamano_bytes`) VALUES
-(58, 89, 'uploads/report_89/682fa48834c29.png', '2025-05-22 22:26:23', 'image/png', 862183);
+(59, 89, 'uploads/report_89/68393c1a85c33.jpg', '2025-05-30 05:04:07', 'image/jpeg', 246670),
+(60, 89, 'uploads/report_89/68393c2cc198c.jpg', '2025-05-30 05:04:07', 'image/jpeg', 8683),
+(61, 89, 'uploads/report_89/68393c43dbbaa.webp', '2025-05-30 05:04:07', 'image/webp', 50340);
 
 -- --------------------------------------------------------
 
@@ -236,7 +260,15 @@ INSERT INTO `fuente_poder` (`id_fuente_poder`, `id_equipo_informatico_fuente`, `
 (17, 10, 'Thermaltake', 650, 1),
 (24, 17, 'Thermaltake', 650, 1),
 (25, 18, 'Corsair', 700, 1),
-(26, 19, 'Thermaltake', 700, 1);
+(27, 20, 'EVGA', 600, 1),
+(28, 21, 'Corsair', 550, 1),
+(29, 22, 'Seasonic', 750, 1),
+(30, 23, 'Thermaltake', 650, 1),
+(31, 24, 'Cooler Master', 700, 1),
+(32, 26, 'EVGA', 850, 1),
+(33, 27, 'Corsair', 750, 1),
+(34, 28, 'Seasonic', 650, 1),
+(35, 29, 'Thermaltake', 750, 1);
 
 -- --------------------------------------------------------
 
@@ -260,7 +292,15 @@ INSERT INTO `motherboard` (`id_motherboard`, `id_equipo_informatico_motherboard`
 (23, 10, 'Gigabyte', 'BZ790', 1),
 (30, 17, 'Gigabyte', 'BZ790', 1),
 (31, 18, 'Rog', 'H614', 1),
-(32, 19, 'Gigabyte', 'BZ790', 1);
+(33, 20, 'Asus', 'PRIME B450M-A', 1),
+(34, 21, 'Gigabyte', 'B450 AORUS M', 1),
+(35, 22, 'MSI', 'B450 TOMAHAWK', 1),
+(36, 23, 'ASRock', 'B450M Pro4', 1),
+(37, 24, 'Asus', 'ROG STRIX B450-F', 1),
+(39, 26, 'MSI', 'MEG Z490', 1),
+(40, 27, 'Gigabyte', 'Z490 AORUS', 1),
+(41, 28, 'Asus', 'TUF B550-PLUS', 1),
+(42, 29, 'Asus', 'ROG STRIX Z490-E', 1);
 
 -- --------------------------------------------------------
 
@@ -291,7 +331,11 @@ INSERT INTO `notificaciones` (`id`, `mensaje`, `tipo`, `id_destino`, `id_reporte
 (13, 'Nuevo reporte de falla creado con el código: #7A20F906', 'rol', 3, 68, '2025-05-30 16:02:06', 0, NULL),
 (14, 'Nuevo reporte de falla creado con el código: #7A20F906', 'rol', 1, 68, '2025-05-30 16:02:06', 0, NULL),
 (15, 'Nuevo reporte de falla creado con el código: #1E907DE5', 'rol', 3, 69, '2025-05-30 16:03:00', 0, NULL),
-(16, 'Nuevo reporte de falla creado con el código: #1E907DE5', 'rol', 1, 69, '2025-05-30 16:03:00', 0, NULL);
+(16, 'Nuevo reporte de falla creado con el código: #1E907DE5', 'rol', 1, 69, '2025-05-30 16:03:00', 0, NULL),
+(29, 'Nuevo reporte de falla creado con el código: #54496CE7', 'rol', 3, 76, '2025-06-01 18:46:04', 0, NULL),
+(30, 'Nuevo reporte de falla creado con el código: #54496CE7', 'rol', 1, 76, '2025-06-01 18:46:04', 0, NULL),
+(33, 'Nuevo reporte de falla creado con el código: #3C179758', 'rol', 3, 78, '2025-06-01 18:49:36', 0, NULL),
+(34, 'Nuevo reporte de falla creado con el código: #3C179758', 'rol', 1, 78, '2025-06-01 18:49:36', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -384,16 +428,26 @@ INSERT INTO `persona` (`id_persona`, `nombre`, `apellido`, `cedula`, `correo`, `
 (12, 'Santiago', 'Barreto', 30508673, 'santiago@gmail.com', 1, 1, '2007-05-10', 10, 'Activo'),
 (17, 'Anyerli', 'Zurita', 30508566, 'anyerlidelosangeles@gmail.com', 1, 2, '2004-09-23', 12, 'Activo'),
 (23, 'Luis', 'Marcano', 30385225, 'luismarcano@gmail.com', 1, 1, '2005-04-19', NULL, 'Activo'),
-(76, 'Juan', 'Pérez', 10023456, 'juan.perez@example.com', 1, 1, '1990-01-15', NULL, 'Activo'),
+(76, 'Juan', 'Pérez', 10023456, 'juan.perez@example.com', 1, 1, '1990-01-15', NULL, 'Inactivo'),
 (77, 'María', 'Gómez', 11034567, 'maria.gomez@example.com', 2, 2, '1985-05-22', NULL, 'Activo'),
 (78, 'Carlos', 'Rodríguez', 12045678, 'carlos.rodriguez@example.com', 3, 1, '1992-03-14', 11, 'Activo'),
 (79, 'Ana', 'Martínez', 13056789, 'ana.martinez@example.com', 1, 2, '1998-07-18', NULL, 'Activo'),
-(80, 'Luis', 'Hernández', 14067890, 'luis.hernandez@example.com', 2, 1, '1987-09-25', NULL, 'Activo'),
+(80, 'Luis', 'Hernández', 14067890, 'luis.hernandez@example.com', 2, 1, '1987-09-25', NULL, 'Inactivo'),
 (81, 'Lauren', 'López', 15078901, 'laura.lopez@example.com', 3, 2, '1993-11-10', NULL, 'Activo'),
 (82, 'José', 'García', 16089012, 'jose.garcia@example.com', 1, 1, '1995-08-30', NULL, 'Activo'),
 (269, 'Oscary', 'Lozada', 15936662, 'oscary@gmail.com', 2, 2, '2007-05-08', NULL, 'Activo'),
 (270, 'Rebeca', 'Pereira', 30143120, 'rebepereira19@gmail.com', 1, 2, '2001-03-14', NULL, 'Activo'),
-(275, 'Gabriel', 'Villalba', 30123456, 'gabooooo@gmail.com', 1, 1, '2007-05-16', NULL, 'Activo');
+(275, 'Gabriel', 'Villalba', 30123456, 'gabooooo@gmail.com', 1, 1, '2007-05-16', NULL, 'Activo'),
+(276, 'Ana', 'García', 29874562, 'ana.garcia@empresa.com', 4, 2, '1985-05-15', NULL, 'Activo'),
+(277, 'Carlos', 'Martínez', 23456789, 'carlos.martinez@empresa.com', 5, 1, '1990-08-22', NULL, 'Activo'),
+(278, 'Luisa', 'Fernández', 24987532, 'luisa.fernandez@empresa.com', 6, 2, '1988-03-10', NULL, 'Activo'),
+(279, 'Pedro', 'López', 17896543, 'pedro.lopez@empresa.com', 7, 1, '1992-11-28', NULL, 'Activo'),
+(280, 'María', 'Rodríguez', 13785420, 'maria.rodriguez@empresa.com', 8, 2, '1987-07-17', NULL, 'Activo'),
+(281, 'Jorge', 'Sánchez', 17896564, 'jorge.sanchez@empresa.com', 4, 1, '1995-02-05', NULL, 'Activo'),
+(282, 'Sofía', 'Pérez', 7890123, 'sofia.perez@empresa.com', 5, 2, '1993-09-30', NULL, 'Activo'),
+(283, 'Miguel', 'Gómez', 21784563, 'miguel.gomez@empresa.com', 6, 1, '1989-04-12', NULL, 'Activo'),
+(284, 'Elena', 'Díaz', 19894543, 'elena.diaz@empresa.com', 7, 2, '1991-12-08', NULL, 'Activo'),
+(285, 'Ricardo', 'Hernández', 16784512, 'ricardo.hernandez@empresa.com', 8, 1, '1986-06-25', NULL, 'Activo');
 
 -- --------------------------------------------------------
 
@@ -446,7 +500,15 @@ INSERT INTO `procesador` (`id_procesador`, `id_equipo_informatico_procesador`, `
 (24, 10, 'Intel', 'i7 4790', 4, 3.60, 1),
 (31, 17, 'Intel', 'i7 4790', 4, 3.60, 1),
 (32, 18, 'Amd', 'Ryzen 5 5600G', 6, 4.00, 1),
-(33, 19, 'Amd', 'Ryzen 5 5600G', 6, 4.00, 1);
+(34, 20, 'AMD', 'Ryzen 5 3600', 6, 3.60, 1),
+(35, 21, 'Intel', 'Core i5-10400', 6, 2.90, 1),
+(36, 22, 'AMD', 'Ryzen 7 3700X', 8, 3.60, 1),
+(37, 23, 'Intel', 'Core i7-10700', 8, 2.90, 1),
+(38, 24, 'AMD', 'Ryzen 5 5600X', 6, 3.70, 1),
+(40, 26, 'Intel', 'Core i9-10900K', 10, 3.70, 1),
+(41, 27, 'Intel', 'Core i5-10600K', 6, 4.10, 1),
+(42, 28, 'AMD', 'Ryzen 9 5900X', 12, 3.70, 1),
+(43, 29, 'Intel', 'Core i7-10700K', 8, 3.80, 1);
 
 -- --------------------------------------------------------
 
@@ -469,12 +531,20 @@ CREATE TABLE `ram` (
 --
 
 INSERT INTO `ram` (`id_ram`, `id_equipo_informatico_ram`, `fabricante_ram`, `tipo_ram`, `capacidad_ram`, `frecuencia_ram`, `id_estado_pieza_ram`) VALUES
-(25, 17, 'Adata', 'DDR4', 8, 2600, 1),
-(26, 17, 'Corsair', 'DDR4', 8, 2600, 1),
 (27, 18, 'Samsung', 'DDR4', 8, 2800, 1),
-(28, 19, 'Samsung', 'DDR3', 8, 2400, 1),
-(29, 19, 'Adata', 'DDR3', 8, 2800, 1),
-(30, 10, 'Samsung', 'DDR4', 16, 2600, 1);
+(30, 10, 'Samsung', 'DDR4', 16, 2600, 1),
+(31, 17, 'Adata', 'DDR4', 8, 2600, 1),
+(32, 17, 'Corsair', 'DDR4', 8, 2600, 1),
+(33, 20, 'Corsair', 'DDR4', 16, 3200, 1),
+(34, 20, 'Corsair', 'DDR4', 16, 3200, 1),
+(35, 21, 'Kingston', 'DDR4', 8, 2666, 1),
+(36, 22, 'G.Skill', 'DDR4', 32, 3600, 1),
+(37, 23, 'Crucial', 'DDR4', 16, 3200, 1),
+(38, 24, 'HyperX', 'DDR4', 16, 3200, 1),
+(40, 26, 'G.Skill', 'DDR4', 64, 3600, 1),
+(41, 27, 'Corsair', 'DDR4', 32, 3200, 1),
+(42, 28, 'G.Skill', 'DDR4', 32, 3600, 1),
+(43, 29, 'Corsair', 'DDR4', 32, 3200, 1);
 
 -- --------------------------------------------------------
 
@@ -498,7 +568,7 @@ CREATE TABLE `reporte_actividades` (
 --
 
 INSERT INTO `reporte_actividades` (`id_reporte_actividades`, `codigo_reporte_actividades`, `id_usuario`, `fecha_actividad`, `fecha_reporte`, `titulo_reporte`, `contenido_reporte`, `id_tipo_reporte`) VALUES
-(89, 'CA621065', 1, '2025-05-22', '2025-05-30 16:18:34', 'Desarrollo de software', 'Ggggggggggggggggggggggggggg', 2);
+(89, 'CA621065', 1, '2025-05-22', '2025-05-30 05:00:56', 'Desarrollo de software', 'Proceso de diseño, programación y mantenimiento de aplicaciones y sistemas informáticos para resolver problemas y optimizar tareas mediante tecnología', 2);
 
 -- --------------------------------------------------------
 
@@ -525,11 +595,13 @@ CREATE TABLE `reporte_fallas` (
 --
 
 INSERT INTO `reporte_fallas` (`id_reporte_fallas`, `codigo_reporte_fallas`, `id_usuario`, `id_equipo_informatico`, `fecha_hora_reporte_fallas`, `contenido_reporte_fallas`, `id_estado_reporte_fallas`, `prioridad`, `fecha_falla`, `tecnico_asignado`, `id_tipo_falla`) VALUES
-(57, '91DA3639', 1, 10, '2025-05-20 18:49:07', 'awawa', 1, 'Alta', '2025-05-19', NULL, 1),
+(57, '91DA3639', 1, 10, '2025-05-20 18:49:07', 'awawa', 3, 'Alta', '2025-05-19', 12, 1),
 (66, '838B8157', 11, NULL, '2025-05-27 13:49:37', 'La red interna esta fallando y no permite subir archivos al servidor', 2, 'Alta', '2025-05-27', 12, 2),
-(67, '0754C344', 11, NULL, '2025-05-30 15:25:51', 'La conexion se ha caido hoy en la manana durante la jornada laboral', 2, 'Baja', '2025-05-30', 12, 2),
-(68, '7A20F906', 11, NULL, '2025-05-30 20:02:06', 'El sistema de archivos no los esta subiendo a la carpeta compartida', 1, 'Baja', '2025-05-30', NULL, 2),
-(69, '1E907DE5', 11, NULL, '2025-05-30 20:03:00', 'La impresora no imprime', 2, 'Baja', '2025-05-30', 12, 3);
+(67, '0754C344', 11, NULL, '2025-05-30 15:25:51', 'La conexion se ha caido hoy en la manana durante la jornada laboral', 2, 'Alta', '2025-05-30', 12, 2),
+(68, '7A20F906', 11, NULL, '2025-05-30 20:02:06', 'El sistema de archivos no los esta subiendo a la carpeta compartida', 2, 'Alta', '2025-05-30', 12, 2),
+(69, '1E907DE5', 11, NULL, '2025-05-30 20:03:00', 'La impresora no imprime', 2, 'Alta', '2025-05-30', 12, 3),
+(76, '54496CE7', 11, NULL, '2025-06-01 22:46:04', 'No internet\r\n', 1, 'Baja', '2025-06-01', NULL, 2),
+(78, '3C179758', 11, 10, '2025-06-01 22:49:36', 'No inicia', 3, 'Baja', '2025-06-01', 12, 1);
 
 --
 -- Disparadores `reporte_fallas`
@@ -659,7 +731,23 @@ INSERT INTO `seguimiento` (`id_seguimiento`, `id_reporte_fallas`, `accion`, `id_
 (92, 66, 'Reporte aceptado por el técnico', 12, 12, '2025-05-30 15:48:43', 2, 'Alta', NULL),
 (93, 68, 'Creación de reporte', 11, NULL, '2025-05-30 20:02:06', 1, 'Baja', NULL),
 (94, 69, 'Creación de reporte', 11, NULL, '2025-05-30 20:03:00', 1, 'Baja', NULL),
-(95, 69, 'Reporte asignado por el administrador', 1, 12, '2025-05-30 20:04:19', 2, 'Baja', NULL);
+(95, 69, 'Reporte asignado por el administrador', 1, 12, '2025-05-30 20:04:19', 2, 'Baja', NULL),
+(96, 67, 'Cambio de prioridad', NULL, 12, '2025-06-02 20:22:07', 2, 'Media', NULL),
+(97, 68, 'Cambio de prioridad', NULL, NULL, '2025-06-02 20:22:07', 1, 'Media', NULL),
+(98, 69, 'Cambio de prioridad', NULL, 12, '2025-06-02 20:22:07', 2, 'Media', NULL),
+(99, 67, 'Cambio de prioridad', NULL, 12, '2025-06-03 20:22:26', 2, 'Alta', NULL),
+(100, 68, 'Cambio de prioridad', NULL, NULL, '2025-06-03 20:22:26', 1, 'Alta', NULL),
+(101, 69, 'Cambio de prioridad', NULL, 12, '2025-06-03 20:22:26', 2, 'Alta', NULL),
+(102, 68, 'Reporte aceptado por el técnico', 12, 12, '2025-06-01 21:55:04', 2, 'Alta', NULL),
+(103, 57, 'Reporte aceptado por el técnico', 12, 12, '2025-06-01 22:03:18', 2, 'Alta', NULL),
+(104, 57, 'Reporte atendido', 12, 12, '2025-06-01 22:22:43', 3, 'Alta', 'No encendio'),
+(111, 76, 'Creación de reporte', 11, NULL, '2025-06-01 22:46:04', 1, 'Baja', NULL),
+(113, 78, 'Creación de reporte', 11, NULL, '2025-06-01 22:49:36', 1, 'Baja', NULL),
+(114, 78, 'Reporte aceptado por el técnico', 12, 12, '2025-06-01 22:54:12', 2, 'Baja', NULL),
+(115, 78, 'Reporte atendido', 12, 12, '2025-06-01 22:54:21', 3, 'Baja', 'Murio'),
+(116, 78, 'Reporte atendido', 12, 12, '2025-06-01 22:57:49', 3, 'Baja', 'Murio'),
+(117, 78, 'Reporte atendido', 12, 12, '2025-06-01 22:58:33', 3, 'Baja', 'Murio'),
+(118, 78, 'Reporte atendido', 12, 12, '2025-06-01 23:07:07', 3, 'Baja', 'Murio');
 
 -- --------------------------------------------------------
 
@@ -701,7 +789,11 @@ INSERT INTO `tipo_actividad` (`id_tipo_actividad`, `tipo_actividad`) VALUES
 (3, 'Apoyo'),
 (4, 'Configuración'),
 (5, 'Actualización'),
-(6, 'Instalación');
+(6, 'Instalación'),
+(7, 'Capacitación'),
+(8, 'Reunión'),
+(9, 'Desarrollo'),
+(10, 'Pruebas');
 
 -- --------------------------------------------------------
 
@@ -740,7 +832,7 @@ CREATE TABLE `usuario` (
 --
 
 INSERT INTO `usuario` (`id_usuario`, `password`, `id_rol`) VALUES
-(1, '$2y$10$POIYCiDptQy45VWTAApJVeWkYthozSHlGBaJQ0aeaCCtW6jaXvdNe', 1),
+(1, '$2y$10$ozq7tiYnV.2dmMkkFd4R1ufcFP23o0NJ/DxoaunHPN7ndMoFmrtyK', 1),
 (10, '$2y$10$wWOe1FwHzJCT2LV90C95ue57n1DvUDW6NKsXIf.QUi9DoSY/NtXwO', 4),
 (11, '$2y$10$jccCwISlz5ognXzwaH.iI.Y6k9FvPneGjKKnIYbkIc3YpdO3p/GkC', 2),
 (12, '$2y$10$quhDQN59uSvhKCvLdpFSP.6eig.FI1dRzdraopLRXBQMET5jK1QM.', 3);
@@ -762,9 +854,9 @@ CREATE TABLE `usuario_pregunta` (
 --
 
 INSERT INTO `usuario_pregunta` (`id_usuario`, `id_pregunta`, `respuesta`) VALUES
-(1, 2, '$2y$10$HzFqtP458A9mZS.p/7O.O.j04XT/Ga/d1uDIp4EkyxPo6J1UgwvqC'),
-(1, 3, '$2y$10$wfQ0Pn.PVwbZofwhXNFPKuPLjUQtrXYmG5VqLHdn/v74h6FLFl9VG'),
-(1, 7, '$2y$10$M.FkjBs0mKr.NM7NXUiOX.U6wyHQ9LVL5tQKlDfztAtmWgQn9.0Tq'),
+(1, 1, '$2y$10$hTk9M6Vk8Uya/FtUGcJc7u4GjI0vYJPqA4zmCp14XvhFFuewmplPq'),
+(1, 6, '$2y$10$YY0LtFvzZ4qG1MjmPDFbDuYgYAoA9HlI5mATTGgFLyCF70UXlOSw2'),
+(1, 10, '$2y$10$qKrATZhOWoRUxoQszTHSvuEcgV2bkaN9SYJy88O3a3sItAhCeWSRG'),
 (10, 2, '$2y$10$eHk4bYKntCtsrET5wOgEsOL5hO6PponKObBrm5xdnRVvcJ6GcrR7S'),
 (10, 8, '$2y$10$1iLdkztdCkEndG8pj1Y2quYgXKX4Wb9ar/0m2Hw7gM6f20e.Vkt.G'),
 (10, 10, '$2y$10$qPkOTHzffxJHi6a7c4NceOhFV8HrFg1MUU.kyyHxBlrJXauRkPx8u'),
@@ -986,19 +1078,19 @@ ALTER TABLE `usuario_pregunta`
 -- AUTO_INCREMENT de la tabla `almacenamiento`
 --
 ALTER TABLE `almacenamiento`
-  MODIFY `id_almacenamiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `id_almacenamiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT de la tabla `departamento`
 --
 ALTER TABLE `departamento`
-  MODIFY `id_departamento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_departamento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT de la tabla `equipo_informatico`
 --
 ALTER TABLE `equipo_informatico`
-  MODIFY `id_equipo_informatico` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id_equipo_informatico` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT de la tabla `estado_equipo_informatico`
@@ -1022,25 +1114,25 @@ ALTER TABLE `estado_reporte_fallas`
 -- AUTO_INCREMENT de la tabla `evidencia_reporte_actividades`
 --
 ALTER TABLE `evidencia_reporte_actividades`
-  MODIFY `id_evidencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
+  MODIFY `id_evidencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT de la tabla `fuente_poder`
 --
 ALTER TABLE `fuente_poder`
-  MODIFY `id_fuente_poder` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id_fuente_poder` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT de la tabla `motherboard`
 --
 ALTER TABLE `motherboard`
-  MODIFY `id_motherboard` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id_motherboard` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT de la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT de la tabla `permisos`
@@ -1052,7 +1144,7 @@ ALTER TABLE `permisos`
 -- AUTO_INCREMENT de la tabla `persona`
 --
 ALTER TABLE `persona`
-  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=276;
+  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=286;
 
 --
 -- AUTO_INCREMENT de la tabla `preguntas_seguridad`
@@ -1064,13 +1156,13 @@ ALTER TABLE `preguntas_seguridad`
 -- AUTO_INCREMENT de la tabla `procesador`
 --
 ALTER TABLE `procesador`
-  MODIFY `id_procesador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id_procesador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT de la tabla `ram`
 --
 ALTER TABLE `ram`
-  MODIFY `id_ram` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id_ram` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT de la tabla `reporte_actividades`
@@ -1082,7 +1174,7 @@ ALTER TABLE `reporte_actividades`
 -- AUTO_INCREMENT de la tabla `reporte_fallas`
 --
 ALTER TABLE `reporte_fallas`
-  MODIFY `id_reporte_fallas` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id_reporte_fallas` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=79;
 
 --
 -- AUTO_INCREMENT de la tabla `rol`
@@ -1094,7 +1186,7 @@ ALTER TABLE `rol`
 -- AUTO_INCREMENT de la tabla `seguimiento`
 --
 ALTER TABLE `seguimiento`
-  MODIFY `id_seguimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
+  MODIFY `id_seguimiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
 
 --
 -- AUTO_INCREMENT de la tabla `sexo`
@@ -1106,7 +1198,7 @@ ALTER TABLE `sexo`
 -- AUTO_INCREMENT de la tabla `tipo_actividad`
 --
 ALTER TABLE `tipo_actividad`
-  MODIFY `id_tipo_actividad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_tipo_actividad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_falla`

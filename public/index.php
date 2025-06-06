@@ -194,7 +194,7 @@ if ($viewName === "pdf") {
 
                                 <?php
                                 require_once $view;
-                                if (in_array($viewName, ['employeeTable', 'pcTable', 'faultReportTable', 'userTable', 'activitiesReportTable'])) {
+                                if (in_array($viewName, ['employeeTable', 'pcTable', 'faultReportTable', 'userTable', 'activitiesReportTable', 'myFaultReports'])) {
                                     echo '<script src="./js/datatableConfig.js"></script>';
                                     echo '<script src="./js/dropzone.min.js"></script>';
                                     echo '<script src="./js/modal.js"></script>';

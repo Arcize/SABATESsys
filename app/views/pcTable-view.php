@@ -22,6 +22,9 @@ $statePcController = $statePcController->listStates();
     <div class="table-heading">
         <h3 class="h3">Datos de Equipos Informáticos</h3>
         <div class="table-actions">
+            <a href="index.php?view=pcDeincorporatedTable">
+                <button type="button" class="table-button dark-button">Ver Desincorporados</button>
+            </a>
             <button class="table-button open-modal" data-target-modal="pcModal" data-fetch="false">Añadir Equipo</button>
         </div>
     </div>
@@ -29,14 +32,15 @@ $statePcController = $statePcController->listStates();
         <thead class="table-head">
             <tr>
                 <th scope="col">N°</th>
+                <th scope="col">Código</th>
                 <th scope="col">Fabricante</th>
                 <th scope="col">Estado</th>
                 <th scope="col">Asignado a</th>
                 <th scope="col">Procesador</th>
                 <th scope="col">Motherboard</th>
                 <th scope="col">Fuente</th>
-                <th scope="col">RAM</th>
-                <th scope="col">Almacenamiento</th>
+                <!-- <th scope="col">RAM</th>
+                <th scope="col">Almacenamiento</th> -->
                 <th scope="col">Acciones</th>
             </tr>
         </thead>
@@ -286,7 +290,7 @@ $statePcController = $statePcController->listStates();
             <div class="modal-body">
                 <input type="hidden" id="id_equipo_informatico" name="id_equipo_informatico">
                 <div class="inputGroup">
-                    <label for="reassign_cedula">Nueva cédula de la persona:</label>
+                    <label for="reassign_cedula">Cédula de la persona:</label>
                     <input type="text" id="reassign_cedula" name="cedula" class="input ci" required>
                 </div>
             </div>
@@ -298,7 +302,11 @@ $statePcController = $statePcController->listStates();
     </div>
 </div>
 <script>
+    window.userIsAdmin = <?php echo (isset($_SESSION['role']) && $_SESSION['role'] == 1) ? 'true' : 'false'; ?>;
+
     $(document).ready(function() {
+        var urlParams = new URLSearchParams(window.location.search);
+        var estado = urlParams.get('estado');
         $('#pcTable').DataTable({
             ...commonDatatableConfig, // Configuración común
             buttons: [{
@@ -308,14 +316,14 @@ $statePcController = $statePcController->listStates();
                 customize: function(doc) {
                     // Logo igual que en faultReportTable
                     const logoBase64 = '<?php
-                        $imagenPath = "./img/banner_SABATES.png";
-                        if (file_exists($imagenPath)) {
-                            $imagenData = base64_encode(file_get_contents($imagenPath));
-                            echo 'data:image/png;base64,' . $imagenData;
-                        } else {
-                            echo '';
-                        }
-                    ?>';
+                                        $imagenPath = "./img/banner_SABATES.png";
+                                        if (file_exists($imagenPath)) {
+                                            $imagenData = base64_encode(file_get_contents($imagenPath));
+                                            echo 'data:image/png;base64,' . $imagenData;
+                                        } else {
+                                            echo '';
+                                        }
+                                        ?>';
                     doc.header = function() {
                         return {
                             image: logoBase64,
@@ -368,10 +376,26 @@ $statePcController = $statePcController->listStates();
                     const anioActual = new Date().getFullYear();
                     doc.footer = function(currentPage, pageCount) {
                         return {
-                            columns: [
-                                { text: 'SABATES ' + anioActual, alignment: 'left', margin: [40, 0, 0, 0], fontSize: 9, color: '#000000' },
-                                { text: 'Reporte Generado el: ' + fechaHora, alignment: 'center', fontSize: 9, color: '#000000' },
-                                { text: 'Página ' + currentPage.toString() + ' de ' + pageCount, alignment: 'right', margin: [0, 0, 40, 0], fontSize: 9, color: '#000000' }
+                            columns: [{
+                                    text: 'SABATES ' + anioActual,
+                                    alignment: 'left',
+                                    margin: [40, 0, 0, 0],
+                                    fontSize: 9,
+                                    color: '#000000'
+                                },
+                                {
+                                    text: 'Reporte Generado el: ' + fechaHora,
+                                    alignment: 'center',
+                                    fontSize: 9,
+                                    color: '#000000'
+                                },
+                                {
+                                    text: 'Página ' + currentPage.toString() + ' de ' + pageCount,
+                                    alignment: 'right',
+                                    margin: [0, 0, 40, 0],
+                                    fontSize: 9,
+                                    color: '#000000'
+                                }
                             ],
                             margin: [0, 0, 0, 10]
                         };
@@ -393,10 +417,24 @@ $statePcController = $statePcController->listStates();
                     },
                 },
                 {
+                    data: 'codigo_equipo'
+                },
+                {
                     data: 'fabricante_equipo_informatico'
                 },
                 {
-                    data: 'estado_equipo_informatico'
+                    data: 'estado_equipo_informatico',
+                    render: function(data, type, row) {
+                        if (data === 'Desincorporado') {
+                            return `<span class="states dark-button">${data}</span>`;
+                        } else if (data === 'En reparación') {
+                            return `<span class="states yellow-button">${data}</span>`;
+                        } else if (data === 'Operativo') {
+                            return `<span class="states green-button">${data}</span>`;
+                        } else if (data === 'Averiado') {
+                            return `<span class="states red-button">${data}</span>`;
+                        }
+                    }
                 },
                 {
                     data: 'nombre_completo',
@@ -416,12 +454,12 @@ $statePcController = $statePcController->listStates();
                 {
                     data: 'fuente'
                 },
-                {
-                    data: 'capacidad_ram_total'
-                },
-                {
-                    data: 'almacenamiento_total'
-                },
+                // {
+                //     data: 'capacidad_ram_total'
+                // },
+                // {
+                //     data: 'almacenamiento_total'
+                // },
                 {
                     data: null,
                     render: function(data, type, row) {
@@ -438,13 +476,27 @@ $statePcController = $statePcController->listStates();
                             actions += `<button class="crud-button crud-option reassign-pc-btn open-modal" data-target-modal="reassignPcModal" data-id="${data.id_equipo_informatico}">Reasignar equipo</button>`;
                             actions += `<button class="crud-button crud-option unassign-pc-btn" data-id="${data.id_equipo_informatico}">Desasignar equipo</button>`;
                         }
+                        // Botón Desincorporar (solo admin y si NO está desincorporado)
+                        if (window.userIsAdmin && row.estado_equipo_informatico !== 'Desincorporado') {
+                            actions += `<button class="crud-button crud-option deincorporate-pc-btn" data-id="${data.id_equipo_informatico}">Desincorporar equipo</button>`;
+                        }
+                        // Botón Reincorporar (solo admin y si SÍ está desincorporado)
+                        if (window.userIsAdmin && row.estado_equipo_informatico === 'Desincorporado') {
+                            actions += `<button class="crud-button crud-option reincorporate-pc-btn" data-id="${data.id_equipo_informatico}">Reincorporar equipo</button>`;
+                        }
                         // Botón Generar Reporte
                         actions += `<button class="crud-button crud-option generate-pc-report-btn" data-row='${JSON.stringify(data)}'>Generar Reporte</button>`;
                         actions += `</div></div>`;
                         return actions;
                     }
                 }
-            ]
+            ],
+            initComplete: function() {
+                // Aplicar el filtro si el parámetro 'estado' existe
+                if (estado) {
+                    this.api().search(estado).draw();
+                }
+            }
         });
     });
 
@@ -476,6 +528,88 @@ $statePcController = $statePcController->listStates();
         $('#reassignPcModal input[name="id_equipo_informatico"]').val(id);
     });
 
+    // Acción única de desincorporar equipo (solo admin)
+    $(document).on('click', '.deincorporate-pc-btn', function(e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        if (window.Swal) {
+            Swal.fire({
+                title: '¿Está seguro?',
+                text: '¿Desea desincorporar este equipo? Esta acción cambiará su estado a "Desincorporado".',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, desincorporar',
+                cancelButtonText: 'Cancelar',
+                customClass: {
+                    popup: 'swal2-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('index.php?view=pc&action=deincorporate_pc', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: `id_equipo_informatico=${encodeURIComponent(id)}`
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire('Desincorporado', data.message, 'success');
+                                $('#pcTable').DataTable().ajax.reload(null, false);
+                            } else {
+                                Swal.fire('Error', data.message || 'No se pudo desincorporar.', 'error');
+                            }
+                        })
+                        .catch(() => {
+                            Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
+                        });
+                }
+            });
+        }
+    });
+
+    // Acción para reincorporar equipo (solo admin)
+    $(document).on('click', '.reincorporate-pc-btn', function(e) {
+        e.preventDefault();
+        const id = $(this).data('id');
+        if (window.Swal) {
+            Swal.fire({
+                title: '¿Está seguro?',
+                text: '¿Desea reincorporar este equipo? Esta acción cambiará su estado a "Operativo".',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, reincorporar',
+                cancelButtonText: 'Cancelar',
+                customClass: {
+                    popup: 'swal2-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch('index.php?view=pc&action=reincorporate_pc', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            },
+                            body: `id_equipo_informatico=${encodeURIComponent(id)}`
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                Swal.fire('Reincorporado', data.message, 'success');
+                                $('#pcTable').DataTable().ajax.reload(null, false);
+                            } else {
+                                Swal.fire('Error', data.message || 'No se pudo reincorporar.', 'error');
+                            }
+                        })
+                        .catch(() => {
+                            Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
+                        });
+                }
+            });
+        }
+    });
+
     // Solo deja este script para el botón "Generar Reporte" (no lo dupliques):
     $(document).ready(function() {
         document.getElementById('pcTable').addEventListener('click', function(e) {
@@ -485,39 +619,49 @@ $statePcController = $statePcController->listStates();
                 const rowData = JSON.parse(btnReport.getAttribute('data-row'));
                 // Petición al backend para obtener los datos completos del equipo
                 fetch('index.php?view=pc&action=generateReport', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: 'id_equipo_informatico=' + encodeURIComponent(rowData.id_equipo_informatico)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data && !data.error) {
-                        // Crear formulario oculto y enviarlo a pcV-view.php
-                        const form = document.createElement('form');
-                        form.method = 'POST';
-                        form.action = 'index.php?view=pcV'; // Usa el nombre correcto de la vista aquí
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'row';
-                        input.value = JSON.stringify(data);
-                        form.appendChild(input);
-                        document.body.appendChild(form);
-                        form.submit();
-                    } else {
-                        if (window.Swal) {
-                            Swal.fire({ icon: 'error', title: 'Error', text: data.error || 'No se pudo generar el reporte.' });
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: 'id_equipo_informatico=' + encodeURIComponent(rowData.id_equipo_informatico)
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && !data.error) {
+                            // Crear formulario oculto y enviarlo a pcV-view.php
+                            const form = document.createElement('form');
+                            form.method = 'POST';
+                            form.action = 'index.php?view=pcV'; // Usa el nombre correcto de la vista aquí
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = 'row';
+                            input.value = JSON.stringify(data);
+                            form.appendChild(input);
+                            document.body.appendChild(form);
+                            form.submit();
                         } else {
-                            alert(data.error || 'No se pudo generar el reporte.');
+                            if (window.Swal) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: data.error || 'No se pudo generar el reporte.'
+                                });
+                            } else {
+                                alert(data.error || 'No se pudo generar el reporte.');
+                            }
                         }
-                    }
-                })
-                .catch(error => {
-                    if (window.Swal) {
-                        Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo generar el reporte.' });
-                    } else {
-                        alert('No se pudo generar el reporte.');
-                    }
-                });
+                    })
+                    .catch(error => {
+                        if (window.Swal) {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'No se pudo generar el reporte.'
+                            });
+                        } else {
+                            alert('No se pudo generar el reporte.');
+                        }
+                    });
             }
         });
     });

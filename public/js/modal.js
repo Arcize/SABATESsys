@@ -400,6 +400,30 @@ async function handleFormResponse(response, form, sentBtn) {
   console.log("Respuesta del servidor:", data);
 
   if (data.success) {
+    // --- CAMBIO DE ESTADO DE EQUIPO SI ES ATENDER REPORTE ---
+    if (form.id === "attendReportForm") {
+      const tipoFalla = form.querySelector('#attend_tipo_falla')?.value;
+      const repairDone = form.querySelector('#repair_done')?.value;
+      const idEquipo = form.querySelector('#attend_id_equipo_informatico')?.value;
+      if (tipoFalla == 1 && idEquipo) {
+        let url = '';
+        let params = { id_equipo: idEquipo };
+        if (repairDone === 'no') {
+          url = 'index.php?view=pc&action=set_broken';
+        } else if (repairDone === 'si') {
+          url = 'index.php?view=pc&action=set_operational';
+        }
+        if (url) {
+          // No await, solo dispara el cambio de estado
+          fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(params)
+          });
+        }
+      }
+    }
+
     const modal = form.closest(".modal-box");
     const overlay = modal ? modal.closest(".overlay-modal") : null;
 

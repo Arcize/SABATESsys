@@ -91,13 +91,13 @@ class EmployeeModel
     public function readPage()
     {
         $sql = "SELECT p.*, d.nombre_departamento, s.sexo
-                    FROM persona p
-                    JOIN departamento d ON p.id_departamento = d.id_departamento
-                    JOIN sexo s ON p.id_sexo = s.id_sexo
-                    ORDER BY id_persona";
+                FROM persona p
+                JOIN departamento d ON p.id_departamento = d.id_departamento
+                JOIN sexo s ON p.id_sexo = s.id_sexo
+                WHERE p.estado_empleado = 'Activo'
+                ORDER BY id_persona";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
-
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
@@ -262,6 +262,18 @@ class EmployeeModel
                 FROM usuario u
                 JOIN persona p ON u.id_usuario = p.id_usuario
                 WHERE u.id_rol = 3";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+    public function readInactive()
+    {
+        $sql = "SELECT p.*, d.nombre_departamento, s.sexo
+                FROM persona p
+                JOIN departamento d ON p.id_departamento = d.id_departamento
+                JOIN sexo s ON p.id_sexo = s.id_sexo
+                WHERE p.estado_empleado = 'Inactivo'
+                ORDER BY id_persona DESC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);

@@ -21,7 +21,7 @@ const commonDatatableConfig = {
             ],
 
   info: false,
-  ordering: false,
+  ordering: true,
   lengthMenu: [10, 15, 20, 25],
   language: {
     emptyTable: "", // Dejarlo vacío evita el mensaje por defecto

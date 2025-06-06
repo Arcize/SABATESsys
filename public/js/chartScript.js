@@ -45,9 +45,9 @@ const defaultOptions = {
   plugins: {
     title: {
       display: true,
-      font: { size: 20 },
+      font: { size: 18 },
       color: "#0f2c64",
-      padding: { bottom: 20 },
+      padding: { bottom: 12 },
     },
     legend: { position: "bottom" },
     tooltip: { enabled: true },
@@ -67,7 +67,7 @@ const centerTextPlugin = {
       );
       const percentage =
         total > 0
-          ? Math.round((chart.data.datasets[0].data[1] / total) * 100)
+          ? Math.round((chart.data.datasets[0].data[0] / total) * 100)
           : 0;
 
       ctx.save();
@@ -113,18 +113,73 @@ function updateOrCreateChart(chartId, chartData) {
       const index = elements[0].index;
       const label = chart.data.labels[index];
 
-      // Redirigir según el gráfico y el label seleccionado
-      if (chartId === "empleados") {
-        // Ejemplo: filtro por estado de empleados
-        window.location.href = `index.php?view=userTable&estado=${encodeURIComponent(label)}`;
-      } else if (chartId === "roles") {
-        // Ejemplo: filtro por rol
-        window.location.href = `index.php?view=userTable&rol=${encodeURIComponent(label)}`;
-      } else if (chartId === "reportes_fallas") {
-        // Ejemplo: filtro por día de la semana
-        window.location.href = `index.php?view=userTable&dia=${encodeURIComponent(label)}`;
+      // Mapeo de redirección por gráfica
+      const chartRedirects = {
+        empleados: {
+          view: 'employeeTable',
+          param: 'estatus',
+          normalize: (l) => l === 'Registrados' ? 'Registrado' : l
+        },
+        roles: {
+          view: 'userTable',
+          param: 'rol',
+          normalize: (l) => l
+        },
+        reportes_fallas: {
+          view: 'faultReportTable',
+          param: 'dia',
+          normalize: (l) => l
+        },
+        reportes_fallas_mensual: {
+          view: 'faultReportTable',
+          param: 'estado',
+          normalize: (l, chart, elements, chartData) => {
+            const datasetIndex = elements[0].datasetIndex;
+            return chart.data.datasets[datasetIndex].label;
+          },
+          extraParams: (index, chartData) => {
+            const ranges = chartData.ranges || [];
+            const range = ranges[index] || {};
+            if (range.start && range.end) {
+              return `&fecha_inicio=${encodeURIComponent(range.start)}&fecha_fin=${encodeURIComponent(range.end)}`;
+            }
+            return '';
+          }
+        },
+        fallas_por_tipo: {
+          view: 'faultReportTable',
+          param: 'tipo',
+          normalize: (l) => l
+        },
+        estado_equipos: {
+          view: 'pcTable',
+          param: 'estado',
+          normalize: (l) => l
+        },
+        prioridades_fallas: {
+          view: 'faultReportTable',
+          param: 'prioridad',
+          normalize: (l) => l
+        },
+        actividades_por_tipo: {
+          view: 'activitiesReportTable',
+          param: 'tipo_actividad',
+          normalize: (l) => l
+        }
+      };
+
+      const redirect = chartRedirects[chartId];
+      if (redirect) {
+        let filtro = redirect.normalize(label, chart, elements, chartData);
+        let url = `index.php?view=${redirect.view}&${redirect.param}=${encodeURIComponent(filtro)}`;
+        if (redirect.extraParams) {
+          url += redirect.extraParams(index, chartData);
+        }
+        window.location.href = url;
+      } else {
+        // Por defecto, redirigir a una tabla genérica
+        window.location.href = `index.php?view=tabla&filtro=${encodeURIComponent(label)}`;
       }
-      // Agrega más condiciones según tus necesidades
     }
   };
 
@@ -150,17 +205,20 @@ function updateOrCreateChart(chartId, chartData) {
           {
             data: chartData.data,
             backgroundColor: chartData.backgroundColor || chartColors,
+            borderColor: chartData.borderColor,
+            fill: chartData.fill
           },
         ],
       },
       options: {
         ...defaultOptions,
+        indexAxis: chartData.horizontal ? 'y' : 'x', // Hacer horizontal si corresponde
         showCenterText: chartData.showCenterText,
         plugins: {
           ...defaultOptions.plugins,
           title: { ...defaultOptions.plugins.title, text: chartData.title },
           legend: {
-            display: chartData.type !== "bar" || !!chartData.datasets,
+            display: chartData.legendDisplay !== undefined ? chartData.legendDisplay : (chartData.type !== "bar" || !!chartData.datasets),
             position: "bottom"
           },
         },

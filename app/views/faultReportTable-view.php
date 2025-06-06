@@ -119,6 +119,8 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
         </div>
         <form id="attendReportForm" action="index.php?view=faultReport&action=attend_report" method="POST">
             <div class="modal-body">
+                <input type="hidden" id="attend_report_id" name="id_reporte_fallas">
+                <input type="hidden" id="attend_id_equipo_informatico" name="id_equipo_informatico"><!-- NUEVO -->
                 <table class="details-table attend-details-table">
                     <tr>
                         <th class="details-label">Código</th>
@@ -129,6 +131,16 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
                         <td class="details-value"><span id="attend_fecha_reporte"></span></td>
                     </tr>
                 </table>
+                <!-- Campo oculto para saber si es tipo equipo -->
+                <input type="hidden" id="attend_tipo_falla" name="tipo_falla">
+                <div id="repair-question-group" class="inputGroup" style="display:none;">
+                    <label for="repair_done">¿Se llevó a cabo la reparación?</label>
+                    <select id="repair_done" name="repair_done" class="input">
+                        <option value="">Seleccione</option>
+                        <option value="si">Sí</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
                 <div class="inputGroup textArea">
                     <label for="attend_observacion">Observación:</label>
                     <textarea id="attend_observacion" name="observacion" required></textarea>
@@ -166,120 +178,126 @@ $logoBase64 = 'data:image/png;base64,' . $imagenData;
 
 <!-- Modal para asignar técnico (solo admin) -->
 <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 1): ?>
-<div class="overlay-modal close-modal" data-modal-id="assignTechnicianOverlay">
-    <div class="modal-box" id="assignTechnicianModal" data-modal-id="assignTechnicianModal">
-        <div class="modal-header">
-            <h3 class="h3">Asignar Técnico</h3>
-        </div>
-        <form id="assignTechnicianForm" action="index.php?view=faultReport&action=assign_technician" method="POST">
-            <div class="modal-body">
-                <input type="hidden" id="assign_report_id" name="report_id">
-                <div class="inputGroup">
-                    <label for="tecnico_select">Selecciona un técnico:</label>
-                    <select id="tecnico_select" name="tecnico_id" required class="input">
-                        <option value="">Seleccione</option>
-                        <!-- Opciones se llenan por JS -->
-                    </select>
+    <div class="overlay-modal close-modal" data-modal-id="assignTechnicianOverlay">
+        <div class="modal-box" id="assignTechnicianModal" data-modal-id="assignTechnicianModal">
+            <div class="modal-header">
+                <h3 class="h3">Asignar Técnico</h3>
+            </div>
+            <form id="assignTechnicianForm" action="index.php?view=faultReport&action=assign_technician" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" id="assign_report_id" name="report_id">
+                    <div class="inputGroup">
+                        <label for="tecnico_select">Selecciona un técnico:</label>
+                        <select id="tecnico_select" name="tecnico_id" required class="input">
+                            <option value="">Seleccione</option>
+                            <!-- Opciones se llenan por JS -->
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-button close-modal" type="button">Cancelar</button>
-                <button class="modal-button sentBtn" type="submit">Asignar</button>
-            </div>
-        </form>
+                <div class="modal-footer">
+                    <button class="modal-button close-modal" type="button">Cancelar</button>
+                    <button class="modal-button sentBtn" type="submit">Asignar</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
-<!-- Modal para invalidar reporte (solo admin) -->
-<div class="overlay-modal close-modal" data-modal-id="invalidateReportOverlay">
-    <div class="modal-box" id="invalidateReportModal" data-modal-id="invalidateReportModal">
-        <div class="modal-header">
-            <h3 class="h3">Invalidar Reporte de Falla</h3>
+    <!-- Modal para invalidar reporte (solo admin) -->
+    <div class="overlay-modal close-modal" data-modal-id="invalidateReportOverlay">
+        <div class="modal-box" id="invalidateReportModal" data-modal-id="invalidateReportModal">
+            <div class="modal-header">
+                <h3 class="h3">Invalidar Reporte de Falla</h3>
+            </div>
+            <form id="invalidateReportForm" action="index.php?view=faultReport&action=invalidate_report" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" id="invalidate_report_id" name="id_reporte_fallas">
+                    <div class="inputGroup">
+                        <label for="invalid_reason">Motivo de invalidación</label>
+                        <select id="invalid_reason" name="invalid_reason" class="input" required>
+                            <option value="">Seleccione</option>
+                            <option value="Duplicidad">Duplicidad</option>
+                            <option value="Inconsistencia">Inconsistencia</option>
+                        </select>
+                    </div>
+                    <div class="inputGroup textArea">
+                        <label for="invalid_observacion">Observación (opcional):</label>
+                        <textarea id="invalid_observacion" name="invalid_observacion"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-button close-modal" type="button">Cancelar</button>
+                    <button class="modal-button sentBtn" type="submit">Invalidar</button>
+                </div>
+            </form>
         </div>
-        <form id="invalidateReportForm" action="index.php?view=faultReport&action=invalidate_report" method="POST">
-            <div class="modal-body">
-                <input type="hidden" id="invalidate_report_id" name="id_reporte_fallas">
-                <div class="inputGroup">
-                    <label for="invalid_reason">Motivo de invalidación</label>
-                    <select id="invalid_reason" name="invalid_reason" class="input" required>
-                        <option value="">Seleccione</option>
-                        <option value="Duplicidad">Duplicidad</option>
-                        <option value="Inconsistencia">Inconsistencia</option>
-                    </select>
-                </div>
-                <div class="inputGroup textArea">
-                    <label for="invalid_observacion">Observación (opcional):</label>
-                    <textarea id="invalid_observacion" name="invalid_observacion"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-button close-modal" type="button">Cancelar</button>
-                <button class="modal-button sentBtn" type="submit">Invalidar</button>
-            </div>
-        </form>
     </div>
-</div>
 <?php endif; ?>
 <script>
-$(document).ready(function() {
-    // --- Llenar select de técnicos dinámicamente ---
-    function cargarTecnicos() {
-        $.get('index.php?view=employee&action=get_technicians', function(data) {
-            var select = $('#tecnico_select');
-            select.empty();
-            select.append('<option value="">Seleccione</option>');
-            if (Array.isArray(data)) {
-                data.forEach(function(tecnico) {
-                    select.append('<option value="' + tecnico.id_usuario + '">' + tecnico.nombre + '</option>');
-                });
-            }
-        }, 'json');
+    // Registrar el formato de fecha para el ordenamiento correcto en DataTables
+    if ($.fn.dataTable && $.fn.dataTable.moment) {
+        $.fn.dataTable.moment('DD/MM/YYYY hh:mm A');
     }
+</script>
+<script>
+    $(document).ready(function() {
+        // --- Llenar select de técnicos dinámicamente ---
+        function cargarTecnicos() {
+            $.get('index.php?view=employee&action=get_technicians', function(data) {
+                var select = $('#tecnico_select');
+                select.empty();
+                select.append('<option value="">Seleccione</option>');
+                if (Array.isArray(data)) {
+                    data.forEach(function(tecnico) {
+                        select.append('<option value="' + tecnico.id_usuario + '">' + tecnico.nombre + '</option>');
+                    });
+                }
+            }, 'json');
+        }
 
-    // Solo permitir asignar si no hay técnico asignado
-    $(document).on('click', '.assign-technician-btn.open-modal', function(e) {
-        const reportId = $(this).data('report-id');
-        // Obtener datos de la fila
-        const rowData = $('#faultReportTable').DataTable().row($(this).closest('tr')).data();
-        if (rowData && rowData.tecnico_asignado) {
-            Swal.fire({
-                icon: 'info',
-                title: 'Ya hay un técnico asignado',
-                text: 'No se puede reasignar un técnico a este reporte.'
-            });
-            e.stopImmediatePropagation();
-            return false;
-        }
-        $('#assign_report_id').val(reportId);
-        cargarTecnicos();
-    });
+        // Solo permitir asignar si no hay técnico asignado
+        $(document).on('click', '.assign-technician-btn.open-modal', function(e) {
+            const reportId = $(this).data('report-id');
+            // Obtener datos de la fila
+            const rowData = $('#faultReportTable').DataTable().row($(this).closest('tr')).data();
+            if (rowData && rowData.tecnico_asignado) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Ya hay un técnico asignado',
+                    text: 'No se puede reasignar un técnico a este reporte.'
+                });
+                e.stopImmediatePropagation();
+                return false;
+            }
+            $('#assign_report_id').val(reportId);
+            cargarTecnicos();
+        });
 
-    // Botón para abrir modal de invalidar (solo admin)
-    $(document).on('click', '.invalidate-report-btn', function(e) {
-        const reportId = $(this).data('report-id');
-        // Buscar en la fila si ya tiene técnico asignado
-        const rowData = $('#faultReportTable').DataTable().row($(this).closest('tr')).data();
-        if (rowData && rowData.tecnico_asignado) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            Swal.fire({
-                icon: 'info',
-                title: 'No permitido',
-                text: 'No se puede invalidar un reporte que ya tiene un técnico asignado.'
-            });
-            return false;
-        }
-        $('#invalidate_report_id').val(reportId);
-        // Solo aquí abrimos la modal manualmente si pasa la validación
-        const overlay = document.querySelector('[data-modal-id="invalidateReportOverlay"]');
-        const modal = document.getElementById('invalidateReportModal');
-        if (overlay && modal) {
-            overlay.classList.add('overlay-active', 'overlay-opening');
-            modal.classList.add('modal-active', 'modal-opening');
-            overlay.style.display = '';
-        }
+        // Botón para abrir modal de invalidar (solo admin)
+        $(document).on('click', '.invalidate-report-btn', function(e) {
+            const reportId = $(this).data('report-id');
+            // Buscar en la fila si ya tiene técnico asignado
+            const rowData = $('#faultReportTable').DataTable().row($(this).closest('tr')).data();
+            if (rowData && rowData.tecnico_asignado) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                Swal.fire({
+                    icon: 'info',
+                    title: 'No permitido',
+                    text: 'No se puede invalidar un reporte que ya tiene un técnico asignado.'
+                });
+                return false;
+            }
+            $('#invalidate_report_id').val(reportId);
+            // Solo aquí abrimos la modal manualmente si pasa la validación
+            const overlay = document.querySelector('[data-modal-id="invalidateReportOverlay"]');
+            const modal = document.getElementById('invalidateReportModal');
+            if (overlay && modal) {
+                overlay.classList.add('overlay-active', 'overlay-opening');
+                modal.classList.add('modal-active', 'modal-opening');
+                overlay.style.display = '';
+            }
+        });
     });
-});
 </script>
 
 <style>
@@ -288,12 +306,14 @@ $(document).ready(function() {
         max-width: 420px;
         margin: 0 auto;
     }
+
     .details-modal-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 100%;
     }
+
     .details-code {
         font-weight: bold;
         font-size: 1.1em;
@@ -301,28 +321,34 @@ $(document).ready(function() {
         text-align: center;
         width: 100%;
     }
+
     .details-code-label {
         font-weight: normal;
     }
+
     .details-table {
         width: 100%;
         border-collapse: collapse;
     }
+
     .details-table th.details-label,
     .details-table td.details-value {
         text-align: left;
         padding: 8px 10px;
         vertical-align: top;
     }
+
     .details-table th.details-label {
         font-weight: bold;
         width: 38%;
         background: #f5f5f5;
     }
+
     .details-table td.details-value {
         width: 62%;
         background: #fff;
     }
+
     .details-description-title {
         font-weight: bold;
         margin-bottom: 4px;
@@ -330,6 +356,7 @@ $(document).ready(function() {
         text-align: left;
         width: 100%;
     }
+
     .details-description-content {
         width: 100%;
         min-height: 60px;
@@ -344,11 +371,13 @@ $(document).ready(function() {
         box-sizing: border-box;
         text-align: left;
     }
+
     .details-error {
         color: red;
         text-align: center;
         padding: 1em;
     }
+
     .attend-info-row {
         display: flex;
         flex-direction: column;
@@ -356,14 +385,17 @@ $(document).ready(function() {
         gap: 24px;
         margin-bottom: 12px;
     }
+
     .attend-info-item {
         display: flex;
         align-items: flex-start;
     }
+
     .attend-info-label {
         font-weight: bold;
         margin-bottom: 2px;
     }
+
     .attend-info-table {
         width: 100%;
         margin-bottom: 14px;
@@ -372,32 +404,38 @@ $(document).ready(function() {
         table-layout: fixed;
         border: solid 1px #e0e0e0;
     }
+
     .attend-info-label {
         font-weight: bold;
         width: 160px;
         padding-right: 10px;
         vertical-align: top;
     }
+
     .attend-info-table td {
         padding: 2px 4px;
         vertical-align: top;
         width: 100%;
     }
+
     .attend-details-table {
         width: 100%;
         border-collapse: collapse;
     }
+
     .attend-details-table th.details-label,
     .attend-details-table td.details-value {
         text-align: left;
         padding: 8px 10px;
         vertical-align: top;
     }
+
     .attend-details-table th.details-label {
         font-weight: bold;
         width: 38%;
         background: #f5f5f5;
     }
+
     .attend-details-table td.details-value {
         width: 62%;
         background: #fff;
@@ -500,6 +538,55 @@ $(document).ready(function() {
         // Inicialización normal de DataTable
         var table = $('#faultReportTable').DataTable({
             ...commonDatatableConfig,
+            layout: {
+                topEnd: [
+                    function() {
+                        let container = document.createElement('div');
+                        container.className = 'date-filter-container';
+
+                        let divFechaInicio = document.createElement('div');
+                        let labelInicio = document.createElement('label');
+                        labelInicio.setAttribute('for', 'min-date-fault');
+                        labelInicio.textContent = 'Fecha Inicio: ';
+                        let inputInicio = document.createElement('input');
+                        inputInicio.type = 'text';
+                        inputInicio.id = 'min-date-fault';
+                        inputInicio.name = 'min-date-fault';
+                        inputInicio.className = 'date-filter'; // <-- aquí
+                        inputInicio.readOnly = true;
+                        divFechaInicio.appendChild(labelInicio);
+                        divFechaInicio.appendChild(inputInicio);
+                        container.appendChild(divFechaInicio);
+
+                        let divFechaFin = document.createElement('div');
+                        let labelFin = document.createElement('label');
+                        labelFin.setAttribute('for', 'max-date-fault');
+                        labelFin.textContent = 'Fecha Fin: ';
+                        let inputFin = document.createElement('input');
+                        inputFin.type = 'text';
+                        inputFin.id = 'max-date-fault';
+                        inputFin.name = 'max-date-fault';
+                        inputFin.className = 'date-filter '; // <-- aquí
+                        inputFin.readOnly = true;
+                        divFechaFin.appendChild(labelFin);
+                        divFechaFin.appendChild(inputFin);
+                        container.appendChild(divFechaFin);
+
+                        let resetButton = document.createElement('button');
+                        resetButton.id = 'resetFiltersFault';
+                        resetButton.className = 'crud-button reset-button green-button';
+                        resetButton.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3">
+                                                <path d="M480-160q-134 0-227-93t-93-227q0-134 93-227t227-93q69 0 132 28.5T720-690v-110h80v280H520v-80h168q-32-56-87.5-88T480-720q-100 0-170 70t-70 170q0 100 70 170t170 70q77 0 139-44t87-116h84q-28 106-114 173t-196 67Z" />
+                                            </svg>`;
+                        container.appendChild(resetButton);
+
+                        return container;
+                    }, 'search'
+                ],
+                topStart: "pageLength",
+                bottomStart: 'buttons',
+                bottomEnd: 'paging'
+            },
             buttons: [{
                 extend: 'pdfHtml5',
                 text: 'Exportar a PDF',
@@ -555,10 +642,26 @@ $(document).ready(function() {
                     const anioActual = new Date().getFullYear();
                     doc.footer = function(currentPage, pageCount) {
                         return {
-                            columns: [
-                                { text: 'SABATES ' + anioActual, alignment: 'left', margin: [40, 0, 0, 0], fontSize: 9, color: '#000000' },
-                                { text: 'Reporte Generado el: ' + fechaHora, alignment: 'center', fontSize: 9, color: '#000000' },
-                                { text: 'Página ' + currentPage.toString() + ' de ' + pageCount, alignment: 'right', margin: [0, 0, 40, 0], fontSize: 9, color: '#000000' }
+                            columns: [{
+                                    text: 'SABATES ' + anioActual,
+                                    alignment: 'left',
+                                    margin: [40, 0, 0, 0],
+                                    fontSize: 9,
+                                    color: '#000000'
+                                },
+                                {
+                                    text: 'Reporte Generado el: ' + fechaHora,
+                                    alignment: 'center',
+                                    fontSize: 9,
+                                    color: '#000000'
+                                },
+                                {
+                                    text: 'Página ' + currentPage.toString() + ' de ' + pageCount,
+                                    alignment: 'right',
+                                    margin: [0, 0, 40, 0],
+                                    fontSize: 9,
+                                    color: '#000000'
+                                }
                             ],
                             margin: [0, 0, 0, 10]
                         };
@@ -602,16 +705,15 @@ $(document).ready(function() {
                 {
                     data: 'fecha_hora_reporte_fallas',
                     render: function(data, type, row) {
-                        // Formatear la fecha y hora
-                        const date = new Date(data);
-                        return date.toLocaleString('es-ES', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: true
-                        }).replace(",", "");
+                        // Si no hay dato, devolver vacío
+                        if (!data) return '';
+                        // Para ordenamiento y búsqueda, devolver el valor ISO (original)
+                        if (type === 'sort' || type === 'type') {
+                            return data;
+                        }
+                        // Para display, devolver en formato DD/MM/YYYY hh:mm A
+                        var m = moment(data);
+                        return m.isValid() ? m.format('DD/MM/YYYY hh:mm A') : data;
                     }
                 },
                 {
@@ -623,6 +725,10 @@ $(document).ready(function() {
                             return `<span class="states status-accepted">${data}</span>`;
                         } else if (row.id_estado_reporte_fallas === 3) {
                             return `<span class="states status-completed">${data}</span>`;
+                        } else if (row.id_estado_reporte_fallas === 4) {
+                            return `<span class="states dark-button">${data}</span>`;
+                        } else if (row.id_estado_reporte_fallas === 5) {
+                            return `<span class="states dark-button">${data}</span>`;
                         } else {
                             return data; // Muestra el valor original si no es ninguno de los anteriores
                         }
@@ -660,35 +766,39 @@ $(document).ready(function() {
                     render: function(data, type, row) {
                         // Si el reporte está completado, no mostrar botones de acción
                         if (row.id_estado_reporte_fallas === 3) {
-                            return row.tecnico_asignado_nombre ? row.tecnico_asignado_nombre : '-';
+                            return row.tecnico_asignado_nombre ? row.tecnico_asignado_nombre : 'N/A';
+                        }
+                        // Si el reporte está invalidado o rechazado, no mostrar botones de acción
+                        if (row.id_estado_reporte_fallas === 4 || row.id_estado_reporte_fallas === 5) {
+                            return row.tecnico_asignado_nombre ? row.tecnico_asignado_nombre : 'N/A';
                         }
                         // Si ya hay técnico asignado
                         if (row.tecnico_asignado) {
                             // Si el técnico asignado coincide con el usuario actual, mostrar solo el botón rechazar
                             if (row.tecnico_asignado == currentId) {
                                 return `<button class="table-button red-button reject-repair-button open-modal" 
-            data-report-id="${row.id_reporte_fallas}" data-fetch="false" data-target-modal="rejectReportModal">
-            Rechazar
-        </button>`;
+        data-report-id="${row.id_reporte_fallas}" data-fetch="false" data-target-modal="rejectReportModal">
+        Rechazar
+    </button>`;
                             }
                             // Si no coincide, solo mostrar el nombre
-                            return row.tecnico_asignado_nombre ? row.tecnico_asignado_nombre : '-';
+                            return row.tecnico_asignado_nombre ? row.tecnico_asignado_nombre : 'N/A';
                         }
                         // Si es admin y no hay técnico asignado, mostrar botón Asignar Técnico
                         if (typeof window.isAdmin !== 'undefined' && window.isAdmin) {
                             return `<button class="table-button blue-button assign-technician-btn open-modal" 
-                        data-report-id="${row.id_reporte_fallas}" 
-                        data-target-modal="assignTechnicianModal" data-fetch="false">
-                        Asignar Técnico
-                    </button>`;
+                    data-report-id="${row.id_reporte_fallas}" 
+                    data-target-modal="assignTechnicianModal" data-fetch="false">
+                    Asignar Técnico
+                </button>`;
                         }
                         // Si es técnico y no hay técnico asignado, mostrar botón aceptar
                         if (data === null || data === undefined) {
                             return `<button class="table-button green-button accept-repair-button" 
-                        data-report-id="${row.id_reporte_fallas}" 
-                        onclick="acceptRepair(${row.id_reporte_fallas})">
-                        Aceptar
-                    </button>`;
+                    data-report-id="${row.id_reporte_fallas}" 
+                    onclick="acceptRepair(${row.id_reporte_fallas})">
+                    Aceptar
+                </button>`;
                         } else {
                             return row.tecnico_asignado_nombre; // Muestra el valor original si no es null
                         }
@@ -727,14 +837,211 @@ $(document).ready(function() {
                         return buttons;
                     }
                 },
-            ]
+            ],
+            initComplete: function() {
+                // Inicializar los selectores DateTime después de que se han creado en el DOM
+                minDateFault = new DateTime('#min-date-fault', {
+                    format: 'DD/MM/YYYY',
+                    i18n: {
+                        previous: 'Anterior',
+                        next: 'Siguiente',
+                        months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                        weekdays: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+                        amPm: ['am', 'pm'],
+                        today: 'Hoy',
+                        clear: 'Limpiar',
+                        close: 'Cerrar'
+                    }
+                });
+                minDateFault.max(new Date());
+
+                maxDateFault = new DateTime('#max-date-fault', {
+                    format: 'DD/MM/YYYY',
+                    i18n: {
+                        previous: 'Anterior',
+                        next: 'Siguiente',
+                        months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+                        weekdays: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+                        amPm: ['am', 'pm'],
+                        today: 'Hoy',
+                        clear: 'Limpiar',
+                        close: 'Cerrar'
+                    }
+                });
+                maxDateFault.max(new Date());
+
+                // --- UNIFICAR urlParams al principio de initComplete ---
+                const urlParams = new URLSearchParams(window.location.search);
+
+                // --- AUTOFILL DE FILTROS DE FECHA DESDE URL ---
+                const fechaInicio = urlParams.get('fecha_inicio');
+                const fechaFin = urlParams.get('fecha_fin');
+                if (fechaInicio || fechaFin) { // Cambié a '||' para que funcione si solo se pasa una fecha
+                    function toDDMMYYYY(fecha) {
+                        if (!fecha) return null; // Manejar el caso de fecha nula
+                        const [y, m, d] = fecha.split('-');
+                        return `${d}/${m}/${y}`;
+                    }
+
+                    if (fechaInicio) {
+                        const fechaInicioFormateada = toDDMMYYYY(fechaInicio);
+                        // Establecer valor directamente en el input visible
+                        $('#min-date-fault').val(fechaInicioFormateada);
+                        // Importante: Establecer el valor en la instancia de DateTime
+                        minDateFault.val(fechaInicioFormateada);
+                    }
+                    if (fechaFin) {
+                        const fechaFinFormateada = toDDMMYYYY(fechaFin);
+                        // Establecer valor directamente en el input visible
+                        $('#max-date-fault').val(fechaFinFormateada);
+                        // Importante: Establecer el valor en la instancia de DateTime
+                        maxDateFault.val(fechaFinFormateada);
+                    }
+                    // No necesitas llamar a table.draw() aquí, lo haremos al final después de todos los filtros.
+                }
+
+                // --- RESTRICCIÓN: max-date debe ser igual o mayor que min-date ---
+                $('#min-date-fault').on('change', function() {
+                    const minVal = minDateFault.val(); // Obtener el valor formateado de la instancia DateTime
+                    if (minVal) {
+                        maxDateFault.min(minVal); // Establecer el mínimo para el selector maxDateFault
+                        // Si maxDate actual es menor que el nuevo minDate, ajustar maxDate
+                        if (maxDateFault.val() && maxDateFault.val() < minVal) {
+                            maxDateFault.val(minVal);
+                        }
+                    } else {
+                        maxDateFault.min(null); // Si minDate está vacío, quitar la restricción de maxDate
+                    }
+                    table.draw(); // Redibujar la tabla cuando la fecha mínima cambia
+                });
+
+                $('#max-date-fault').on('change', function() {
+                    // Redibujar la tabla cuando la fecha máxima cambia
+                    table.draw();
+                });
+
+
+                // --- Filtro de fechas EXACTO como en activitiesReportTable-view.php ---
+                $.fn.dataTable.ext.search.push(
+                    function(settings, data, dataIndex) {
+                        if (settings.nTable.id !== 'faultReportTable') return true;
+
+                        let minDateObj = minDateFault.val();
+                        let maxDateObj = maxDateFault.val();
+                        let dateStr = data[4]; // Ej: "25/05/2025 01:53 AM"
+
+                        if ((minDateObj === null && maxDateObj === null) || dateStr === null || dateStr === undefined) {
+                            return true;
+                        }
+
+                        // Función para normalizar fechas considerando la zona horaria
+                        function normalize(date, isEndOfDay = false) {
+                            if (!date) return null;
+
+                            // Si es un objeto Date
+                            if (Object.prototype.toString.call(date) === '[object Date]') {
+                                // Ajustar para zona horaria local
+                                const offset = date.getTimezoneOffset() * 60000;
+                                const localDate = new Date(date.getTime() - offset);
+
+                                if (isEndOfDay) {
+                                    // Para fecha fin, establecer a las 23:59:59 del día seleccionado
+                                    return new Date(localDate.setHours(23, 59, 59, 999)).getTime();
+                                }
+                                // Para fecha inicio, establecer a las 00:00:00 del día seleccionado
+                                return new Date(localDate.setHours(0, 0, 0, 0)).getTime();
+                            }
+
+                            // Si es string en formato YYYY-MM-DD
+                            if (typeof date === 'string') {
+                                const match = date.match(/(\d{4})-(\d{2})-(\d{2})/);
+                                if (match) {
+                                    const year = parseInt(match[1]);
+                                    const month = parseInt(match[2]) - 1;
+                                    const day = parseInt(match[3]);
+                                    const localDate = new Date(year, month, day);
+                                    return normalize(localDate, isEndOfDay);
+                                }
+                                // Si es string en formato DD/MM/YYYY
+                                const match2 = date.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+                                if (match2) {
+                                    const day = parseInt(match2[1]);
+                                    const month = parseInt(match2[2]) - 1;
+                                    const year = parseInt(match2[3]);
+                                    const localDate = new Date(year, month, day);
+                                    return normalize(localDate, isEndOfDay);
+                                }
+                            }
+                            return null;
+                        }
+
+                        // Parsear la fecha de la columna (solo la parte de la fecha)
+                        let datePart = dateStr.split(' ')[0]; // "25/05/2025"
+                        // Convertir a objeto Date
+                        let dateObj = normalize(datePart);
+
+                        // Convertir fechas de filtro
+                        const minTime = minDateObj ? normalize(minDateObj) : null;
+                        const maxTime = maxDateObj ? normalize(maxDateObj, true) : null; // true para indicar que es fecha fin
+
+                        if (minTime !== null && maxTime !== null) {
+                            return dateObj >= minTime && dateObj <= maxTime;
+                        } else if (minTime !== null) {
+                            return dateObj >= minTime;
+                        } else if (maxTime !== null) {
+                            return dateObj <= maxTime;
+                        }
+                        return true;
+                    }
+                );
+
+
+                // Evento para resetear los filtros
+                $('#resetFiltersFault').on('click', function() {
+                    $('#min-date-fault, #max-date-fault').val('');
+                    minDateFault.val(null); // Importante: resetear las instancias DateTime
+                    maxDateFault.val(null); // Importante: resetear las instancias DateTime
+                    table.draw();
+                });
+
+                // --- APLICAR FILTRO GLOBAL SEGÚN PARÁMETROS DE LA URL ---
+                // Lista de parámetros que deben activar el filtro global
+                const globalSearchParams = ['codigo', 'estado', 'prioridad', 'tipo'];
+                let filtroGlobal = '';
+                for (const param of globalSearchParams) {
+                    const valor = urlParams.get(param);
+                    if (valor) {
+                        filtroGlobal = valor;
+                        break; // Solo toma el primero que encuentre
+                    }
+                }
+                if (filtroGlobal) {
+                    this.api().search(filtroGlobal).draw();
+                    // Escribir en el input de búsqueda general
+                    $('div.dataTables_filter input').val(filtroGlobal);
+                }
+
+                // Finalmente, redibujar la tabla UNA SOLA VEZ para aplicar todos los filtros de la URL
+                table.draw();
+            },
         });
 
-        // Filtrar por código si viene en la URL
+        // --- UNIFICAR urlParams ---
         const urlParams = new URLSearchParams(window.location.search);
+
+        // Filtrar por código si viene en la URL
         const codigo = urlParams.get('codigo');
         if (codigo) {
             table.search(codigo).draw();
+            // Escribir en el input de búsqueda general
+            $('div.dataTables_filter input').val(codigo);
+        }
+        // Filtrar por estado si viene en la URL (escribir en el input de búsqueda global)
+        const estado = urlParams.get('estado');
+        if (estado) {
+            table.search(estado).draw();
+            // Escribir el valor en el input de búsqueda global de DataTables (compatible con todas las versiones)
+            $('div.dataTables_filter input').val(estado);
         }
     });
 </script>
@@ -922,7 +1229,7 @@ $(document).ready(function() {
             }
             $('#attend_report_id').val(reportId);
             // Mostrar código y fecha
-            if(rowData) {
+            if (rowData) {
                 $('#attend_codigo_reporte').text(rowData.codigo_reporte_fallas || '');
                 // Formatear la fecha
                 let fecha = rowData.fecha_hora_reporte_fallas;
@@ -938,25 +1245,61 @@ $(document).ready(function() {
                     }).replace(",", "");
                 }
                 $('#attend_fecha_reporte').text(fecha || '');
+                // Guardar el tipo de falla en un campo oculto
+                $('#attend_tipo_falla').val(rowData.id_tipo_falla);
+                // NUEVO: guardar id_equipo_informatico en campo oculto
+                $('#attend_id_equipo_informatico').val(rowData.id_equipo_informatico || '');
+                // Si es tipo equipo (id_tipo_falla == 1), mostrar la pregunta
+                if (rowData.id_tipo_falla == 1) {
+                    $('#repair-question-group').show();
+                    $('#repair_done').prop('required', true);
+                } else {
+                    $('#repair-question-group').hide();
+                    $('#repair_done').prop('required', false);
+                }
             } else {
                 $('#attend_codigo_reporte').text('');
                 $('#attend_fecha_reporte').text('');
+                $('#attend_tipo_falla').val('');
+                $('#repair-question-group').hide();
+                $('#repair_done').prop('required', false);
             }
         });
 
         $('#attendReportForm').on('submit', function(e) {
             e.preventDefault();
             const form = this;
-            const formData = $(form).serialize();
+            const formData = $(form).serializeArray();
             const sentBtn = form.querySelector('.sentBtn');
             if (sentBtn) sentBtn.disabled = true;
-            $.post(form.action, formData, function(data) {
+            const tipoFalla = $('#attend_tipo_falla').val();
+            const repairDone = $('#repair_done').val();
+            // NUEVO: obtener id_equipo_informatico del campo oculto
+            const idEquipo = $('#attend_id_equipo_informatico').val();
+            $.post(form.action, $(form).serialize(), function(data) {
                 Swal.fire({
                     icon: data.success ? 'success' : 'error',
                     title: data.success ? 'Éxito' : 'Error',
                     text: data.message
                 });
                 if (data.success) {
+                    // Si es tipo equipo, cambiar estado según respuesta
+                    if (tipoFalla == 1 && idEquipo) {
+                        let url = '';
+                        let params = {
+                            id_equipo: idEquipo
+                        };
+                        if (repairDone === 'no') {
+                            url = 'index.php?view=pc&action=set_broken';
+                        } else if (repairDone === 'si') {
+                            url = 'index.php?view=pc&action=set_operational';
+                        }
+                        if (url) {
+                            $.post(url, params, function(resp) {
+                                // Puedes mostrar un mensaje si lo deseas
+                            });
+                        }
+                    }
                     // Cerrar modal
                     const modal = document.getElementById('attendReportModal');
                     const overlay = modal.closest('.overlay-modal');
@@ -1087,27 +1430,70 @@ $(document).ready(function() {
         const sentBtn = form.querySelector('.sentBtn');
         if (sentBtn) sentBtn.disabled = true;
         $.post(form.action, formData, function(data) {
-        Swal.fire({
-            icon: data.success ? 'success' : 'error',
-            title: data.success ? 'Éxito' : 'Error',
-            text: data.message
+            Swal.fire({
+                icon: data.success ? 'success' : 'error',
+                title: data.success ? 'Éxito' : 'Error',
+                text: data.message
+            });
+            if (data.success) {
+                // Cerrar modal
+                const modal = document.getElementById('invalidateReportModal');
+                const overlay = modal.closest('.overlay-modal');
+                if (overlay && modal) {
+                    overlay.classList.remove('overlay-active', 'overlay-opening');
+                    modal.classList.remove('modal-active', 'modal-opening');
+                    overlay.style.display = 'none';
+                }
+                // Recargar tabla
+                if ($('#faultReportTable').length) {
+                    $('#faultReportTable').DataTable().ajax.reload(null, false);
+                }
+            }
+        }, 'json').always(function() {
+            if (sentBtn) sentBtn.disabled = false;
         });
-        if (data.success) {
-            // Cerrar modal
-            const modal = document.getElementById('invalidateReportModal');
-            const overlay = modal.closest('.overlay-modal');
-            if (overlay && modal) {
-                overlay.classList.remove('overlay-active', 'overlay-opening');
-                modal.classList.remove('modal-active', 'modal-opening');
-                overlay.style.display = 'none';
-            }
-            // Recargar tabla
-            if ($('#faultReportTable').length) {
-                $('#faultReportTable').DataTable().ajax.reload(null, false);
-            }
-        }
-    }, 'json').always(function() {
-        if (sentBtn) sentBtn.disabled = false;
     });
-});
+</script>
+<script>
+    $(document).ready(function() {
+        // --- FORMULARIO DE REPORTE DE FALLA ---
+        $('#faultReportForm').on('submit', function(e) {
+            e.preventDefault();
+            const form = this;
+            const formData = $(form).serialize();
+            const sentBtn = form.querySelector('.sentBtn');
+            if (sentBtn) sentBtn.disabled = true;
+            $.post(form.action, formData, function(data) {
+                Swal.fire({
+                    icon: data.success ? 'success' : 'error',
+                    title: data.success ? 'Éxito' : 'Error',
+                    text: data.message
+                });
+                if (data.success) {
+                    // Si es tipo equipo, cambiar estado a "en reparación"
+                    var tipoFalla = $('#tipoFalla').val();
+                    var idEquipo = $('#idPC').val();
+                    if (tipoFalla == '1' && idEquipo) {
+                        $.post('index.php?view=pc&action=set_in_repair', {
+                            id_equipo: idEquipo
+                        });
+                    }
+                    // Cerrar modal
+                    const modal = document.getElementById('faultReportModal');
+                    const overlay = modal.closest('.overlay-modal');
+                    if (overlay && modal) {
+                        overlay.classList.remove('overlay-active', 'overlay-opening');
+                        modal.classList.remove('modal-active', 'modal-opening');
+                        overlay.style.display = 'none';
+                    }
+                    // Recargar tabla
+                    if ($('#faultReportTable').length) {
+                        $('#faultReportTable').DataTable().ajax.reload(null, false);
+                    }
+                }
+            }, 'json').always(function() {
+                if (sentBtn) sentBtn.disabled = false;
+            });
+        });
+    });
 </script>
